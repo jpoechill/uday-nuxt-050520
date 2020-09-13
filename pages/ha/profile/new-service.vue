@@ -131,8 +131,28 @@ export default {
           isActive: false
         },
         {
-          name: 'service2',
-          title: 'Service 2',
+          name: 'bloodtest',
+          title: 'Blood Test',
+          isActive: false
+        },
+        {
+          name: 'bloodtest',
+          title: 'Blood Test',
+          isActive: false
+        },
+        {
+          name: 'xray',
+          title: 'X-Ray',
+          isActive: false
+        },
+        {
+          name: 'mri',
+          title: 'MRI',
+          isActive: false
+        },
+        {
+          name: 'ctscan',
+          title: 'CT Scan',
           isActive: false
         }
       ],

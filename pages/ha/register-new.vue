@@ -282,6 +282,11 @@ export default {
       }
 
       // event.preventDefault()
+      
+      // error checks
+      if (payload.demographics.name === '') {
+        payload.demographics.name = 'Unnamed Patient'
+      }
 
       this.$store.commit('registerPatient', payload)
       this.$store.commit('updateCurrPatient', payload)
