@@ -77,7 +77,13 @@
                   <input class="form-check-input" type="checkbox" :checked="patientQuestion.isActive" :id="'patientQuestions' + index">
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
-                  </label>
+                  </label><br>
+                  <select :value="patientQuestion.relationship" class="custom-select w-75 ml-3 mt-3">
+                    <option selected disabled>Relationship</option>
+                    <option value="Parent">Parent</option>
+                    <option value="Spouse">Spouse</option>
+                    <option value="Other Relationship">Other Relationship</option>
+                  </select>
                 </div>
               </div>
             </div>

@@ -181,11 +181,11 @@
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
                   </label><br>
-                  <select class="custom-select w-75 ml-3 mt-3">
+                  <select v-model="patientQuestion.relationship" class="custom-select w-75 ml-3 mt-3">
                     <option selected disabled>Relationship</option>
-                    <option value="1">Parent</option>
-                    <option value="2">Spouse</option>
-                    <option value="3">Other Relationship</option>
+                    <option value="Parent">Parent</option>
+                    <option value="Spouse">Spouse</option>
+                    <option value="Other Relationship">Other Relationship</option>
                   </select>
                 </div>
               </div>

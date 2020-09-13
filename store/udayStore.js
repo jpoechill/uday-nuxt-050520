@@ -15,7 +15,7 @@ export default {
             status: "offline",
             allocatedPatients: ['pa001', 'pa002', 'pa003'],
             demographics: {
-              name: "Dr. Akshit Gupta"
+              name: "Dr. Abhigyan Bose"
             }
           },
         ],

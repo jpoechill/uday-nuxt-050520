@@ -802,9 +802,6 @@ export default {
 </script>
 
 <style>
-html {
-  scroll-behavior: smooth;
-}
 
 .list-inline-item {
   margin-right: 16px !important;

@@ -3075,7 +3075,7 @@ export default {
               question: "How long have the boils been there?",
               type: 'number',
               answer: '0',
-              caption: 'days'
+              caption: 'days.'
             },
             {
               question: "Where is are the boils located?",
@@ -7225,13 +7225,13 @@ export default {
                   question: "When was the last LMP?",
                   type: 'number',
                   answer: '0',
-                  caption: 'days'
+                  caption: 'days.'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
                   answer: '0',
-                  caption: 'days'
+                  caption: 'days.'
                 },
                 {
                   question: "What is the interval between periods?",

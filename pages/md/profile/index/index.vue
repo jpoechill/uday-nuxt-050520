@@ -114,6 +114,9 @@ export default {
     ])
   },
   computed: {
+    currEpisode: function () {
+      return this.$store.state.currPatient.episodes.find(episode => episode.episodeID === this.$route.query.id)
+    },
     filterAllVisits: function () {
       let queryID = this.$route.query.id
 

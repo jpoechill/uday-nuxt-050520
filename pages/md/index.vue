@@ -11,7 +11,7 @@
           <div class="col-md-9">
             <div class="row">
               <div class="col-md-6">
-                <h5 class="d-inline text-decoration-none">Dr. Akshit Gupta</h5>  
+                <h5 class="d-inline text-decoration-none">Dr. Abhigyan Bose</h5>  
               </div>
               <div class="col-md-6 text-right">
                 <img src="/circle-green.svg" class="shape-status" alt="">
@@ -19,7 +19,7 @@
               </div>
             </div>
             <br>
-            Hello, my name is Dr. Gupta, and I graduated from John Hopkins in '20. I'm happy help you!<br><br>
+            Hello, my name is Dr. Bose, and I graduated from John Hopkins in '20. I'm happy help you!<br><br>
             <div class="row">
               <div class="col-md-6">
                 4444 Market St. <br>
