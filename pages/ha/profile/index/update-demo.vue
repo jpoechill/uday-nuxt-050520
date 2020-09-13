@@ -44,7 +44,7 @@
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="Gender" v-model="demographics.gender">
                 <div class="small text-muted mb-1">
-                  Age
+                  Age (in {{ demographics.ageType }}) 
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="Age" v-model="demographics.age">
                 <div class="small text-muted mb-1">
@@ -149,6 +149,7 @@ export default {
         occupation: '',
         gender: '',
         age: 0,
+        ageType: '',
         hswd: '',
         address: '',
         address2: '',

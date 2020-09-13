@@ -42,6 +42,21 @@
                   <label for="">Name</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.name" placeholder="Full Name">
                   
+                </div>
+                <div class="col-md-6">
+                  <label for="">Age</label><br>
+                  <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
+                  <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
+                    <option selected disabled>Age Type</option>
+                    <option value="days">Days</option>
+                    <option value="months">Months</option>
+                    <option value="years">Years</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="row mt-3">
+                <div class="col-md-6">
                   <label for="">Gender</label>
                   <select class="custom-select mb-3">
                     <option selected disabled>Gender</option>
@@ -51,15 +66,8 @@
                   </select>
                   <label for="">Phone Number</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.phone" placeholder="Phone Number">
-                  
-                  <!-- <label for="">Current Date</label>
-                  <input type="text" class="w-100 p-2 mb-3" placeholder="Current Date">
-                 -->
                 </div>
                 <div class="col-md-6">
-                  <label for="">Age</label>
-                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
-                  
                   <label for="">Occupation</label>
                   <select class="custom-select mb-3">
                     <option selected disabled>Occupation</option>
@@ -70,7 +78,6 @@
                   </select>
                   <label for="">Husband/Wife/Son/Daughter of</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.hswd" placeholder="Family Members's Name">
-                
                 </div>
               </div>
               <div class="row mt-3">
@@ -285,7 +292,7 @@ export default {
       
       // error checks
       if (payload.demographics.name === '') {
-        payload.demographics.name = 'Unnamed Patient'
+        payload.demographics.name = 'Un-named Patient'
       }
 
       this.$store.commit('registerPatient', payload)
@@ -303,6 +310,7 @@ export default {
         occupation: 'Truck Driver',
         gender: "m",
         age: "29",
+        ageType: '',
         hswd: '',
         address: "4444 Market St.",
         address2: "Address 2",
@@ -315,6 +323,7 @@ export default {
           occupation: 'Truck Driver',
           gender: "m",
           age: "29",
+          ageType: "",
           hswd: '',
           address: "4444 Market St.",
           address2: "Address 2",
