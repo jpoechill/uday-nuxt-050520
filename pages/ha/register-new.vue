@@ -46,8 +46,8 @@
                 <div class="col-md-6">
                   <label for="">Age</label><br>
                   <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
-                  <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
-                    <option disabled selected>Age Type</option>
+                  <select class="w-100 custom-select mb-3" value="" v-model="patientData.ageType">
+                    <option disabled selected value="">Age Type</option>
                     <option value="days">Days</option>
                     <option value="months">Months</option>
                     <option value="years">Years</option>
@@ -188,7 +188,7 @@
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
                   </label><br>
-                  <select v-model="patientQuestion.relationship" class="custom-select w-75 ml-3 mt-3">
+                  <select v-model="patientQuestion.relationship" value="" class="custom-select w-75 ml-3 mt-3">
                     <option :selected="true" :disabled="true" value="">Relationship</option>
                     <option value="Parent">Parent</option>
                     <option value="Spouse">Spouse</option>

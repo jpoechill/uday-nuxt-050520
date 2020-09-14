@@ -31,7 +31,7 @@
             <div class="row">
               <div class="col-md-6"> 
                 {{ currPatient.demographics.occupation }} | 
-                {{ currPatient.demographics.age }} years old <br>
+                {{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old <br>
                 {{ currPatient.demographics.hswd }} <br><br>
                 {{ currPatient.demographics.police }}
               </div>

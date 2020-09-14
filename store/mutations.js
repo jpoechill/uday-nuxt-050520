@@ -41,7 +41,31 @@ export default {
         patient => patient.id === PATIENT_ID
       ) || state.currPatient; 
       
-    patientProf.demographics = {...PATIENT_DEMOGRAPHICS };
+    patientProf.demographics = {
+      ...PATIENT_DEMOGRAPHICS
+    };
+
+    alert('The patient\'s demographics have been updated.')
+  },
+  updateHistory(state, payload) {
+    let PATIENT_ID = state.currPatient.id
+    let CLUSTER_ID = state.currCluster;
+    let PATIENT_HISTORY = payload[0]
+    let FAMILY_HISTORY = payload[1]
+
+    let patientProf =
+      state.udayDb.clusters[CLUSTER_ID].patients.find(
+        patient => patient.id === PATIENT_ID
+      ) || state.currPatient;
+
+    patientProf.demographics.patientHistory = {
+      ...PATIENT_HISTORY
+    };
+    patientProf.demographics.familyHistory = {
+      ...FAMILY_HISTORY
+    };
+
+    alert('The patient\'s medical history has been updated.')
   },
   updateCurrEpisode(state, payload) {
     state.currEpisode = payload
@@ -180,26 +204,6 @@ export default {
         .episodes.find(episode => episode.episodeID === EPISODE_ID)
         .services.push(SERVICE_PAYLOAD);
     }
-  },
-  updateHistory(state, payload) {
-    let PATIENT_ID = state.currPatient.id
-    let CLUSTER_ID = state.currCluster;
-    let PATIENT_HISTORY = payload[0]
-    let FAMILY_HISTORY = payload[1]
-
-    let patientProf =
-      state.udayDb.clusters[CLUSTER_ID].patients.find(
-        patient => patient.id === PATIENT_ID
-      ) || state.currPatient;
-
-    console.log(payload[0], payload[1])
-    console.log('xxx')
-
-    patientProf.demographics.patientHistory = { ...PATIENT_HISTORY };
-    patientProf.demographics.familyHistory = { ...FAMILY_HISTORY };
-
-    console.log(patientProf.demographics.patientHistory)
-    console.log(patientProf.demographics.familyHistory)
   },
   registerPatient(state, payload) {
     let CLUSTER_ID = state.currCluster

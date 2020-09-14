@@ -20,34 +20,50 @@
             <div class="row pt-3">
               <div class="col-md-12 pb-3">
                 General Information <br>
-                <!-- <br><br> -->
-                <!-- {{ demographics }} -->
-                <!-- {{ currPatient.demographics }} -->
               </div>
-              <div class="col-md-6">
+               <div class="col-md-6">
                 <div class="small text-muted mb-1">
                   Full Name
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="First Name" v-model="demographics.name">
-                <div class="small text-muted mb-1">
-                  Phone Number
-                </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="Phone Number" v-model="demographics.phone">
-                <div class="small text-muted mb-1">
-                  H/W/S/D of
-                </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="H/W/S/D of" v-model="demographics.hswd">
-              </div>
+               </div>
               <div class="col-md-6">
                 <div class="small text-muted mb-1">
                   Gender
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="Gender" v-model="demographics.gender">
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
                 <div class="small text-muted mb-1">
-                  Age (in {{ demographics.ageType }}) 
+                  Phone Number
+                </div>
+                <input type="text" class="w-100 p-2 mb-3" placeholder="Phone Number" v-model="demographics.phone">
+              </div>
+              <div class="col-md-6">
+                <div class="small text-muted mb-1">
+                  Age
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="Age" v-model="demographics.age">
                 <div class="small text-muted mb-1">
+                  Age Type
+                </div>
+                <select v-model="demographics.ageType" class="w-100 custom-select mb-3">
+                    <option disabled selected value="">Age Type</option>
+                    <option value="days">Days</option>
+                    <option value="months">Months</option>
+                    <option value="years">Years</option>
+                  </select>
+              </div>
+            </div>
+            <div class="row pt-3">
+              <div class="col-md-6"><div class="small text-muted mb-1">
+                  H/W/S/D of
+                </div>
+                <input type="text" class="w-100 p-2 mb-3" placeholder="H/W/S/D of" v-model="demographics.hswd">
+              </div>
+              <div class="col-md-6"><div class="small text-muted mb-1">
                   Occupation
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="Occupation" v-model="demographics.occupation">
