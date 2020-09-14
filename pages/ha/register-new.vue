@@ -47,7 +47,7 @@
                   <label for="">Age</label><br>
                   <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
                   <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
-                    <option selected disabled>Age Type</option>
+                    <option disabled selected>Age Type</option>
                     <option value="days">Days</option>
                     <option value="months">Months</option>
                     <option value="years">Years</option>
@@ -189,7 +189,7 @@
                     {{ patientQuestion.title }}
                   </label><br>
                   <select v-model="patientQuestion.relationship" class="custom-select w-75 ml-3 mt-3">
-                    <option selected disabled>Relationship</option>
+                    <option :selected="true" :disabled="true" value="">Relationship</option>
                     <option value="Parent">Parent</option>
                     <option value="Spouse">Spouse</option>
                     <option value="Other Relationship">Other Relationship</option>
@@ -318,20 +318,6 @@ export default {
         phone: "1-415-555-5555",
         location: "Hyderabad, IN",
         country: '',
-        demographics: {
-          name: "",
-          occupation: 'Truck Driver',
-          gender: "m",
-          age: "29",
-          ageType: "",
-          hswd: '',
-          address: "4444 Market St.",
-          address2: "Address 2",
-          police: "Police Station",
-          phone: "1-415-555-5555",
-          location: "Hyderabad, IN",
-          country: '',
-        },
         patientHistory: {
           questions: {
             highBloodPressure: {
