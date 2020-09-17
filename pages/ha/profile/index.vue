@@ -69,32 +69,7 @@
                   </button>
                 </nuxt-link>
               </div>
-              <!-- <div class="col-md-6">
-                <nuxt-link to="/ha/profile/update-history">
-                  <button class="btn btn-light py-1 px-3">
-                    <small>
-                      View Family History 
-                    </small>
-                  </button>
-                </nuxt-link>
-              </div> -->
             </div>
-            <!-- <div class="row">
-              <div class="col-md-12">
-                <hr>
-              </div>
-              <div class="col-md-6">
-                <small>
-                  Edit Demographics...
-                </small>
-              </div>
-              <div class="col-md-6">
-                <small>
-                  View Family History... <br>
-                  Edit Family History... <br>
-                </small>
-              </div>
-            </div> -->
           </div>
         </div>
       </transition>

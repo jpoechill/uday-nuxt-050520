@@ -63,6 +63,7 @@
               <!-- </div> -->
             </li>
           </ul>
+          <!-- {{ patientList }} -->
           <div class="shadow-sm w-100 bg-white mb-3 mt-0 px-3 py-1">
             <!-- <input type="text" class="w-100 p-2" placeholder=":: Search by ID, name or phone number"> -->
             <table class="table table-sm table-hover mt-2">
@@ -82,7 +83,7 @@
               <!-- <tbody> -->
 
               <!-- <transition name="u-fade"  mode="in-out" tag="tbody"> -->
-                <tr class="pointer" v-for="(patient, index) in list.slice().reverse()" :key="index">
+                <tr class="pointer" v-for="(patient, index) in patientList" :key="index">
                   <!-- <th class="text-uppercase" scope="row">{{ patient.id }}</th> -->
                   <td class="text-capitalize">
                     <img v-if="patient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
@@ -92,13 +93,13 @@
                     {{ patient.status }}
                   </td>
                   <td>
-                    <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.demographics.name }}</nuxt-link>
+                    <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name }}</nuxt-link>
                   </td>
                   <!-- <td class="text-uppercase">{{ patient.demographics.gender }}</td> -->
                   <!-- <td>{{ patient.demographics.age }}</td> -->
-                  <td>{{ patient.lastVisited }}</td>
-                  <td>{{ patient.dateRegistered }}</td>
-                  <td>{{ patient.regBy }}</td>
+                  <td>{{ patient.ldate }}</td>
+                  <td>{{ patient.date }}</td>
+                  <td>{{ patient.haname }}</td>
                 </tr>
 
                 <tr v-show="list.length === 0" class="pointer" key="empty" style="height: 40px;">
@@ -118,6 +119,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   layout: 'dashboard',
   computed: {
@@ -177,8 +180,20 @@ export default {
 
     this.$store.commit('updateCurrUser')
     this.$store.commit('updatePath', path)
+
+    this.getPatientList()
   },
   methods: {
+    getPatientList: function () {
+      let self = this
+      axios.get(this.baseURL + '/getpatientlist')
+        .then(function (response) {
+          self.patientList = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     getList: function (tabName) {
       if (tabName == 'patients') {
         this.list = this.filterMyPatients
@@ -224,6 +239,8 @@ export default {
   },
   data() {
     return {
+      baseURL: 'https://powerful-thicket-49412.herokuapp.com',
+      patientList: [],
       list: [],
       tabs: [
         {

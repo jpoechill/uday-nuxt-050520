@@ -71,10 +71,7 @@
                   <label for="">Occupation</label>
                   <select class="custom-select mb-3">
                     <option selected disabled>Occupation</option>
-                    <option value="1">Industrial Farmer</option>
-                    <option value="2">Teacher</option>
-                    <option value="2">Student</option>
-                    <option value="3">Other</option>
+                    <option v-for="(occupation, index) in occupations" :key="index" :value="occupation.objectid">{{ occupation.name }}</option>
                   </select>
                   <label for="">Husband/Wife/Son/Daughter of</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.hswd" placeholder="Family Members's Name">
@@ -91,9 +88,15 @@
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.address" placeholder="Address 1">
                   
                   <label for="">District</label>
-                  <input type="text" class="w-100 p-2 mb-3" placeholder="District">
+                  <select class="custom-select mb-4">
+                    <option selected disabled>District</option>
+                    <option v-for="(district, index) in districts" :key="index" :value="district.objectid">{{ district.name }}</option>
+                  </select>
                   <label for="">Police Station</label>
-                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.police" placeholder="Police Station">
+                  <select class="custom-select mb-4">
+                    <option selected disabled>District</option>
+                    <option v-for="(policeStation, index) in police" :key="index" :value="policeStation.objectid">{{ policeStation.name }}</option>
+                  </select>
                 </div>
                 <div class="col-md-6">
 
@@ -103,10 +106,7 @@
                   <label for="">State</label>
                   <select class="custom-select mb-4">
                     <option selected disabled>State</option>
-                    <option value="1">Maharashtra</option>
-                    <option value="2">Kerala</option>
-                    <option value="2">Tamila Nadu</option>
-                    <option value="3">Other</option>
+                    <option v-for="(state, index) in states" :key="index" :value="states.objectid">{{ state.name }}</option>
                   </select>
                   <label for="">Country</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.country" placeholder="India" value="India">
@@ -238,9 +238,55 @@ export default {
 
     this.$store.commit('updatePath', path)
 
+    this.getPolice()
+    this.getDistricts()
+    this.getStates()
+    this.getOccupations()
     this.generateFakeCredentials()
   },
   methods: {
+    getPolice: function () {
+      let self = this
+      axios.get(this.baseURL + '/requestps')
+        .then(function (response) {
+          self.police = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    getDistricts: function () {
+      let self = this
+      axios.get(this.baseURL + '/requestdistrict')
+        .then(function (response) {
+          self.districts = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    getStates: function () {
+      let self = this
+      axios.get(this.baseURL + '/requeststate')
+        .then(function (response) {
+          console.log(response.data);
+          self.states = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+          alert('Could not retrieve.')
+        });
+    },
+    getOccupations: function () {
+      let self = this
+      axios.get(this.baseURL + '/requestoccupation')
+        .then(function (response) {
+          self.occupations = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     generateFakeCredentials: function name(params) {
       let self = this
       axios.get('https://cors-anywhere.herokuapp.com/https://randomuser.me/api/').then(res => {
@@ -299,12 +345,17 @@ export default {
       this.$store.commit('updateCurrPatient', payload)
 
       alert('A new patient has been registered.')
-      
-      
     }
   },
   data() {
     return {
+      baseURL: 'https://powerful-thicket-49412.herokuapp.com',
+      occupations: [],
+      patientList: '',
+      police: '',
+      districts: [],
+      states: [],
+      occupations: '',
       patientData: {
         name: "",
         occupation: 'Truck Driver',
