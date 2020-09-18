@@ -152,7 +152,7 @@
                       <td>{{ patient.haname || patient.regBy }}</td>
                     </tr>
 
-                    <tr v-show="patientList.length === 0" class="pointer" key="empty" style="height: 40px;">
+                    <tr v-show="patientListOnline.length === 0" class="pointer" key="empty" style="height: 40px;">
                       <td class="py-3 px-3 text-center" colspan="9">
                         <small>
                           There are no patients in this list. Register a new patient to get started.
