@@ -228,16 +228,16 @@ export default {
     patientDataComputed() {
       return {
         name: this.patientData.name,
-        occupation: this.occupations.selected,
+        occupation:  typeof this.occupations.selected == 'object' ? this.occupations.selected.id : '5f3e81a843bec66f97b8f6f3',
         gender: this.patientData.gender,
         age: this.patientData.age,
         ageType: this.patientData.ageType,
         hswd: this.patientData.hswd,
         address: this.patientData.address,
         address2: this.patientData.address2,
-        district: this.districts.selected,
-        state: this.states.selected,
-        policeStation: this.policeStations.selected,
+        district: typeof this.districts.selected == 'object' ? this.districts.selected.id : '5f3e7eba43bec66f97b8f6ef',
+        state: typeof this.states.selected == 'object' ? this.states.selected.id : '5f3e7e6f43bec66f97b8f6ee',
+        policeStation: typeof this.policeStations.selected == 'object' ? this.policeStations.selected.id : '5f3e7eba43bec66f97b8f6ef',
         phone: this.patientData.phone,
         location: this.patientData.location,
         country: this.patientData.country,
@@ -265,6 +265,8 @@ export default {
     this.getDistricts()
     this.getStates()
     this.getOccupations()
+
+
     this.generateFakeCredentials()
   },
   methods: {
@@ -365,8 +367,51 @@ export default {
       this.$store.commit('registerPatient', payload)
       this.$store.commit('updateCurrPatient', payload)
 
-      alert('A new patient has been registered.')
-    }
+      this.registerPatientOnline()
+      // alert('A new patient has been registered.')
+    },
+    registerPatientOnline: function () {
+
+      console.log(this.patientDataComputed)
+
+      var data = {
+        HaId: this.$store.state.currUser.HaId,
+        name: this.patientData.name,
+        gender: this.patientData.gender,
+        age: this.patientData.age,
+        ageType: this.patientData.ageType,
+        phone: 1111,
+        villOrCity: 'VILLAGE',
+        stateId: this.patientDataComputed.state,
+        districtId: '5f3e7eba43bec66f97b8f6ef',
+        psId: '5f3e7eba43bec66f97b8f6ef',
+        sdwOf: 'self.patientData.hswd',
+        occupationId: '5f3e81a843bec66f97b8f6f3',
+        cluster: this.$store.state.currUser.cluster
+      }
+
+      var headers = {      
+        'Content-Type': 'application/json;charset=UTF-8',
+      }
+      
+      const self = this
+
+      axios.post(this.baseURL + '/registerpatient', data, headers)
+        .then(function (response) {
+          console.log(response);
+          self.HaId = response.data
+          alert('Registration successful.')
+
+          self.$router.push({path: '/ha/'})
+        })
+        .catch(function (error) {
+          console.log(error);
+          // self.example = error
+          alert('Could not register patient.')
+
+          self.$router.push({path: '/ha/'})
+        });
+    },
   },
   data() {
     return {

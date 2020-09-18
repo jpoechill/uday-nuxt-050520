@@ -1,12 +1,12 @@
 <template>
   <div>
     <transition name="u-fade" appear>
-      <div v-if="loaded">
+      <div>
         <div class="container">
           <div class="row">
             <div class="col-md-3 text-left responsive-padding-bottom">
               <div class="position-relative">
-                <div class="position-absolute">
+                <div class="position-absolute w-100">
                   <img class="w-100 pb-2" src="/avatar-girl_04.png">
                 </div>
                 <div class="w-100" style="padding-bottom: 100%;"></div>
@@ -57,36 +57,26 @@
             <div class="col-md-12 rounded">
               <ul class="list-inline mb-2">
                 <li class="list-inline-item pointer" v-for="(tab, index) in tabs" :key="index">
-                  <!-- <div style="border-bottom: 2px solid #ccc;"> -->
                     <div class="px-2 mr-2 pb-1 mb-1" @click="getList(tab.name)" :class="{ underline: tab.isActive }" role="button">
                       {{ tab.title }} <span v-if="tab.name !== 'global'">({{ getListLength(tab.name) }})</span>
                     </div>
-                  <!-- </div> -->
                 </li>
               </ul>
-              <!-- {{ list }} -->
               <div class="shadow-sm w-100 bg-white mb-3 mt-0 px-3 py-1">
                 <!-- <input type="text" class="w-100 p-2" placeholder=":: Search by ID, name or phone number"> -->
                 <table class="table table-sm table-hover mt-2">
-                  <!--  v-if="!tabs[4].isActive" -->
                   <thead>
                     <tr>
-                      <!-- <th scope="col">ID</th> -->
                       <th scope="col">Patient Status</th>
                       <th scope="col">Patient Name</th>
-                      <!-- <th scope="col">Gender</th> -->
-                      <!-- <th scope="col">Age</th> -->
                       <th scope="col">Last Visited</th>
                       <th scope="col">Registered Date</th>
                       <th scope="col">Registered By</th>
                     </tr>
                   </thead>
-                  <!-- <tbody> -->
 
-                    <!-- {{ patientList }} -->
                   <!-- <transition name="u-fade"  mode="in-out" tag="tbody"> -->
                     <tr class="pointer" v-for="(patient, index) in list.slice().reverse()" :key="index">
-                      <!-- <th class="text-uppercase" scope="row">{{ patient.id }}</th> -->
                       <td class="text-capitalize">
                         <img v-if="patient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
                         <img v-if="patient.status == 'released'" src="/circle-yellow.svg" class="shape-status" alt="">
@@ -97,14 +87,72 @@
                       <td>
                         <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name || patient.demographics.name }}</nuxt-link>
                       </td>
-                      <!-- <td class="text-uppercase">{{ patient.demographics.gender }}</td> -->
-                      <!-- <td>{{ patient.demographics.age }}</td> -->
                       <td>{{ patient.ldate || patient.lastVisited }}</td>
                       <td>{{ patient.date || patient.dateRegistered }}</td>
                       <td>{{ patient.haname || patient.regBy }}</td>
                     </tr>
 
                     <tr v-show="list.length === 0" class="pointer" key="empty" style="height: 40px;">
+                      <td class="py-3 px-3 text-center" colspan="9">
+                        <small>
+                          There are no patients in this list. Register a new patient to get started.
+                        </small>
+                      </td>
+                    </tr>
+                  <!-- </transition-group> -->
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="container mt-3" v-if="onlineLoaded">
+          <div class="row">
+            <div class="col-md-12 text-muted mb-2">
+              <small>
+                dev server:
+              </small>
+            </div>
+            <div class="col-md-12 rounded">
+              <ul class="list-inline mb-2">
+                <li class="list-inline-item pointer" v-for="(tab, index) in tabs" :key="index">
+                    <div class="px-2 mr-2 pb-1 mb-1" @click="getList(tab.name)" :class="{ underline: tab.isActive }" role="button">
+                      {{ tab.title }} <span v-if="tab.name !== 'global'">({{ getListLength(tab.name) }})</span>
+                    </div>
+                </li>
+              </ul>
+              <div class="shadow-sm w-100 bg-white mb-3 mt-0 px-3 py-1">
+                <!-- <input type="text" class="w-100 p-2" placeholder=":: Search by ID, name or phone number"> -->
+                <table class="table table-sm table-hover mt-2">
+                  <thead>
+                    <tr>
+                      <th scope="col">Patient Status</th>
+                      <th scope="col">Patient Name</th>
+                      <th scope="col">Last Visited</th>
+                      <th scope="col">Registered Date</th>
+                      <th scope="col">Registered By</th>
+                    </tr>
+                  </thead>
+
+                  <!-- {{ patientListOnline }} -->
+                  <!-- <transition name="u-fade"  mode="in-out" tag="tbody"> -->
+                    <tr class="pointer" v-for="(patient, index) in patientListOnline.slice().reverse()" :key="index">
+                      <td class="text-capitalize">
+                        <img v-if="patient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
+                        <img v-if="patient.status == 'released'" src="/circle-yellow.svg" class="shape-status" alt="">
+                        <img v-if="patient.status == 'allocated'" src="/circle-red.svg" class="shape-status" alt="">
+                        <img v-if="patient.status == 'queued'" src="/circle-orange.svg" class="shape-status" alt="">
+                        {{ patient.status }}
+                      </td>
+                      <td>
+                        <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name }}</nuxt-link>
+                      </td>
+                      <td>{{ patient.ldate || patient.lastVisited }}</td>
+                      <td>{{ patient.date || patient.dateRegistered }}</td>
+                      <td>{{ patient.haname || patient.regBy }}</td>
+                    </tr>
+
+                    <tr v-show="patientList.length === 0" class="pointer" key="empty" style="height: 40px;">
                       <td class="py-3 px-3 text-center" colspan="9">
                         <small>
                           There are no patients in this list. Register a new patient to get started.
@@ -127,6 +175,9 @@ import axios from 'axios'
 
 export default {
   layout: 'dashboard',
+  created() {
+    console.log(this.currUser)
+  },
   computed: {
     currUser () {
       return this.$store.state.currUser
@@ -179,27 +230,62 @@ export default {
       },
     ]
 
+    setTimeout(function () {
+      self.vuexLoaded = true
+    }, 1000)
+  
     this.list = this.patientList.filter(patient => patient.regBy == this.$store.state.currUser.name)
 
     this.$store.commit('updatePath', path)
 
-    // this.getPatientList()
     let self = this
 
     setTimeout(function () {
-      self.loaded = true
+      self.vuexLoaded = true
     }, 1000)
+
+    this.getPatientListOnline()
   },
   methods: {
-    getPatientList: function () {
+    getPatientListOnline: function () {
       let self = this
+      let data = {}
+      let headers = {}
+
       axios.get(this.baseURL + '/getpatientlist')
         .then(function (response) {
-          // self.patientList = response.data
+          console.log(response.data);
+          self.patientListOnline = response.data
+
+          self.onlineLoaded = true
         })
         .catch(function (error) {
           console.log(error);
         });
+
+      // axios.get('https://powerful-thicket-49412.herokuapp.com/getpatientlist', data, headers)
+      //   .then(function (response) {
+      //     console.log(response.data);
+      //     // self.exampleContent = response.data
+      //     alert('Patient list successful.')
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //     // self.example = error
+      //     alert('Could not fetch patient list.')
+      //   })
+
+      // axios.get('http://127.0.0.1:5000/getpatientlist', data, headers)
+      //   .then(function (response) {
+      //     console.log(response.data);
+      //     // self.exampleContent = response.data
+      //     alert('Patient list successful.')
+      //   })
+      //   .catch(function (error) {
+      //     console.log(error);
+      //     // self.example = error
+      //     alert('Could not fetch patient list.')
+      //   });
     },
     getList: function (tabName) {
       if (tabName == 'patients') {
@@ -246,9 +332,11 @@ export default {
   },
   data() {
     return {
-      loaded: false,
+      onlineLoaded: false,
+      vuexLoaded: false,
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
       list: [],
+      patientListOnline: [],
       tabs: [
         {
           name: 'patients',

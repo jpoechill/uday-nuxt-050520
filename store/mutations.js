@@ -239,8 +239,6 @@ export default {
     state.udayDb.clusters[CLUSTER_ID].patients.push(
       baseProfile
     )
-
-    this.$router.push({path: '/ha/'})
   },
   registerHA(state, payload) {
     let CLUSTER_ID = state.currCluster
