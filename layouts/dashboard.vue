@@ -10,8 +10,9 @@
                 <nuxt-link to="/" class="text-white text-decoration-none">UD</nuxt-link>
               </span>
               <div class="float-right pt-1 dropdown d-inline">
-                <span class="dropdown-toggle dropdown-no-caret pointer" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  ritwikaghosh48@gmail.org
+                <span class="dropdown-toggle dropdown-no-caret pointer" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <!-- ritwikaghosh48@gmail.org -->
+                  {{ this.$store.state.currUser.name.replace(' ', '').toLowerCase() }}@udayhealth.org
                 </span>
                 <div class="dropdown-menu">
                   <div class="dropdown-item">MIS Reports</div>
@@ -47,7 +48,7 @@
               </span>
             </small>
             <div class="float-right d-inline">
-              <small>Cluster 0001</small>
+              <small>Cluster {{ this.$store.state.currUser.cluster.substring(0, 5) || ' '}}</small>
             </div>
             <!-- Lorem ipsum dolor sit amet. {{ counter }} <button @click="increment()">Click</button> <br> -->
             <!-- <button @click="increment()">Click</button> -->

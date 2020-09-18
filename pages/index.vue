@@ -13,8 +13,8 @@
             Welcome to Uday. 
           </div>
           <hr>
-          <input type="text" name="" class="w-100 mb-2 p-2" placeholder="Username or Email" id=""><br>
-          <input type="text" name="" class="w-100 p-2" placeholder="Password" id=""><br>
+          <input type="text" name="" class="w-100 mb-2 p-2" placeholder="Username or Email" id="" v-model="email"><br>
+          <input type="password" name="" class="w-100 p-2" v-model="password" placeholder="Password" id=""><br>
           <button @click="login" class="btn btn-dark mt-3 mb-2 p-2 w-100 text-uppercase">
             Login as HA
           </button>
@@ -49,33 +49,34 @@ import axios from 'axios'
 
 export default {
   layout: 'default',
+  data() {
+    return {
+      email: 'poulami@gmail.com',
+      password: 'abcd1234',
+      type: 'HA'
+    }
+  },
   methods: {
-    // makeRequest: function () {
-    //   axios.get('http://localhost:5000/').then(function(res){
-    //     console.log(res)
-    //     console.log('Success 123s')
-    //   })
-    // },
     login: function () {
-      var data = {
-        email: 'ritwikaghosh48@gmail.com',
-        password: 'abcd1234'
-      }
-
       var headers = {      
         'Content-Type': 'application/json;charset=UTF-8',
       }
 
+      var data = {
+        email: this.email,
+        password: this.password,
+        type: 'HA'
+      }
+
+    // this.$store.commit('updateCurrUser')
       const self = this
 
-      // Live server
-      // http://76.218.96.73/login
-
-      axios.post('http://127.0.0.1:5000/login', data, headers)
+      axios.post(this.$store.state.baseURL + '/login', data, headers)
         .then(function (response) {
           console.log(response.data);
-
-          alert('You are logged in as ' + response.data + '.')
+          alert('You are logged in as ' + response.data[0].name + '.')
+          
+          self.$store.commit('updateCurrUser', response.data[0])
 
           self.$router.push({
             path: '/ha'
@@ -83,12 +84,7 @@ export default {
         })
         .catch(function (error) {
           console.log(error);
-
           alert('Could not login.')
-          
-          self.$router.push({
-            path: '/ha'
-          })
         });
     }
   }

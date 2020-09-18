@@ -94,7 +94,7 @@
                   </select>
                   <label for="">Police Station</label>
                   <select class="custom-select mb-4">
-                    <option selected disabled>District</option>
+                    <option selected disabled>Police Station</option>
                     <option v-for="(policeStation, index) in police" :key="index" :value="policeStation.objectid">{{ policeStation.name }}</option>
                   </select>
                 </div>

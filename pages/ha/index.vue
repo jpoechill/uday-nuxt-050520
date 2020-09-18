@@ -22,15 +22,16 @@
               </div>
             </div>
             <br>
-            {{ currUser.bio }}<br><br>
+            Hello, my name is {{ this.$store.state.currUser.name }}, and I'm studying to become a nurse! I'm happy help you!
+            <br><br>
             <div class="row">
               <div class="col-md-6">
                 Health Assistant | 24 years old
               </div>
               <div class="col-md-6">
-                {{ currUser.phone }} <br><br>
-                {{ currUser.address }} <br>
-                {{ currUser.location }}<br>
+                1-415-555-1234 <br><br>
+                2222 Market Street <br>
+                San Francisco, CA<br>
               </div>
             </div>
           </div>
@@ -63,7 +64,7 @@
               <!-- </div> -->
             </li>
           </ul>
-          <!-- {{ patientList }} -->
+          <!-- {{ list }} -->
           <div class="shadow-sm w-100 bg-white mb-3 mt-0 px-3 py-1">
             <!-- <input type="text" class="w-100 p-2" placeholder=":: Search by ID, name or phone number"> -->
             <table class="table table-sm table-hover mt-2">
@@ -82,8 +83,9 @@
               </thead>
               <!-- <tbody> -->
 
+                <!-- {{ patientList }} -->
               <!-- <transition name="u-fade"  mode="in-out" tag="tbody"> -->
-                <tr class="pointer" v-for="(patient, index) in patientList" :key="index">
+                <tr class="pointer" v-for="(patient, index) in list.slice().reverse()" :key="index">
                   <!-- <th class="text-uppercase" scope="row">{{ patient.id }}</th> -->
                   <td class="text-capitalize">
                     <img v-if="patient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
@@ -93,13 +95,13 @@
                     {{ patient.status }}
                   </td>
                   <td>
-                    <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name }}</nuxt-link>
+                    <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name || patient.demographics.name }}</nuxt-link>
                   </td>
                   <!-- <td class="text-uppercase">{{ patient.demographics.gender }}</td> -->
                   <!-- <td>{{ patient.demographics.age }}</td> -->
-                  <td>{{ patient.ldate }}</td>
-                  <td>{{ patient.date }}</td>
-                  <td>{{ patient.haname }}</td>
+                  <td>{{ patient.ldate || patient.lastVisited }}</td>
+                  <td>{{ patient.date || patient.dateRegistered }}</td>
+                  <td>{{ patient.haname || patient.regBy }}</td>
                 </tr>
 
                 <tr v-show="list.length === 0" class="pointer" key="empty" style="height: 40px;">
@@ -175,10 +177,8 @@ export default {
       },
     ]
 
+    this.list = this.patientList.filter(patient => patient.regBy == this.$store.state.currUser.name)
 
-    this.list = this.patientList.filter(patient => patient.regBy ==  this.$store.state.currUser.name)
-
-    this.$store.commit('updateCurrUser')
     this.$store.commit('updatePath', path)
 
     this.getPatientList()
@@ -188,7 +188,7 @@ export default {
       let self = this
       axios.get(this.baseURL + '/getpatientlist')
         .then(function (response) {
-          self.patientList = response.data
+          // self.patientList = response.data
         })
         .catch(function (error) {
           console.log(error);
@@ -240,7 +240,6 @@ export default {
   data() {
     return {
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
-      patientList: [],
       list: [],
       tabs: [
         {

@@ -16,10 +16,11 @@ export default {
   updateStatus(state, payload) {
     state.currPatient.status = payload
   },
-  updateCurrUser(state) {
+  updateCurrUser(state, payload) {
     let CLUSTER_ID = state.currCluster
 
-    state.currUser = state.udayDb.clusters[CLUSTER_ID].has[0]
+    // state.currUser = state.udayDb.clusters[CLUSTER_ID].has[0]
+    state.currUser = payload
   },
   updateCurrPatient(state, payload) {
     let CLUSTER_ID = state.currCluster

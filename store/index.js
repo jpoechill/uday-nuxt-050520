@@ -10,6 +10,7 @@ export const state = () => ({
   ],
   currCluster: 'cluster001',
   currUser: {},
+  baseURL: 'https://powerful-thicket-49412.herokuapp.com',
   currPatient: {
     id: "",
     status: "",
