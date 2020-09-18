@@ -85,7 +85,6 @@
                   <option selected disabled value="district">District</option>
                   <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
                 </select>
-                {{ demographics }}
                 
                 <label for="">Police Station</label>
                 <select class="custom-select mb-4" v-model="demographics.policeStation">
