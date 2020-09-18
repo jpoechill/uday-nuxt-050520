@@ -99,9 +99,13 @@ export default {
       return this.$route.fullPath
     }
   },
+  ready() {
+    // this.loaded = true
+  },
   data() {
     return {
       showDemographics: true,
+      loaded: false,
       fullPath: [
         {
           title: 'Dashboard',
