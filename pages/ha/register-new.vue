@@ -117,7 +117,7 @@
         </div>
         <div class="col-md-12 mb-3">
           <button type="button" @click="goToNext()" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-            NEXT SECTION
+            GO TO NEXT SECTION
           </button>
         </div>
       </div>
@@ -161,7 +161,7 @@
         </div>
         <div class="col-md-12 mb-3">
           <button type="button" @click="goToNext()" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-            NEXT SECTION
+            GO TO NEXT SECTION
           </button>
         </div>
       </div>
@@ -210,7 +210,7 @@
         </div>
         <div class="col-md-12 mb-3">
           <button type="submit" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-            Register New Patient
+            Register Patient
           </button>
         </div>
       </div>
