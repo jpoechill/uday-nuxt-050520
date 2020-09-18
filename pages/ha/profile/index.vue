@@ -45,7 +45,7 @@
                 <!-- {{ currPatient.demographics.address2 }} <br> -->
                 <!-- :: {{ this.$store.state.currPatient.id }}<br> -->
               </div>
-              <div class="col-md-10 mt-4">
+              <div class="col-md-12 mt-1">
                 <hr>
               </div>
               <div class="col-md-12">

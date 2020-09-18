@@ -11,7 +11,7 @@
         </div>
       </div>
     </div>
-    <div class="container" v-else>
+    <div class="container mb-5" v-else>
       <div class="row text-center mx-2">
         <div class="shadow offset-md-4 col-md-4 bg-white rounded px-4 py-4">
           <div class="position-relative">
