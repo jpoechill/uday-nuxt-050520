@@ -46,7 +46,7 @@
                 <div class="col-md-6">
                   <label for="">Age</label><br>
                   <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
-                  <select class="w-100 custom-select mb-3" value="" v-model="patientData.ageType">
+                  <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
                     <option disabled selected value="">Age Type</option>
                     <option value="days">Days</option>
                     <option value="months">Months</option>
@@ -68,10 +68,10 @@
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.phone" placeholder="Phone Number">
                 </div>
                 <div class="col-md-6">
-                  <label for="">Occupation</label>
-                  <select class="custom-select mb-3">
-                    <option selected disabled>Occupation</option>
-                    <option v-for="(occupation, index) in occupations" :key="index" :value="occupation.objectid">{{ occupation.name }}</option>
+                  <label for="occupation">Occupation</label>
+                  <select class="custom-select mb-3" v-model="occupations.selected">
+                    <option selected disabled value="occupation">Occupation</option>
+                    <option v-for="(occupation, index) in occupations.options" :key="index" :value="{ name: occupation.name, id: occupation.objectid}">{{ occupation.name }}</option>
                   </select>
                   <label for="">Husband/Wife/Son/Daughter of</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.hswd" placeholder="Family Members's Name">
@@ -88,14 +88,14 @@
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.address" placeholder="Address 1">
                   
                   <label for="">District</label>
-                  <select class="custom-select mb-4">
-                    <option selected disabled>District</option>
-                    <option v-for="(district, index) in districts" :key="index" :value="district.objectid">{{ district.name }}</option>
+                  <select class="custom-select mb-4" v-model="districts.selected">
+                    <option selected disabled value="district">District</option>
+                    <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
                   </select>
                   <label for="">Police Station</label>
-                  <select class="custom-select mb-4">
-                    <option selected disabled>Police Station</option>
-                    <option v-for="(policeStation, index) in police" :key="index" :value="policeStation.objectid">{{ policeStation.name }}</option>
+                  <select class="custom-select mb-4" v-model="policeStations.selected">
+                    <option selected disabled value="policestation">Police Station</option>
+                    <option v-for="(policeStation, index) in policeStations.options" :key="index" :value="{ name: policeStation.name, id: policeStation.objectid}">{{ policeStation.name }}</option>
                   </select>
                 </div>
                 <div class="col-md-6">
@@ -104,9 +104,9 @@
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.address2" placeholder="Address 2">
                   
                   <label for="">State</label>
-                  <select class="custom-select mb-4">
-                    <option selected disabled>State</option>
-                    <option v-for="(state, index) in states" :key="index" :value="states.objectid">{{ state.name }}</option>
+                  <select class="custom-select mb-4" v-model="states.selected">
+                    <option selected disabled value="state">State</option>
+                    <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
                   </select>
                   <label for="">Country</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.country" placeholder="India" value="India">
@@ -117,7 +117,7 @@
         </div>
         <div class="col-md-12 mb-3">
           <button type="button" @click="goToNext()" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-            Go to Patient Medical History
+            NEXT SECTION
           </button>
         </div>
       </div>
@@ -161,7 +161,7 @@
         </div>
         <div class="col-md-12 mb-3">
           <button type="button" @click="goToNext()" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-            Go to Family Medical History
+            NEXT SECTION
           </button>
         </div>
       </div>
@@ -224,6 +224,29 @@ import axios from 'axios'
 
 export default {
   layout: 'dashboard',
+  computed: {
+    patientDataComputed() {
+      return {
+        name: this.patientData.name,
+        occupation: this.occupations.selected,
+        gender: this.patientData.gender,
+        age: this.patientData.age,
+        ageType: this.patientData.ageType,
+        hswd: this.patientData.hswd,
+        address: this.patientData.address,
+        address2: this.patientData.address2,
+        district: this.districts.selected,
+        state: this.states.selected,
+        policeStation: this.policeStations.selected,
+        phone: this.patientData.phone,
+        location: this.patientData.location,
+        country: this.patientData.country,
+        patientHistory: this.patientData.patientHistory,
+        familyHistory: this.patientData.familyHistory,
+        generalDescription: this.patientData.generalDescription
+      }
+    }
+  },
   mounted() {
     let path = [
       {
@@ -249,7 +272,7 @@ export default {
       let self = this
       axios.get(this.baseURL + '/requestps')
         .then(function (response) {
-          self.police = response.data
+          self.policeStations.options = response.data
         })
         .catch(function (error) {
           console.log(error);
@@ -259,7 +282,7 @@ export default {
       let self = this
       axios.get(this.baseURL + '/requestdistrict')
         .then(function (response) {
-          self.districts = response.data
+          self.districts.options = response.data
         })
         .catch(function (error) {
           console.log(error);
@@ -269,19 +292,17 @@ export default {
       let self = this
       axios.get(this.baseURL + '/requeststate')
         .then(function (response) {
-          console.log(response.data);
-          self.states = response.data
+          self.states.options = response.data
         })
         .catch(function (error) {
           console.log(error);
-          alert('Could not retrieve.')
         });
     },
     getOccupations: function () {
       let self = this
       axios.get(this.baseURL + '/requestoccupation')
         .then(function (response) {
-          self.occupations = response.data
+          self.occupations.options = response.data
         })
         .catch(function (error) {
           console.log(error);
@@ -331,7 +352,7 @@ export default {
     registerPatient: function (event) {
       let payload = {
         regBy: this.$store.state.currUser.name,
-        demographics: this.patientData
+        demographics: this.patientDataComputed
       }
 
       // event.preventDefault()
@@ -350,24 +371,37 @@ export default {
   data() {
     return {
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
-      occupations: [],
+      occupations: {
+        selected: 'occupation',
+        options: []
+      },
       patientList: '',
-      police: '',
-      districts: [],
-      states: [],
-      occupations: '',
+      policeStations: {
+        selected: 'policestation',
+        options: []
+      },
+      districts: {
+        selected: 'district',
+        options: []
+      },
+      states: {
+        selected: 'state',
+        options: []
+      },
       patientData: {
         name: "",
-        occupation: 'Truck Driver',
+        occupation: "",
         gender: "m",
         age: "29",
         ageType: '',
         hswd: '',
-        address: "4444 Market St.",
-        address2: "Address 2",
-        police: "Police Station",
-        phone: "1-415-555-5555",
-        location: "Hyderabad, IN",
+        address: "",
+        address2: "",
+        district: "",
+        state: "",
+        policeStation: "",
+        phone: "",
+        location: "",
         country: '',
         patientHistory: {
           questions: {

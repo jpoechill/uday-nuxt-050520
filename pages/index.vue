@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-items-center">
+  <div class="d-flex align-items-center" style="min-height: 100vh">
     <div class="container">
       <div class="row text-center mx-2">
         <div class="shadow offset-md-4 col-md-4 bg-white rounded px-4 py-4">
@@ -74,7 +74,7 @@ export default {
       axios.post(this.$store.state.baseURL + '/login', data, headers)
         .then(function (response) {
           console.log(response.data);
-          alert('You are logged in as ' + response.data[0].name + '.')
+          alert('Welcome ' + response.data[0].name + '.')
           
           self.$store.commit('updateCurrUser', response.data[0])
 

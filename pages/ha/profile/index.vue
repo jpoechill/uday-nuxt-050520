@@ -16,7 +16,7 @@
           <div class="col-md-9">
             <div class="row">
               <div class="col-md-12 text-capitalize">
-                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name }}</h5>  
+                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name ? currPatient.demographics.name : '' }}</h5>  
                 <div class="d-inline float-right">
                   <img v-if="currPatient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
                   <img v-if="currPatient.status == 'released'" src="/circle-yellow.svg" class="shape-status" alt="">
@@ -30,21 +30,23 @@
             
             <div class="row">
               <div class="col-md-6"> 
-                {{ currPatient.demographics.occupation }} | 
-                {{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old <br>
-                {{ currPatient.demographics.hswd }} <br><br>
-                {{ currPatient.demographics.police }}
+                {{ typeof(currPatient.demographics.occupation) == 'object' ? currPatient.demographics.occupation.name : 'Un-employed' }} | 
+                {{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old <br><br>
+                {{ currPatient.demographics.phone || 'No Phone' }} <br><br>
+                <!-- {{ currPatient.demographics }} -->
+                <!-- HSWD of: {{ currPatient.demographics.hswd }} <br> -->
+                {{ typeof(currPatient.demographics.state) == 'object' ? currPatient.demographics.state.name : 'No State' }}
               </div>
               <div class="col-md-6">
-                {{ currPatient.demographics.phone }} <br><br>
-                {{ currPatient.demographics.address }} <br>
-                {{ currPatient.demographics.location }}
+                {{ currPatient.demographics.address || "No Address" }} <br><br>
+                {{ typeof(currPatient.demographics.district) == 'object' ? currPatient.demographics.district.name : 'No District' }} <br><br>
                 
+                {{ typeof(currPatient.demographics.policeStation) == 'object' ? currPatient.demographics.policeStation.name : 'No Police Station' }}
                 <!-- {{ currPatient.demographics.address2 }} <br> -->
                 <!-- :: {{ this.$store.state.currPatient.id }}<br> -->
               </div>
               <div class="col-md-10 mt-4">
-                <!-- <hr> -->
+                <hr>
               </div>
               <div class="col-md-12">
                 <nuxt-link to="/ha/profile/">

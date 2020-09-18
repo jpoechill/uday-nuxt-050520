@@ -181,7 +181,7 @@ export default {
 
     this.$store.commit('updatePath', path)
 
-    this.getPatientList()
+    // this.getPatientList()
   },
   methods: {
     getPatientList: function () {

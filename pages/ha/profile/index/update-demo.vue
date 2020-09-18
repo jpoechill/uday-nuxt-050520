@@ -63,10 +63,12 @@
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="H/W/S/D of" v-model="demographics.hswd">
               </div>
-              <div class="col-md-6"><div class="small text-muted mb-1">
-                  Occupation
-                </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="Occupation" v-model="demographics.occupation">
+              <div class="col-md-6">
+                <label for="occupation">Occupation</label>
+                <select class="custom-select mb-3" v-model="demographics.occupation">
+                  <option selected disabled value="occupation">Occupation</option>
+                  <option v-for="(occupation, index) in occupations.options" :key="index" :value="{ name: occupation.name, id: occupation.objectid}">{{ occupation.name }}</option>
+                </select>
               </div>
             </div>
             <div class="row pt-3">
@@ -78,24 +80,29 @@
                   Address 1
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="First Name" v-model="demographics.address">
-                <div class="small text-muted mb-1">
-                  District
-                </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="First Name" value="District">
-                <div class="small text-muted mb-1">
-                  Police Station
-                </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="Phone Number" v-model="demographics.police">
+                <label for="">District</label>
+                <select class="custom-select mb-4" v-model="demographics.district">
+                  <option selected disabled value="district">District</option>
+                  <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
+                </select>
+                {{ demographics }}
+                
+                <label for="">Police Station</label>
+                <select class="custom-select mb-4" v-model="demographics.policeStation">
+                  <option selected disabled value="policestation">Police Station</option>
+                  <option v-for="(policeStation, index) in policeStations.options" :key="index" :value="{ name: policeStation.name, id: policeStation.objectid}">{{ policeStation.name }}</option>
+                </select>
               </div>
               <div class="col-md-6">
                 <div class="small text-muted mb-1">
                   Address 2
                 </div>
                 <input type="text" class="w-100 p-2 mb-3" placeholder="First Name" v-model="demographics.address2">
-                <div class="small text-muted mb-1">
-                  State
-                </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="" v-model="demographics.country">
+                <label for="">State</label>
+                <select class="custom-select mb-4" v-model="demographics.state">
+                  <option selected disabled value="state">State</option>
+                  <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
+                </select>
               </div>
             </div>
           </div>
@@ -119,6 +126,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   layout: 'dashboard',
   mounted() {
@@ -136,30 +145,107 @@ export default {
         url: '/ha/profile'
       }
     ])
+
+    this.demographics = {...this.currPatient.demographics}
+
+    this.getOccupations()
+    this.getPolice()
+    this.getDistricts()
+    this.getStates()
   },
   computed: {
     currPatient: function () {
       return this.$store.state.currPatient
+    },
+    patientDataComputed: function () {
+      return {
+        name: this.demographics.name,
+        occupation: this.demographics.occupation,
+        gender: this.demographics.gender,
+        age: this.demographics.age,
+        ageType: this.demographics.ageType,
+        hswd: this.demographics.hswd,
+        address: this.demographics.address,
+        address2: this.demographics.address2,
+        district: this.demographics,
+        state: this.demographics,
+        policeStation: this.demographics,
+        phone: this.demographics.phone,
+        location: this.demographics.location,
+        country: this.demographics.country
+      }
     }
   },
-  mounted() {
-    this.demographics = {...this.currPatient.demographics}
-  },
   methods: {
+    getPolice: function () {
+      let self = this
+      axios.get(this.baseURL + '/requestps')
+        .then(function (response) {
+          self.policeStations.options = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    getDistricts: function () {
+      let self = this
+      axios.get(this.baseURL + '/requestdistrict')
+        .then(function (response) {
+          self.districts.options = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    getStates: function () {
+      let self = this
+      axios.get(this.baseURL + '/requeststate')
+        .then(function (response) {
+          self.states.options = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
+    getOccupations: function () {
+      let self = this
+      axios.get(this.baseURL + '/requestoccupation')
+        .then(function (response) {
+          console.log(response.data)
+          self.occupations.options = response.data
+        })
+        .catch(function (error) {
+          console.log(error);
+        });
+    },
     updateDemographics: function (msg) {
       alert(msg)
 
       let currPatientId = this.currPatient.id
 
-      this.$store.commit('updateDemographics', [currPatientId, this.demographics])
+      this.$store.commit('updateDemographics', [currPatientId, this.patientDataComputed])
     }
   },
   data() {
     return {
-      list: [],
-      showDocsFeedback: true,
-      showDemographics: true,
-      showComplete: false,
+      baseURL: 'https://powerful-thicket-49412.herokuapp.com',
+      occupations: {
+        selected: 'occupation',
+        options: []
+      },
+      patientList: '',
+      policeStations: {
+        selected: 'policestation',
+        options: []
+      },
+      districts: {
+        selected: 'district',
+        options: []
+      },
+      states: {
+        selected: 'state',
+        options: []
+      },
       demographics: {
         name: '',
         occupation: '',
@@ -173,34 +259,7 @@ export default {
         phone: '',
         location: '',
         country: '',
-      },
-      tabs: [
-        {
-          name: 'allocated',
-          title: 'Chief Complaints',
-          isActive: true,
-        },
-        {
-          name: 'cluster',
-          title: 'Vitals',
-          isActive: false,
-        },
-        {
-          name: 'general',
-          title: 'General Exams',
-          isActive: false,
-        },
-        {
-          name: 'specific',
-          title: 'Specific Exams',
-          isActive: false,
-        },
-        {
-          name: 'photos',
-          title: 'Add. Photos',
-          isActive: false,
-        }
-      ]
+      }
     }
   },
   transition: 'u-fade'
