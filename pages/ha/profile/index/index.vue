@@ -110,16 +110,6 @@
 export default {
   layout: 'dashboard',
   mounted() {
-    let queryID = this.$route.query.id
-    if (queryID !== this.$store.state.currPatient.id) {
-      // get that patient profile
-      // update to currUser
-
-      this.$store.commit('updateCurrPatient', { id: queryID })
-    }
-
-    this.$store.commit('clearVisitID')
-
     this.list = this.filterAllVisits
 
     this.$store.commit('updatePath', [

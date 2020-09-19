@@ -65,7 +65,7 @@
               </div>
               <div class="col-md-6">
                 <label for="occupation">Occupation</label>
-                <select class="custom-select mb-3" v-model="demographics.occupation">
+                <select class="custom-select mb-3" v-model="occupations.selected">
                   <option selected disabled value="occupation">Occupation</option>
                   <option v-for="(occupation, index) in occupations.options" :key="index" :value="{ name: occupation.name, id: occupation.objectid}">{{ occupation.name }}</option>
                 </select>
@@ -79,15 +79,15 @@
                 <div class="small text-muted mb-1">
                   Address 1
                 </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="First Name" v-model="demographics.address">
+                <input type="text" class="w-100 p-2 mb-3" placeholder="Address 1" v-model="demographics.address">
                 <label for="">District</label>
-                <select class="custom-select mb-4" v-model="demographics.district">
+                <select class="custom-select mb-4" v-model="districts.selected">
                   <option selected disabled value="district">District</option>
                   <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
                 </select>
                 
                 <label for="">Police Station</label>
-                <select class="custom-select mb-4" v-model="demographics.policeStation">
+                <select class="custom-select mb-4" v-model="policeStations.selected">
                   <option selected disabled value="policestation">Police Station</option>
                   <option v-for="(policeStation, index) in policeStations.options" :key="index" :value="{ name: policeStation.name, id: policeStation.objectid}">{{ policeStation.name }}</option>
                 </select>
@@ -96,9 +96,9 @@
                 <div class="small text-muted mb-1">
                   Address 2
                 </div>
-                <input type="text" class="w-100 p-2 mb-3" placeholder="First Name" v-model="demographics.address2">
+                <input type="text" class="w-100 p-2 mb-3" placeholder="Address 2" v-model="demographics.address2">
                 <label for="">State</label>
-                <select class="custom-select mb-4" v-model="demographics.state">
+                <select class="custom-select mb-4" v-model="states.selected">
                   <option selected disabled value="state">State</option>
                   <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
                 </select>
@@ -145,7 +145,13 @@ export default {
       }
     ])
 
+
     this.demographics = {...this.currPatient.demographics}
+
+    this.occupations.selected = this.currPatient.demographics.occupation
+    this.states.selected = this.currPatient.demographics.state
+    this.districts.selected = this.currPatient.demographics.district
+    this.policeStations.selected = this.currPatient.demographics.policeStation
 
     this.getOccupations()
     this.getPolice()
@@ -159,16 +165,16 @@ export default {
     patientDataComputed: function () {
       return {
         name: this.demographics.name,
-        occupation: this.demographics.occupation,
+        occupation: this.occupations.selected,
         gender: this.demographics.gender,
         age: this.demographics.age,
         ageType: this.demographics.ageType,
         hswd: this.demographics.hswd,
         address: this.demographics.address,
         address2: this.demographics.address2,
-        district: this.demographics,
-        state: this.demographics,
-        policeStation: this.demographics,
+        district: this.districts.selected,
+        state: this.states.selected,
+        policeStation: this.policeStations.selected,
         phone: this.demographics.phone,
         location: this.demographics.location,
         country: this.demographics.country

@@ -16,7 +16,7 @@
           <div class="col-md-9">
             <div class="row">
               <div class="col-md-12 text-capitalize">
-                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name ? currPatient.demographics.name : '' }}</h5>  
+                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name ? currPatient.demographics.name : '' }} ({{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old) </h5>  
                 <div class="d-inline float-right">
                   <img v-if="currPatient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
                   <img v-if="currPatient.status == 'released'" src="/circle-yellow.svg" class="shape-status" alt="">
@@ -30,8 +30,8 @@
             
             <div class="row">
               <div class="col-md-6"> 
-                {{ typeof(currPatient.demographics.occupation) == 'object' ? currPatient.demographics.occupation.name : 'Un-employed' }} | 
-                {{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old <br><br>
+                {{ typeof(currPatient.demographics.occupation) == 'object' ? currPatient.demographics.occupation.name : 'Un-employed' }}
+                <br><br>
                 {{ currPatient.demographics.phone || 'No Phone' }} <br><br>
                 <!-- {{ currPatient.demographics }} -->
                 <!-- HSWD of: {{ currPatient.demographics.hswd }} <br> -->
@@ -99,9 +99,6 @@ export default {
       return this.$route.fullPath
     }
   },
-  ready() {
-    // this.loaded = true
-  },
   data() {
     return {
       showDemographics: true,
@@ -119,6 +116,20 @@ export default {
     }
   },
   mounted () {
+    let queryID = this.$route.query.id
+    if (queryID !== this.$store.state.currPatient.id) {
+      // get that patient profile
+      // update to currUser
+
+
+
+      this.$store.commit('updateCurrPatient', { id: queryID })
+    }
+
+    this.$store.commit('clearVisitID')
+
+    window.scrollTo(0, 0);
+
     this.$store.commit('updatePath', this.fullPath)
   },
   transition: 'u-fade'

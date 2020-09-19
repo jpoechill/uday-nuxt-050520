@@ -7,7 +7,7 @@
             <div class="col-md-3 text-left responsive-padding-bottom">
               <div class="position-relative">
                 <div class="position-absolute w-100">
-                  <img class="w-100 pb-2" src="/avatar-girl_04.png">
+                  <img class="w-100 pb-2" src="/avatar-ud.svg">
                 </div>
                 <div class="w-100" style="padding-bottom: 100%;"></div>
               </div>
@@ -52,7 +52,8 @@
             </div>
           </div>
         </div>
-        <div class="container mt-3">
+
+        <div class="container mt-3 d-none">
           <div class="row">
             <div class="col-md-12 rounded">
               <ul class="list-inline mb-2">
@@ -67,16 +68,26 @@
                 <table class="table table-sm table-hover mt-2">
                   <thead>
                     <tr>
-                      <th scope="col">Patient Status</th>
+                      <th scope="col">Reg. ID</th>
                       <th scope="col">Patient Name</th>
                       <th scope="col">Last Visited</th>
                       <th scope="col">Registered Date</th>
                       <th scope="col">Registered By</th>
+                      <th scope="col">Patient Status</th>
                     </tr>
                   </thead>
 
                   <!-- <transition name="u-fade"  mode="in-out" tag="tbody"> -->
                     <tr class="pointer" v-for="(patient, index) in list.slice().reverse()" :key="index">
+                      <td>
+                        {{ patient.regNo }}
+                      </td>
+                      <td>
+                        <nuxt-link :to="'/ha/profile?id=' + patient.objectID">{{ patient.name || patient.demographics.name }}</nuxt-link>
+                      </td>
+                      <td>{{ patient.ldate || patient.lastVisited }}</td>
+                      <td>{{ patient.date || patient.dateRegistered }}</td>
+                      <td>{{ patient.haname || patient.regBy }}</td>
                       <td class="text-capitalize">
                         <img v-if="patient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
                         <img v-if="patient.status == 'released'" src="/circle-yellow.svg" class="shape-status" alt="">
@@ -84,12 +95,6 @@
                         <img v-if="patient.status == 'queued'" src="/circle-orange.svg" class="shape-status" alt="">
                         {{ patient.status }}
                       </td>
-                      <td>
-                        <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name || patient.demographics.name }}</nuxt-link>
-                      </td>
-                      <td>{{ patient.ldate || patient.lastVisited }}</td>
-                      <td>{{ patient.date || patient.dateRegistered }}</td>
-                      <td>{{ patient.haname || patient.regBy }}</td>
                     </tr>
 
                     <tr v-show="list.length === 0" class="pointer" key="empty" style="height: 40px;">
@@ -99,20 +104,36 @@
                         </small>
                       </td>
                     </tr>
-                  <!-- </transition-group> -->
+                  <!-- </transition> -->
                 </table>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="container mt-3" v-if="onlineLoaded">
+        <!-- <div class="container mt-3">
           <div class="row">
             <div class="col-md-12 text-muted mb-2">
               <small>
-                dev server:
+                dev server | <span class="fake-link" @click="getPatientListOnline()">refresh</span>
               </small>
             </div>
+          </div>
+        </div> -->
+
+      <div class="container" v-if="!onlineLoaded">
+        <div class="row pt-5">
+          <div class="col-md-12 my-5">
+            <div class="spinner my-5">
+              <div class="bounce1"></div>
+              <div class="bounce2"></div>
+              <div class="bounce3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="container mt-3" v-else>
+          <div class="row">
             <div class="col-md-12 rounded">
               <ul class="list-inline mb-2">
                 <li class="list-inline-item pointer" v-for="(tab, index) in tabs" :key="index">
@@ -145,7 +166,7 @@
                         {{ patient.status }}
                       </td>
                       <td>
-                        <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name }}</nuxt-link>
+                        <nuxt-link :to="'/ha/profile?id=' + patient.objectid">{{ patient.name }}</nuxt-link>
                       </td>
                       <td>{{ patient.ldate || patient.lastVisited }}</td>
                       <td>{{ patient.date || patient.dateRegistered }}</td>
@@ -230,6 +251,8 @@ export default {
       },
     ]
 
+    window.scrollTo(0, 0);
+
     setTimeout(function () {
       self.vuexLoaded = true
     }, 1000)
@@ -252,6 +275,8 @@ export default {
       let data = {}
       let headers = {}
 
+      self.patientListOnline = []
+
       axios.get(this.baseURL + '/getpatientlist')
         .then(function (response) {
           console.log(response.data);
@@ -262,30 +287,6 @@ export default {
         .catch(function (error) {
           console.log(error);
         });
-
-      // axios.get('https://powerful-thicket-49412.herokuapp.com/getpatientlist', data, headers)
-      //   .then(function (response) {
-      //     console.log(response.data);
-      //     // self.exampleContent = response.data
-      //     alert('Patient list successful.')
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     // self.example = error
-      //     alert('Could not fetch patient list.')
-      //   })
-
-      // axios.get('http://127.0.0.1:5000/getpatientlist', data, headers)
-      //   .then(function (response) {
-      //     console.log(response.data);
-      //     // self.exampleContent = response.data
-      //     alert('Patient list successful.')
-      //   })
-      //   .catch(function (error) {
-      //     console.log(error);
-      //     // self.example = error
-      //     alert('Could not fetch patient list.')
-      //   });
     },
     getList: function (tabName) {
       if (tabName == 'patients') {

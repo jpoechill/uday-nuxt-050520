@@ -20,7 +20,7 @@
                       {{ this.$store.state.currUser.name.replace(' ', '').toLowerCase() }}@udayhealth.org
                     </span>
                     <div class="dropdown-menu">
-                      <div class="dropdown-item">MIS Reports</div>
+                      <div class="dropdown-item fake-link">MIS Reports</div>
                       <div class="dropdown-divider"></div>
                       <nuxt-link to="/ha/edit-profile" class="dropdown-item">Edit Profile</nuxt-link>
                       <nuxt-link to="/ha/edit-password" class="dropdown-item">Change Password</nuxt-link>

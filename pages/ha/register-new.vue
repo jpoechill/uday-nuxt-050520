@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form v-on:submit.prevent="registerPatient">
+    <form v-on:submit.prevent="registerPatientOnline">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -22,7 +22,6 @@
               <div class="row">
                 <div class="col-md-12 text-center">
                   <!-- <img src="/avatar-placeholder.jpg" class="m-3" style="width: 200px;" alt=""><br> -->
-
                   <div class="position-relative mx-auto" style="width: 200px;">
                     <div class="position-absolute">
                       <img src="/avatar-placeholder.jpg" alt="">
@@ -335,6 +334,8 @@ export default {
         }
       }
 
+      window.scrollTo(0, 0);
+
       tabs[ref + 1].isActive = true
       tabs[ref + 1].isEnabled = true
     },
@@ -352,7 +353,14 @@ export default {
       }
     },
     registerPatient: function (event) {
+
+      console.log('Patient Data: ')
+      console.log(this.patientData.objectID)
+      console.log(this.patientData.patientRegID)
+
       let payload = {
+        objectID: this.patientData.objectID,
+        regNo: this.patientData.patientRegID,
         regBy: this.$store.state.currUser.name,
         demographics: this.patientDataComputed
       }
@@ -367,12 +375,14 @@ export default {
       this.$store.commit('registerPatient', payload)
       this.$store.commit('updateCurrPatient', payload)
 
-      this.registerPatientOnline()
+      this.$router.push({path: '/ha/'})
+      // this.registerPatientOnline()
       // alert('A new patient has been registered.')
     },
     registerPatientOnline: function () {
 
-      console.log(this.patientDataComputed)
+      // console.log(this.patientDataComputed)
+      event.preventDefault()
 
       var data = {
         HaId: this.$store.state.currUser.HaId,
@@ -398,18 +408,23 @@ export default {
 
       axios.post(this.baseURL + '/registerpatient', data, headers)
         .then(function (response) {
-          console.log(response);
-          self.HaId = response.data
-          alert('Registration successful.')
+          console.log('Registration success: ');
+          console.log(response.data);
 
-          self.$router.push({path: '/ha/'})
+          self.HaId = response.data
+          self.patientData.objectID = response.data[0].objectid
+          self.patientData.patientRegID = response.data[0].regno
+
+          alert('Registration online successful.')
+
+          self.registerPatient()
         })
         .catch(function (error) {
           console.log(error);
           // self.example = error
-          alert('Could not register patient.')
+          alert('Registration online was NOT successful.')
 
-          self.$router.push({path: '/ha/'})
+          // self.$router.push({path: '/ha/'})
         });
     },
   },
@@ -434,6 +449,8 @@ export default {
         options: []
       },
       patientData: {
+        objectID: '',
+        patientRegID: '',
         name: "",
         occupation: "",
         gender: "m",

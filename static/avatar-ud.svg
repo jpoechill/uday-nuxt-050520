@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="207px" height="207px" viewBox="0 0 207 207" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 52.6 (67491) - http://www.bohemiancoding.com/sketch -->
+    <title>Group</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <circle id="path-1" cx="90" cy="89.5" r="89.5"></circle>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Group">
+            <g id="Group-Copy-34">
+                <circle id="Oval" fill="#C4C4C4" cx="103.5" cy="103.5" r="103.5"></circle>
+                <g id="cdc-_N7I1JyPYJw-unsplash-Copy" transform="translate(104.000000, 103.500000) scale(-1, 1) translate(-104.000000, -103.500000) translate(14.000000, 14.000000)">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="Mask" fill="#F5F5F5" xlink:href="#path-1"></use>
+                </g>
+            </g>
+            <text id="UD" font-family="HelveticaNeue-Bold, Helvetica Neue" font-size="84" font-weight="bold" letter-spacing="1.82323241" fill="#BABABA">
+                <tspan x="39.4327676" y="136">UD</tspan>
+            </text>
+        </g>
+    </g>
+</svg>

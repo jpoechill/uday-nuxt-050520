@@ -46,7 +46,7 @@ export default {
       ...PATIENT_DEMOGRAPHICS
     };
 
-    alert('The patient\'s demographics have been updated.')
+    // alert('The patient\'s demographics have been updated.')
   },
   updateHistory(state, payload) {
     let PATIENT_ID = state.currPatient.id
@@ -213,15 +213,21 @@ export default {
     let currentDate = getCurrDate()
 
     // generate random UID
-    let newID = Math.random().toString(36).substr(2, 6)
+    // let newID = Math.random().toString(36).substr(2, 6)
 
-    console.log(payload)
+    console.log('From Vuex Store: ')
+    console.log(payload.regNo)
+    console.log(payload.objectID)
+
+    // console.log(payload)
 
     let baseProfile = {
-      id: newID,
+      regNo: payload.regNo,
+      objectID: payload.objectID,
+      id: payload.objectID,
       status: "registered",
-      dateRegistered: currentDate,
       regBy: payload.regBy,
+      dateRegistered: currentDate,
       lastVisited: currentDate,
       demographics: {
         ...payload.demographics
