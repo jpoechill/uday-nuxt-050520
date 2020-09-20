@@ -18,6 +18,7 @@
               <div class="col-md-12 text-capitalize">
                 <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name ? currPatient.demographics.name : '' }} ({{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old) </h5>  
                 <div class="d-inline float-right">
+                  <!-- {{ currPatient }} -->
                   <img v-if="currPatient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
                   <img v-if="currPatient.status == 'released'" src="/circle-yellow.svg" class="shape-status" alt="">
                   <img v-if="currPatient.status == 'allocated'" src="/circle-red.svg" class="shape-status" alt="">
@@ -30,18 +31,21 @@
             
             <div class="row">
               <div class="col-md-6"> 
-                {{ typeof(currPatient.demographics.occupation) == 'object' ? currPatient.demographics.occupation.name : 'Un-employed' }}
+                {{ currPatient.demographics.occupation }}
+                <!-- {{ typeof(currPatient.demographics.occupation) == 'object' ? currPatient.demographics.occupation.name : 'Un-employed' }} -->
                 <br><br>
                 {{ currPatient.demographics.phone || 'No Phone' }} <br><br>
                 <!-- {{ currPatient.demographics }} -->
                 <!-- HSWD of: {{ currPatient.demographics.hswd }} <br> -->
-                {{ typeof(currPatient.demographics.state) == 'object' ? currPatient.demographics.state.name : 'No State' }}
+                {{ currPatient.demographics.state }}
+                <!-- {{ typeof(currPatient.demographics.state) == 'object' ? currPatient.demographics.state.name : 'No State' }} -->
               </div>
               <div class="col-md-6">
                 {{ currPatient.demographics.address || "No Address" }} <br><br>
-                {{ typeof(currPatient.demographics.district) == 'object' ? currPatient.demographics.district.name : 'No District' }} <br><br>
-                
-                {{ typeof(currPatient.demographics.policeStation) == 'object' ? currPatient.demographics.policeStation.name : 'No Police Station' }}
+                {{ currPatient.demographics.district }} <br><br>
+                <!-- {{ typeof(currPatient.demographics.district) == 'object' ? currPatient.demographics.district.name : 'No District' }} <br><br> -->
+                {{ currPatient.demographics.policeStation }}
+                <!-- {{ typeof(currPatient.demographics.policeStation) == 'object' ? currPatient.demographics.policeStation.name : 'No Police Station' }} -->
                 <!-- {{ currPatient.demographics.address2 }} <br> -->
                 <!-- :: {{ this.$store.state.currPatient.id }}<br> -->
               </div>

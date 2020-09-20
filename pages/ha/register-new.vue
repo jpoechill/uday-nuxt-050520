@@ -14,6 +14,8 @@
         </div>
       </div>
 
+      <!-- {{ patientDataComputed }} -->
+
       <!-- Demographics -->
       <div class="row" v-if="tabs[0].isActive">
         <div class="col-md-12 rounded">
@@ -149,7 +151,8 @@
             </div>
             <div class="row pt-3">
               <div class="col-md-12 small text-muted pb-2">
-                General Notes
+                General Notes 
+                <!-- {{ patientDataComputed }} -->
                 <hr>
               </div>
               <div class="col-md-12">
@@ -236,7 +239,7 @@ export default {
         address2: this.patientData.address2,
         district: typeof this.districts.selected == 'object' ? this.districts.selected.id : '5f3e7eba43bec66f97b8f6ef',
         state: typeof this.states.selected == 'object' ? this.states.selected.id : '5f3e7e6f43bec66f97b8f6ee',
-        policeStation: typeof this.policeStations.selected == 'object' ? this.policeStations.selected.id : '5f3e7eba43bec66f97b8f6ef',
+        policeStation: typeof this.policeStations.selected == 'object' ? this.policeStations.selected.id : '5f3e7f8843bec66f97b8f6f0',
         phone: this.patientData.phone,
         location: this.patientData.location,
         country: this.patientData.country,

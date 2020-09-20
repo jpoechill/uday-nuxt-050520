@@ -53,7 +53,7 @@
           </div>
         </div>
 
-        <div class="container mt-3 d-none">
+        <div class="container mt-3">
           <div class="row">
             <div class="col-md-12 rounded">
               <ul class="list-inline mb-2">

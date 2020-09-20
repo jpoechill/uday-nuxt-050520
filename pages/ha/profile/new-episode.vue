@@ -826,7 +826,7 @@ export default {
     scrollToTop: function () {
       setTimeout(function () {
         window.scrollTo(0, 0);
-      }, 1000)
+      }, 0)
     },
     scrollToAddress: function (bodyPart) {
       let elTopPos
@@ -992,6 +992,8 @@ export default {
       }
     },
     goToNext: function () {
+      this.scrollToTop()
+
       let tabs = this.tabs
       let ref = 0
 
@@ -1001,8 +1003,6 @@ export default {
           ref = i
         }
       }
-
-      this.scrollToTop()
 
       tabs[ref + 1].isActive = true
       tabs[ref + 1].isEnabled = true

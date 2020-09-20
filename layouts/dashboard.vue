@@ -129,9 +129,9 @@ html, body {
   background-color: #eee;
 }
 
-html {
+/* html {
   scroll-behavior: smooth;
-}
+} */
 
 .underline {
   border-bottom: 2px solid #aaa;
