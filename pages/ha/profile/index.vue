@@ -121,19 +121,22 @@ export default {
   },
   mounted () {
     let queryID = this.$route.query.id
+    console.log('Query ID: ' + queryID)
+    console.log('Curr Pateint ID: ' + this.$store.state.currPatient.id)
+
+    // this.$store.commit('updateCurrPatient', { id: queryID })
     if (queryID !== this.$store.state.currPatient.id) {
+      // request ID does not equal curr ID,
       // get that patient profile
-      // update to currUser
-
-      console.log('Query ID: ' + queryID)
-
       this.$store.commit('updateCurrPatient', { id: queryID })
+    } else {
+      // display current Patient in store
+      // console.log(this.currPatient.demographics)
+
+      // this.$store.commit('clearVisitID')
+
+      window.scrollTo(0, 0);
     }
-
-
-    this.$store.commit('clearVisitID')
-
-    window.scrollTo(0, 0);
 
     this.$store.commit('updatePath', this.fullPath)
   },

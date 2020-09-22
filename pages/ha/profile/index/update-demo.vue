@@ -145,13 +145,19 @@ export default {
       }
     ])
 
-
     this.demographics = {...this.currPatient.demographics}
 
+    // set options from patient data
     this.occupations.selected = this.currPatient.demographics.occupation
     this.states.selected = this.currPatient.demographics.state
     this.districts.selected = this.currPatient.demographics.district
     this.policeStations.selected = this.currPatient.demographics.policeStation
+
+    // get options from store
+    this.occupations.options = this.$store.state.occupationOptions
+    this.districts.options = this.$store.state.districtOptions
+    this.states.options = this.$store.state.stateOptions
+    this.policeStations.options = this.$store.state.policeStationOptions
 
     // this.getOccupations()
     // this.getPolice()
@@ -182,52 +188,14 @@ export default {
     }
   },
   methods: {
-    getPolice: function () {
-      let self = this
-      axios.get(this.baseURL + '/requestps')
-        .then(function (response) {
-          self.policeStations.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    getDistricts: function () {
-      let self = this
-      axios.get(this.baseURL + '/requestdistrict')
-        .then(function (response) {
-          self.districts.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    getStates: function () {
-      let self = this
-      axios.get(this.baseURL + '/requeststate')
-        .then(function (response) {
-          self.states.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    getOccupations: function () {
-      let self = this
-      axios.get(this.baseURL + '/requestoccupation')
-        .then(function (response) {
-          console.log(response.data)
-          self.occupations.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
     updateDemographics: function (msg) {
       alert(msg)
 
       let currPatientId = this.currPatient.id
 
+      console.log('xxxx')
+      console.log()
+      console.log(this.patientDataComputed)
       this.$store.commit('updateDemographics', [currPatientId, this.patientDataComputed])
     }
   },

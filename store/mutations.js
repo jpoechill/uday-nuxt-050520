@@ -47,7 +47,7 @@ export default {
       ) || state.currPatient; 
       
     patientProf.demographics = {
-      ...PATIENT_DEMOGRAPHICS
+      ...PATIENT_DEMOGRAPHICS,
     };
 
     // alert('The patient\'s demographics have been updated.')

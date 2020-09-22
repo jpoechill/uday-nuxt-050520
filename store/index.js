@@ -21,15 +21,15 @@ export const state = () => ({
     regBy: "",
     demographics: {
       name: "",
-      occupation: {
-        name: 'No Answer',
-        id: 'xxxx'
-      },
       gender: "",
       age: "",
       hswd: '',
       address: "",
       address2: "",
+      occupation: {
+        name: 'No Answer',
+        id: 'xxxx'
+      },
       district: {
         name: 'No Answer',
         id: 'xxxx'
