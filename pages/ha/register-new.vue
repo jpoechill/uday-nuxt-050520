@@ -263,11 +263,12 @@ export default {
 
     this.$store.commit('updatePath', path)
 
-    // this.getPolice()
-    // this.getDistricts()
-    // this.getStates()
-    // this.getOccupations()
+    console.log(this.$store.state)
 
+    this.occupations.options = this.$store.state.occupationOptions
+    this.districts.options = this.$store.state.districtOptions
+    this.states.options = this.$store.state.stateOptions
+    this.policeStations.options = this.$store.state.policeStationOptions
 
     this.generateFakeCredentials()
   },

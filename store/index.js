@@ -1,5 +1,6 @@
 import udayDBStore from "./udayStore"
 import udayMutations from "./mutations"
+import formOptionsStore from "./formOptions"
 
 export const state = () => ({
   currPath: [
@@ -49,6 +50,7 @@ export const state = () => ({
   },
   currEpisode: {},
   ...udayDBStore,
+  ...formOptionsStore
 });
 
 export const mutations = udayMutations;
