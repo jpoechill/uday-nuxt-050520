@@ -203,20 +203,32 @@ export default {
     return {
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
       occupations: {
-        selected: 'occupation',
+        selected: {
+          name: 'No Answer',
+          id: 'xxxx'
+        },
         options: []
       },
       patientList: '',
       policeStations: {
-        selected: 'policestation',
+        selected: {
+          name: 'No Answer',
+          id: 'xxxx'
+        },
         options: []
       },
       districts: {
-        selected: 'district',
+        selected: {
+          name: 'No Answer',
+          id: 'xxxx'
+        },
         options: []
       },
       states: {
-        selected: 'state',
+        selected: {
+          name: 'No Answer',
+          id: 'xxxx'
+        },
         options: []
       },
       demographics: {

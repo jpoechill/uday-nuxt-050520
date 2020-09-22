@@ -46,7 +46,14 @@ export default {
         patient => patient.id === PATIENT_ID
       ) || state.currPatient; 
       
+    console.log('old')
+    console.log(patientProf)
+
+    console.log('new')
+    console.log(PATIENT_DEMOGRAPHICS)
+
     patientProf.demographics = {
+      ...patientProf.demographics,
       ...PATIENT_DEMOGRAPHICS,
     };
 
