@@ -213,18 +213,18 @@ export default {
     let currentDate = getCurrDate()
 
     // generate random UID
-    // let newID = Math.random().toString(36).substr(2, 6)
+    let newID = Math.random().toString(36).substr(2, 6)
 
     console.log('From Vuex Store: ')
     console.log(payload.regNo)
     console.log(payload.objectID)
 
-    // console.log(payload)
+    console.log(payload)
 
     let baseProfile = {
       regNo: payload.regNo,
       objectID: payload.objectID,
-      id: payload.objectID,
+      id: newID,
       status: "registered",
       regBy: payload.regBy,
       dateRegistered: currentDate,

@@ -230,16 +230,16 @@ export default {
     patientDataComputed() {
       return {
         name: this.patientData.name,
-        occupation:  typeof this.occupations.selected == 'object' ? this.occupations.selected.id : '5f3e81a843bec66f97b8f6f3',
+        occupation:  typeof this.occupations.selected == 'object' ? this.occupations.selected : 'No Occupation',
         gender: this.patientData.gender,
         age: this.patientData.age,
         ageType: this.patientData.ageType,
         hswd: this.patientData.hswd,
         address: this.patientData.address,
         address2: this.patientData.address2,
-        district: typeof this.districts.selected == 'object' ? this.districts.selected.id : '5f3e7eba43bec66f97b8f6ef',
-        state: typeof this.states.selected == 'object' ? this.states.selected.id : '5f3e7e6f43bec66f97b8f6ee',
-        policeStation: typeof this.policeStations.selected == 'object' ? this.policeStations.selected.id : '5f3e7f8843bec66f97b8f6f0',
+        district: typeof this.districts.selected == 'object' ? this.districts.selected : 'No District',
+        state: typeof this.states.selected == 'object' ? this.states.selected : 'No State',
+        policeStation: typeof this.policeStations.selected == 'object' ? this.policeStations.selected : 'No Police Station',
         phone: this.patientData.phone,
         location: this.patientData.location,
         country: this.patientData.country,
@@ -363,7 +363,7 @@ export default {
 
       let payload = {
         objectID: this.patientData.objectID,
-        regNo: this.patientData.patientRegID,
+        regNo: this.patientData,
         regBy: this.$store.state.currUser.name,
         demographics: this.patientDataComputed
       }
@@ -409,26 +409,26 @@ export default {
       
       const self = this
 
-      axios.post(this.baseURL + '/registerpatient', data, headers)
-        .then(function (response) {
-          console.log('Registration success: ');
-          console.log(response.data);
+      // axios.post(this.baseURL + '/registerpatient', data, headers)
+      //   .then(function (response) {
+      //     console.log('Registration success: ');
+      //     console.log(response.data);
 
-          self.HaId = response.data
-          self.patientData.objectID = response.data[0].objectid
-          self.patientData.patientRegID = response.data[0].regno
+      //     self.HaId = response.data
+      //     self.patientData.objectID = response.data[0].objectid
+      //     self.patientData.patientRegID = response.data[0].regno
 
-          alert('Registration online successful.')
+      //     alert('Registration online successful.')
 
           self.registerPatient()
-        })
-        .catch(function (error) {
-          console.log(error);
-          // self.example = error
-          alert('Registration online was NOT successful.')
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
+        //   // self.example = error
+        //   alert('Registration online was NOT successful.')
 
-          // self.$router.push({path: '/ha/'})
-        });
+        //   // self.$router.push({path: '/ha/'})
+        // });
     },
   },
   data() {

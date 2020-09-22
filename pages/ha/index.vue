@@ -80,10 +80,10 @@
                   <!-- <transition name="u-fade"  mode="in-out" tag="tbody"> -->
                     <tr class="pointer" v-for="(patient, index) in list.slice().reverse()" :key="index">
                       <td>
-                        {{ patient.regNo }}
+                        {{ patient.id }}
                       </td>
                       <td>
-                        <nuxt-link :to="'/ha/profile?id=' + patient.objectID">{{ patient.name || patient.demographics.name }}</nuxt-link>
+                        <nuxt-link :to="'/ha/profile?id=' + patient.id">{{ patient.name || patient.demographics.name }}</nuxt-link>
                       </td>
                       <td>{{ patient.ldate || patient.lastVisited }}</td>
                       <td>{{ patient.date || patient.dateRegistered }}</td>
@@ -121,7 +121,7 @@
           </div>
         </div> -->
 
-      <div class="container" v-if="!onlineLoaded">
+      <div class="container d-none">
         <div class="row pt-5">
           <div class="col-md-12 my-5">
             <div class="spinner my-5">
@@ -132,7 +132,7 @@
           </div>
         </div>
       </div>
-        <div class="container mt-3" v-else>
+        <div class="container mt-3 d-none">
           <div class="row">
             <div class="col-md-12 rounded">
               <ul class="list-inline mb-2">
@@ -267,7 +267,7 @@ export default {
       self.vuexLoaded = true
     }, 1000)
 
-    this.getPatientListOnline()
+    // this.getPatientListOnline()
   },
   methods: {
     getPatientListOnline: function () {
