@@ -31,20 +31,20 @@
             
             <div class="row">
               <div class="col-md-6"> 
-                {{ currPatient.demographics.occupation }}
+                {{ currPatient.demographics.occupation.name }}
                 <!-- {{ typeof(currPatient.demographics.occupation) == 'object' ? currPatient.demographics.occupation.name : 'Un-employed' }} -->
                 <br><br>
-                {{ currPatient.demographics.phone || 'No Phone' }} <br><br>
+                {{ currPatient.demographics.phone }} <br><br>
                 <!-- {{ currPatient.demographics }} -->
                 <!-- HSWD of: {{ currPatient.demographics.hswd }} <br> -->
-                {{ currPatient.demographics.state }}
+                {{ currPatient.demographics.state.name }}
                 <!-- {{ typeof(currPatient.demographics.state) == 'object' ? currPatient.demographics.state.name : 'No State' }} -->
               </div>
               <div class="col-md-6">
-                {{ currPatient.demographics.address || "No Address" }} <br><br>
-                {{ currPatient.demographics.district }} <br><br>
+                {{ currPatient.demographics.address }} <br><br>
+                {{ currPatient.demographics.district.name }} <br><br>
                 <!-- {{ typeof(currPatient.demographics.district) == 'object' ? currPatient.demographics.district.name : 'No District' }} <br><br> -->
-                {{ currPatient.demographics.policeStation }}
+                {{ currPatient.demographics.policeStation.name }}
                 <!-- {{ typeof(currPatient.demographics.policeStation) == 'object' ? currPatient.demographics.policeStation.name : 'No Police Station' }} -->
                 <!-- {{ currPatient.demographics.address2 }} <br> -->
                 <!-- :: {{ this.$store.state.currPatient.id }}<br> -->
@@ -125,10 +125,11 @@ export default {
       // get that patient profile
       // update to currUser
 
-
+      console.log('Query ID: ' + queryID)
 
       this.$store.commit('updateCurrPatient', { id: queryID })
     }
+
 
     this.$store.commit('clearVisitID')
 

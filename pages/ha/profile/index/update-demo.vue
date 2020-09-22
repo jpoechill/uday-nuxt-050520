@@ -153,10 +153,10 @@ export default {
     this.districts.selected = this.currPatient.demographics.district
     this.policeStations.selected = this.currPatient.demographics.policeStation
 
-    this.getOccupations()
-    this.getPolice()
-    this.getDistricts()
-    this.getStates()
+    // this.getOccupations()
+    // this.getPolice()
+    // this.getDistricts()
+    // this.getStates()
   },
   computed: {
     currPatient: function () {

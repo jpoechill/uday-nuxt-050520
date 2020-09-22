@@ -80,29 +80,32 @@ export default {
         type: 'HA'
       }
       
-    // this.$store.commit('updateCurrUser')
       const self = this
 
       this.showLoading = true
 
-      axios.post(this.$store.state.baseURL + '/login', data, headers)
-        .then(function (response) {
-          console.log(response.data);
-          // alert('Welcome ' + response.data[0].name + '.')
+      // axios.post(this.$store.state.baseURL + '/login', data, headers)
+      //   .then(function (response) {
+      //     console.log(response.data);
+      //     alert('Welcome ' + response.data[0].name + '.')
           
-          self.$store.commit('updateCurrUser', response.data[0])
+      self.$store.commit('updateCurrUser', {
+        HaId: "5f3eaf404be1fce03b7a5655",
+        cluster: "5f3eacbde0dc1a1675cd2c1a",
+        name: "Poulami Chakraborty"
+      })
 
-          self.$router.push({
+      self.$router.push({
             path: '/ha'
           })
-        })
-        .catch(function (error) {
-          console.log(error);
+        // })
+        // .catch(function (error) {
+        //   console.log(error);
 
-          self.showLoading = false
+        //   self.showLoading = false
 
-          alert('Could not login.')
-        });
+        //   alert('Could not login.')
+        // });
     }
   }
 }

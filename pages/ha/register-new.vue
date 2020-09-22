@@ -48,10 +48,10 @@
                   <label for="">Age</label><br>
                   <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
                   <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
-                    <option disabled selected value="">Age Type</option>
+                    <option disabled value="">Age Type</option>
                     <option value="days">Days</option>
                     <option value="months">Months</option>
-                    <option value="years">Years</option>
+                    <option selected value="years">Years</option>
                   </select>
                 </div>
               </div>
@@ -230,16 +230,16 @@ export default {
     patientDataComputed() {
       return {
         name: this.patientData.name,
-        occupation:  typeof this.occupations.selected == 'object' ? this.occupations.selected : 'No Occupation',
+        occupation:  typeof this.occupations.selected == 'object' ? this.occupations.selected : { name: 'No Answer', id: 'xxxx'},
         gender: this.patientData.gender,
         age: this.patientData.age,
         ageType: this.patientData.ageType,
         hswd: this.patientData.hswd,
         address: this.patientData.address,
         address2: this.patientData.address2,
-        district: typeof this.districts.selected == 'object' ? this.districts.selected : 'No District',
-        state: typeof this.states.selected == 'object' ? this.states.selected : 'No State',
-        policeStation: typeof this.policeStations.selected == 'object' ? this.policeStations.selected : 'No Police Station',
+        district: typeof this.districts.selected == 'object' ? this.districts.selected : { name: 'No Answer', id: 'xxxx'},
+        state: typeof this.states.selected == 'object' ? this.states.selected : { name: 'No Answer', id: 'xxxx'},
+        policeStation: typeof this.policeStations.selected == 'object' ? this.policeStations.selected : { name: 'No Answer', id: 'xxxx'},
         phone: this.patientData.phone,
         location: this.patientData.location,
         country: this.patientData.country,
@@ -263,10 +263,10 @@ export default {
 
     this.$store.commit('updatePath', path)
 
-    this.getPolice()
-    this.getDistricts()
-    this.getStates()
-    this.getOccupations()
+    // this.getPolice()
+    // this.getDistricts()
+    // this.getStates()
+    // this.getOccupations()
 
 
     this.generateFakeCredentials()
@@ -357,13 +357,13 @@ export default {
     },
     registerPatient: function (event) {
 
-      console.log('Patient Data: ')
-      console.log(this.patientData.objectID)
-      console.log(this.patientData.patientRegID)
+      // console.log('Patient Data: ')
+      // console.log(this.patientData.objectID)
+      // console.log(this.patientData.patientRegID)
 
       let payload = {
         objectID: this.patientData.objectID,
-        regNo: this.patientData,
+        // regNo: this.patientData,
         regBy: this.$store.state.currUser.name,
         demographics: this.patientDataComputed
       }
@@ -436,20 +436,40 @@ export default {
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
       occupations: {
         selected: 'occupation',
-        options: []
+        options: [
+          {
+            name: 'Un-employed',
+            id: '11111'
+          }
+        ]
       },
       patientList: '',
       policeStations: {
         selected: 'policestation',
-        options: []
+        options: [
+          {
+            name: 'Police Station',
+            id: '11111'
+          }
+        ]
       },
       districts: {
         selected: 'district',
-        options: []
+        options: [
+          {
+            name: 'District',
+            id: '11111'
+          }
+        ]
       },
       states: {
         selected: 'state',
-        options: []
+        options: [
+          {
+            name: 'State',
+            id: '11111'
+          }
+        ]
       },
       patientData: {
         objectID: '',
@@ -458,7 +478,7 @@ export default {
         occupation: "",
         gender: "m",
         age: "29",
-        ageType: '',
+        ageType: 'years',
         hswd: '',
         address: "",
         address2: "",

@@ -135,10 +135,12 @@ export default {
       }
     ])
 
-    console.log()
+    // console.log('xxx')
+    // console.log(this.currPatient)
+    // console.log(this.currPatient.demographics)
     
-    this.patientHistory =  JSON.parse(JSON.stringify(this.currPatient.demographics.patientHistory));
-    this.familyHistory =  JSON.parse(JSON.stringify(this.currPatient.demographics.familyHistory));
+    this.patientHistory =  JSON.parse(JSON.stringify(this.currPatient.demographics.patientHistory))
+    this.familyHistory =  JSON.parse(JSON.stringify(this.currPatient.demographics.familyHistory))
   },
   computed: {
     currPatient: function () {

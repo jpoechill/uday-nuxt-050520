@@ -9,7 +9,10 @@ export const state = () => ({
     }
   ],
   currCluster: 'cluster001',
-  currUser: {},
+  currUser: {
+    name: 'User',
+    id: 'xxxx'
+  },
   baseURL: 'https://powerful-thicket-49412.herokuapp.com',
   currPatient: {
     id: "",
@@ -17,13 +20,27 @@ export const state = () => ({
     regBy: "",
     demographics: {
       name: "",
-      occupation: '',
+      occupation: {
+        name: 'No Answer',
+        id: 'xxxx'
+      },
       gender: "",
       age: "",
       hswd: '',
       address: "",
       address2: "",
-      police: "",
+      district: {
+        name: 'No Answer',
+        id: 'xxxx'
+      },
+      policeStation: {
+        name: 'No Answer',
+        id: 'xxxx'
+      },
+      state: {
+        name: 'No Answer',
+        id: 'xxxx'
+      },
       phone: "",
       location: ""
     },

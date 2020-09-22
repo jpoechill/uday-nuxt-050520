@@ -17,7 +17,8 @@
                   <div class="float-right pt-1 dropdown d-inline">
                     <span class="dropdown-toggle dropdown-no-caret pointer" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <!-- ritwikaghosh48@gmail.org -->
-                      {{ this.$store.state.currUser.name.replace(' ', '').toLowerCase() }}@udayhealth.org
+                      <!-- {{ this.$store.state.currUser.name }} -->
+                      {{ this.$store.state.currUser.name.replace(' ', '').toLowerCase() || 'healthuser' }}@udayhealth.org
                     </span>
                     <div class="dropdown-menu">
                       <div class="dropdown-item fake-link">MIS Reports</div>
@@ -53,7 +54,7 @@
                   </span>
                 </small>
                 <div class="float-right d-inline">
-                  <small>Cluster {{ this.$store.state.currUser.cluster.substring(0, 5) || ' '}}</small>
+                  <small>Cluster {{ this.$store.state.currUser.cluster }}</small>
                 </div>
                 <!-- Lorem ipsum dolor sit amet. {{ counter }} <button @click="increment()">Click</button> <br> -->
                 <!-- <button @click="increment()">Click</button> -->
