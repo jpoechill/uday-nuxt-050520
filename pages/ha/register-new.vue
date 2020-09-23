@@ -188,19 +188,23 @@
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
                   </label><br>
-                  <input type="number" v-model="patientQuestion.value" min="0" class="ml-3 mr-3 p-2 mt-3 w-25" placeholder="0"> Sticks/packs per day.
+                  <input type="number" v-model="patientQuestion.value" min="0"  @change="handleFormChange(patientQuestion)" class="ml-3 mr-3 p-2 mt-3 w-25" placeholder="0"> Sticks/packs per day.
                 </div>
                 <div class="form-check ml-5 mb-4" v-else>
                   <input class="form-check-input" v-model="patientQuestion.isActive" type="checkbox" value="" :id="'patientQuestions' + index">
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
                   </label><br>
-                  <select v-model="patientQuestion.relationship" value="" class="custom-select w-75 ml-3 mt-3">
-                    <option :selected="true" :disabled="true" value="">Relationship</option>
-                    <option value="Parent">Parent</option>
-                    <option value="Spouse">Spouse</option>
-                    <option value="Other Relationship">Other Relationship</option>
-                  </select>
+
+                  <div v-for="(relationship, index) in patientQuestion.relationship" :key="index">
+                    <select v-model="patientQuestion.relationship[index]" @change="handleFormChange(patientQuestion); addRelation(patientQuestion, index)" value="" class="custom-select w-75 ml-3 mt-3">
+                      <option :selected="true" :disabled="true" value="">Relationship</option>
+                      <option value="Parent">Parent</option>
+                      <option value="Spouse">Spouse</option>
+                      <option value="Other Relationship">Other Relationship</option>
+                    </select>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -254,6 +258,15 @@ export default {
       }
     }
   },
+  beforeRouteLeave (to, from , next) {
+    if (!this.formIsCompelete) {
+      const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
+      
+      answer ? next() : next(false);
+    } else {
+      next()
+    }
+  },
   mounted() {
     let path = [
       {
@@ -270,14 +283,26 @@ export default {
 
     console.log(this.$store.state)
 
-    this.occupations.options = this.$store.state.occupationOptions
-    this.districts.options = this.$store.state.districtOptions
-    this.states.options = this.$store.state.stateOptions
-    this.policeStations.options = this.$store.state.policeStationOptions
+    // this.occupations.options = this.$store.state.occupationOptions
+    // this.districts.options = this.$store.state.districtOptions
+    // this.states.options = this.$store.state.stateOptions
+    // this.policeStations.options = this.$store.state.policeStationOptions
 
-    this.generateFakeCredentials()
+    // this.generateFakeCredentials()
   },
   methods: {
+    addRelation: function (question, questionIndex) {
+      console.log(question)
+
+      if (questionIndex === question.relationship.length - 1) {
+        question.relationship.push('')
+      }
+    },
+    handleFormChange: function (question) {
+      question.isActive = true
+
+      console.log('Select menu updated')
+    },
     getPolice: function () {
       let self = this
       axios.get(this.baseURL + '/requestps')
@@ -384,9 +409,11 @@ export default {
       this.$store.commit('registerPatient', payload)
       this.$store.commit('updateCurrPatient', payload)
 
+      this.formIsCompelete = true
       this.$router.push({path: '/ha/'})
+
       // this.registerPatientOnline()
-      // alert('A new patient has been registered.')
+      alert('A new patient has been registered.')
     },
     registerPatientOnline: function () {
 
@@ -439,13 +466,62 @@ export default {
   },
   data() {
     return {
+      formIsCompelete: false,
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
       occupations: {
         selected: 'occupation',
         options: [
           {
-            name: 'Un-employed',
-            id: '11111'
+            name: "Student",
+            objectid: "5f3e81a843bec66f97b8f6f3"
+          }, 
+          {
+            name: "Homemaker",
+            objectid: "5f3e81b443bec66f97b8f6f4"
+          }, 
+          {
+            name: "Mason",
+            objectid: "5f3e81be43bec66f97b8f6f5"
+          }, 
+          {
+            name: "Daily wage labourer",
+            objectid: "5f3e81ce43bec66f97b8f6f6"
+          }, 
+          {
+            name: "Service",
+            objectid: "5f3e81d843bec66f97b8f6f7"
+          }, 
+          {
+            name: "Farmer",
+            objectid: "5f3e81e043bec66f97b8f6f8"
+          }, 
+          {
+            name: "Small business owner",
+            objectid: "5f3e81ee43bec66f97b8f6f9"
+          }, 
+          {
+            name: "Retired",
+            objectid: "5f3e81f943bec66f97b8f6fa"
+          }, 
+          {
+            name: "Unemployed",
+            objectid: "5f3e820643bec66f97b8f6fb"
+          }, 
+          {
+            name: "Teacher",
+            objectid: "5f3e821043bec66f97b8f6fc"
+          }, 
+          {
+            name: "Health worker",
+            objectid: "5f3e821c43bec66f97b8f6fd"
+          }, 
+          {
+            name: "Others",
+            objectid: "5f3e822443bec66f97b8f6fe"
+          },
+          {
+            name: "None",
+            objectid: "xxxxx"
           }
         ]
       },
@@ -454,8 +530,97 @@ export default {
         selected: 'policestation',
         options: [
           {
-            name: 'Police Station',
-            id: '11111'
+            district: "5f3e7eba43bec66f97b8f6ef",
+            name: "Regent Park",
+            objectid: "5f3e7f8843bec66f97b8f6f0"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Anandapur",
+            objectid: "5f3eea669dc43f950d159445"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Belaberya",
+            objectid: "5f3eea82ff87660cfafd9b3f"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Belda",
+            objectid: "5f3eea999dc43f950d159446"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Belphali",
+            objectid: "5f3eeaabff87660cfafd9b40"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Binpur",
+            objectid: "5f3eeab9ff87660cfafd9b41"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Chandrakona",
+            objectid: "5f3eead29dc43f950d159447"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Daspur",
+            objectid: "5f3eeae29dc43f950d159448"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Datan",
+            objectid: "5f3eeaee9dc43f950d159449"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Debra",
+            objectid: "5f3eeaf99dc43f950d15944a"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Garbeta",
+            objectid: "5f3eeb17ff87660cfafd9b42"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Ghatal",
+            objectid: "5f3eeb21ff87660cfafd9b43"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Goaltar",
+            objectid: "5f3eeb319dc43f950d15944b"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Gopiballavpur",
+            objectid: "5f3eeb529dc43f950d15944c"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Jambani",
+            objectid: "5f3eeb679dc43f950d15944d"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Jhargram",
+            objectid: "5f3eeb829dc43f950d15944e"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Keshpur",
+            objectid: "5f3eeb95ff87660cfafd9b44"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Keshiary",
+            objectid: "5f3eeba5ff87660cfafd9b45"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Kharagpur",
+            objectid: "5f3eebba9dc43f950d15944f"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Kharagpur Town",
+            objectid: "5f3eebc1ff87660cfafd9b46"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Lalgarh",
+            objectid: "5f3eebdd9dc43f950d159450"
+          }, {
+            district: "5f3e871f43bec66f97b8f70f",
+            name: "Midnapore",
+            objectid: "5f3eebec9dc43f950d159451"
+          }, 
+          {
+            name: "None",
+            objectid: "xxxxx"
           }
         ]
       },
@@ -463,8 +628,101 @@ export default {
         selected: 'district',
         options: [
           {
-            name: 'District',
-            id: '11111'
+            name:  "Kolkata",
+            objectid:  "5f3e7eba43bec66f97b8f6ef",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Uttar 24 Parganas",
+            objectid:  "5f3e856e43bec66f97b8f6ff",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Dakshin 24 Parganas",
+            objectid:  "5f3e857e43bec66f97b8f700",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Alipurduar",
+            objectid:  "5f3e859443bec66f97b8f701",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Bankura",
+            objectid:  "5f3e85a843bec66f97b8f702",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Birbhum",
+            objectid:  "5f3e85b443bec66f97b8f703",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Coochbehar",
+            objectid:  "5f3e85cd43bec66f97b8f704",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Darjeeling",
+            objectid:  "5f3e85e943bec66f97b8f705",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Uttar Dinajpur",
+            objectid:  "5f3e862243bec66f97b8f706",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Dakshin Dinajpur",
+            objectid:  "5f3e862e43bec66f97b8f707",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Hooghly",
+            objectid:  "5f3e864f43bec66f97b8f708",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Howrah",
+            objectid:  "5f3e868943bec66f97b8f709",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Jalpaiguri",
+            objectid:  "5f3e869c43bec66f97b8f70a",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Jhargram",
+            objectid:  "5f3e86aa43bec66f97b8f70b",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Kalimpong",
+            objectid:  "5f3e86c943bec66f97b8f70c",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Maldah",
+            objectid:  "5f3e86f243bec66f97b8f70d",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Purba Medinipur",
+            objectid:  "5f3e871043bec66f97b8f70e",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Paschim Medinipur",
+            objectid:  "5f3e871f43bec66f97b8f70f",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Murshidabad",
+            objectid:  "5f3e873443bec66f97b8f710",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Nadia",
+            objectid:  "5f3e873f43bec66f97b8f711",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Purba Bardhaman",
+            objectid:  "5f3e877843bec66f97b8f712",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Paschim Bardhaman",
+            objectid:  "5f3e878243bec66f97b8f713",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, {
+            name:  "Purulia",
+            objectid:  "5f3e879543bec66f97b8f714",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          }, 
+          {
+            name:  "None",
+            objectid:  "xxxxx"
           }
         ]
       },
@@ -472,8 +730,12 @@ export default {
         selected: 'state',
         options: [
           {
-            name: 'State',
-            id: '11111'
+            "name": "West Bengal",
+            "objectid": "5f3e7e6f43bec66f97b8f6ee"
+          }, 
+          {
+            "name": "None",
+            "objectid": "xxxxx"
           }
         ]
       },
@@ -548,54 +810,54 @@ export default {
             highBloodPressure: {
               title: 'High Blood Pressure',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             heartAttack: {
               title: 'Heart Attack',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             stroke: {
               title: 'Stroke',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             diabetes: {
               title: 'Diabetes',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             asthma: {
               title: 'Asthma',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             tb: {
               title: 'Tuberculosis',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             cancer: {
               title: 'Cancer',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             other: {
               title: 'Other',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             tobacco: {
               title: 'Tobacco',
               placeholder: 'Sticks/packs per day',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
             alcohol: {
               title: 'Alcohol',
               placeholder: 'Cups/bottles per day',
               isActive: false,
-              relationship: ''
+              relationship: ['']
             },
           },
           generalDescription: ''

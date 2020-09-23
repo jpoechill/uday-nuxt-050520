@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="container mb-3">
+    <div class="container mb-3" @change="print('Hello')">
       <div class="row px-3">
         <div class="col-md-12 text-center bg-white rounded py-5">
           <div class="position-relative mx-auto" style="width: 200px;">
@@ -83,11 +83,9 @@
     <div class="container mb-3">
       <div class="row">
         <div class="col-md-12">
-          <nuxt-link to="/ha">
-            <button class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-              Save Profile Information
-            </button>
-          </nuxt-link>
+          <button @click="submitChanges()" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1 text-uppercase">
+            Save Profile Information
+          </button>
         </div>
       </div>
     </div>
@@ -97,6 +95,27 @@
 <script>
 export default {
   layout: 'dashboard',
+  beforeRouteLeave (to, from , next) {
+    if (!this.formIsCompelete) {
+      const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
+      
+      answer ? next() : next(false);
+    } else {
+      next()
+    }
+  },
+  methods: {
+    print: function () {
+      console.log('123')
+    },
+    submitChanges: function () {
+      this.formIsCompelete = true
+
+      alert('Your profile information has been updated.')
+
+      this.$router.push({ path: '/ha/' })
+    }
+  },
   mounted() {
     let path = [
       {
@@ -112,7 +131,9 @@ export default {
     this.$store.commit('updatePath', path)
   },
   data() {
-    return {}
+    return {
+      formIsCompelete: false,
+    }
   },
 }
 </script>

@@ -3,6 +3,8 @@ import udayMutations from "./mutations"
 import formOptionsStore from "./formOptions"
 
 export const state = () => ({
+  ...udayDBStore,
+  ...formOptionsStore,
   currPath: [
     {
       title: "Dashboard",
@@ -50,8 +52,6 @@ export const state = () => ({
     services: []
   },
   currEpisode: {},
-  ...udayDBStore,
-  ...formOptionsStore
 });
 
 export const mutations = udayMutations;

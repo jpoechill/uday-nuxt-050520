@@ -1230,6 +1230,11 @@ export default {
       this.save(formData);
     }
   },
+  beforeRouteLeave (to, from , next) {
+    const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
+    
+    answer ? next() : next(false);
+  },
   mounted () {
     this.reset();
     this.$store.commit('updatePath', this.fullPath)
@@ -1344,7 +1349,7 @@ export default {
           {
             title: 'Patient Temperature',
             name: 'temperature',
-            caption: 'F°',
+            caption: '°F',
             value: '0'
           },
           {

@@ -77,12 +77,22 @@
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
                   </label><br>
-                  <select v-model="patientQuestion.relationship" class="custom-select w-75 ml-3 mt-3">
+
+                  <div v-for="(relationship, index) in patientQuestion.relationship" :key="index">
+                    <select v-model="patientQuestion.relationship[index]" @change="handleFormChange(patientQuestion); addRelation(patientQuestion, index)" value="" class="custom-select w-75 ml-3 mt-3">
+                      <option :selected="true" :disabled="true" value="">Relationship</option>
+                      <option value="Parent">Parent</option>
+                      <option value="Spouse">Spouse</option>
+                      <option value="Other Relationship">Other Relationship</option>
+                    </select>
+                  </div>
+
+                  <!-- <select v-model="patientQuestion.relationship" class="custom-select w-75 ml-3 mt-3">
                     <option :selected="true" :disabled="true" value="">Relationship</option>
                     <option value="Parent">Parent</option>
                     <option value="Spouse">Spouse</option>
                     <option value="Other Relationship">Other Relationship</option>
-                  </select>
+                  </select> -->
                 </div>
               </div>
             </div>
@@ -148,6 +158,18 @@ export default {
     }
   },
   methods: {
+    addRelation: function (question, questionIndex) {
+      console.log(question)
+
+      if (questionIndex === question.relationship.length - 1) {
+        question.relationship.push('')
+      }
+    },
+    handleFormChange: function (question) {
+      question.isActive = true
+
+      console.log('Select menu updated')
+    },
     saveHistory: function () {
       this.$store.commit('updateHistory', [this.patientHistory, this.familyHistory])
     },

@@ -85,10 +85,6 @@ export default {
         url: '/ha/profile'
       },
       {
-        title: this.$store.state.currEpisode.title,
-        url: '/ha/profile/visit?id=' + this.$store.state.currEpisode.episodeID,
-      },
-      {
         title: 'New Service',
         url: '/ha/new-service'
       },
@@ -96,11 +92,12 @@ export default {
   },
   methods: {
     recordNewService: function () {
-      alert('New service has been recorded.')
+      alert('A new service has been recorded.')
+
+      this.formIsCompelete = true
 
       const episodeID = this.$route.query.id
 
-      console.log([this.serviceDetails, episodeID])
       this.$store.commit('recordNewService', [this.serviceDetails, episodeID])
     },
     handleServiceOptions: function (serviceIndex) {
@@ -115,8 +112,18 @@ export default {
       })
     }
   },
+  beforeRouteLeave (to, from , next) {
+    if (!this.formIsCompelete) {
+      const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
+      
+      answer ? next() : next(false);
+    } else {
+      next()
+    }
+  },
   data() {
     return {
+      formIsCompelete: false,
       list: [],
       serviceDetails: {
         chiefComplaints: [[]],
