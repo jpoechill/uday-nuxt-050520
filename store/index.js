@@ -57,8 +57,14 @@ export const state = () => ({
 export const mutations = udayMutations;
 
 export const actions = {
-  init(store){
+  nuxtServerInit(store) {
     console.log('INIT STORE')
+
+    // if (localStorage.getItem('vuex')) {
+    //   console.log('LOCAL STORAGE EXISTS')
+    // } else {
+    //   console.log('LOCAL STORAGE EMPTY')
+    // }
   },
   recordEpisodeUpdateCurrPat (context, payload) {
     context.commit('recordNewEpisode', payload)

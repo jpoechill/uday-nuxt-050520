@@ -2,8 +2,8 @@ export default {
   udayDb: {
     superadmins: [
       {
-        id: "su001",
-        name: "Super Admin"
+        id: 'su001',
+        name: 'Super Admin'
       }
     ],
     clusters: {

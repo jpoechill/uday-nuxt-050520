@@ -1,5 +1,6 @@
 <template>
   <div>    
+            <client-only>
     <transition name="u-fade" appear>
       <div>
         <!-- Header -->
@@ -67,7 +68,8 @@
             </div>
           </div>
           <transition appear name="u-fade" mode="out-in">
-            <nuxt  />
+              <nuxt  />
+            <!-- </client-only> -->
             <!-- :key="routerViewKey" -->
           </transition>
         </div>
@@ -84,6 +86,7 @@
         </div> -->
       </div>
     </transition>
+        </client-only>
   </div>
 </template>
 
@@ -111,6 +114,19 @@ export default {
         // },
       ]
     }
+  },
+  created() {
+    console.log('BROWSER REFRESH')
+    console.log('ROUTE: ')
+    console.log(this.$route)
+
+    // if (this.$route.fullPath !== '/ha') {
+    //   this.$router.push({
+    //     path: '/ha'
+    //   })
+    // }
+
+    console.log(this.$store.state)
   },
   mounted () {
     this.setPath()
