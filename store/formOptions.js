@@ -36,12 +36,20 @@ export default {
     }, {
       "name": "Others",
       "objectid": "5f3e822443bec66f97b8f6fe"
+    },
+    {
+      "name": "None",
+      "objectid": "xxxxx"
     }
   ],
   stateOptions: [
     {
       "name": "West Bengal",
       "objectid": "5f3e7e6f43bec66f97b8f6ee"
+    }, 
+    {
+      "name": "None",
+      "objectid": "xxxxx"
     }
   ],
   policeStationOptions: [
@@ -133,6 +141,10 @@ export default {
       "district": "5f3e871f43bec66f97b8f70f",
       "name": "Midnapore",
       "objectid": "5f3eebec9dc43f950d159451"
+    }, 
+    {
+      "name": "None",
+      "objectid": "xxxxx"
     }
   ],
   districtOptions: [
@@ -228,6 +240,10 @@ export default {
       "name": "Purulia",
       "objectid": "5f3e879543bec66f97b8f714",
       "state": "5f3e7e6f43bec66f97b8f6ee"
+    }, 
+    {
+      "name": "None",
+      "objectid": "xxxxx"
     }
   ]
 }

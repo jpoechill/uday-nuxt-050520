@@ -68,6 +68,17 @@ export default {
       showLoading: false
     }
   },
+  mounted() {
+    console.log('Local Storage')
+    console.log(localStorage)
+
+    console.log('Set data')
+    localStorage.setItem('key', 'value')
+
+    console.log('Get data')
+    localStorage.getItem('key')
+
+  },
   methods: {
     login: function () {
       var headers = {      

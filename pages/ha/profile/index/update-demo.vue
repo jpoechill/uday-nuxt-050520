@@ -66,8 +66,9 @@
               <div class="col-md-6">
                 <label for="occupation">Occupation</label>
                 <select class="custom-select mb-3" v-model="occupations.selected">
-                  <option selected disabled value="occupation">Occupation</option>
+                  <option disabled value="">Occupation</option>
                   <option v-for="(occupation, index) in occupations.options" :key="index" :value="{ name: occupation.name, id: occupation.objectid}">{{ occupation.name }}</option>
+                  <!-- <option selected value="none">{{ occupations.selected.name }}</option> -->
                 </select>
               </div>
             </div>
@@ -82,13 +83,13 @@
                 <input type="text" class="w-100 p-2 mb-3" placeholder="Address 1" v-model="demographics.address">
                 <label for="">District</label>
                 <select class="custom-select mb-4" v-model="districts.selected">
-                  <option selected disabled value="district">District</option>
+                  <option disabled value="district">District</option>
                   <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
                 </select>
                 
                 <label for="">Police Station</label>
                 <select class="custom-select mb-4" v-model="policeStations.selected">
-                  <option selected disabled value="policestation">Police Station</option>
+                  <option disabled value="policestation">Police Station</option>
                   <option v-for="(policeStation, index) in policeStations.options" :key="index" :value="{ name: policeStation.name, id: policeStation.objectid}">{{ policeStation.name }}</option>
                 </select>
               </div>
@@ -99,7 +100,7 @@
                 <input type="text" class="w-100 p-2 mb-3" placeholder="Address 2" v-model="demographics.address2">
                 <label for="">State</label>
                 <select class="custom-select mb-4" v-model="states.selected">
-                  <option selected disabled value="state">State</option>
+                  <option disabled value="state">State</option>
                   <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
                 </select>
               </div>
@@ -171,19 +172,19 @@ export default {
     patientDataComputed: function () {
       return {
         name: this.demographics.name,
-        occupation: this.occupations.selected,
         gender: this.demographics.gender,
         age: this.demographics.age,
         ageType: this.demographics.ageType,
         hswd: this.demographics.hswd,
         address: this.demographics.address,
         address2: this.demographics.address2,
-        district: this.districts.selected,
-        state: this.states.selected,
-        policeStation: this.policeStations.selected,
         phone: this.demographics.phone,
         location: this.demographics.location,
-        country: this.demographics.country
+        country: this.demographics.country,
+        occupation: this.occupations.selected || { name: 'No Answer', objectid: 'xxxx'},
+        district: this.districts.selected || { name: 'No Answer', objectid: 'xxxx'},
+        state: this.states.selected || { name: 'No Answer', objectid: 'xxxx'},
+        policeStation: this.policeStations.selected || { name: 'No Answer', objectid: 'xxxx'},
       }
     }
   },
@@ -197,6 +198,7 @@ export default {
       console.log()
       console.log(this.patientDataComputed)
       this.$store.commit('updateDemographics', [currPatientId, this.patientDataComputed])
+      // this.$store.commit('')
     }
   },
   data() {

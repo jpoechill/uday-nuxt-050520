@@ -56,6 +56,9 @@ export const state = () => ({
 export const mutations = udayMutations;
 
 export const actions = {
+  init(store){
+    console.log('INIT STORE')
+  },
   recordEpisodeUpdateCurrPat (context, payload) {
     context.commit('recordNewEpisode', payload)
     context.commit('updateCurrPatient')

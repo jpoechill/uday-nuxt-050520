@@ -1,6 +1,5 @@
 const pkg = require('./package')
 
-
 module.exports = {
   mode: 'universal',
 
@@ -39,7 +38,11 @@ module.exports = {
   /*
   ** Plugins to load before mounting the App
   */
-  plugins: ['@/plugins/vue-html-to-paper.js', '@/plugins/v-tooltips.js'],
+  plugins: [
+    '@/plugins/vue-html-to-paper.js', 
+    '@/plugins/v-tooltips.js',
+    { src: '~/plugins/vuex-persist', ssr: false }
+  ],
 
   /*
   ** Page transitions

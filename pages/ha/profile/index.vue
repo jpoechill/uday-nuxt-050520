@@ -31,23 +31,16 @@
             
             <div class="row">
               <div class="col-md-6"> 
-                {{ currPatient.demographics.occupation.name }}
-                <!-- {{ typeof(currPatient.demographics.occupation) == 'object' ? currPatient.demographics.occupation.name : 'Un-employed' }} -->
-                <br><br>
-                {{ currPatient.demographics.phone }} <br><br>
                 <!-- {{ currPatient.demographics }} -->
-                <!-- HSWD of: {{ currPatient.demographics.hswd }} <br> -->
-                {{ currPatient.demographics.state.name }}
-                <!-- {{ typeof(currPatient.demographics.state) == 'object' ? currPatient.demographics.state.name : 'No State' }} -->
+                {{ currPatient.demographics.occupation.name }}
+                <br><br>
+                <!-- {{ currPatient.demographics.phone }} <br><br>
+                {{ currPatient.demographics.state.name }} -->
               </div>
               <div class="col-md-6">
                 {{ currPatient.demographics.address }} <br><br>
                 {{ currPatient.demographics.district.name }} <br><br>
-                <!-- {{ typeof(currPatient.demographics.district) == 'object' ? currPatient.demographics.district.name : 'No District' }} <br><br> -->
                 {{ currPatient.demographics.policeStation.name }}
-                <!-- {{ typeof(currPatient.demographics.policeStation) == 'object' ? currPatient.demographics.policeStation.name : 'No Police Station' }} -->
-                <!-- {{ currPatient.demographics.address2 }} <br> -->
-                <!-- :: {{ this.$store.state.currPatient.id }}<br> -->
               </div>
               <div class="col-md-12 mt-1">
                 <hr>

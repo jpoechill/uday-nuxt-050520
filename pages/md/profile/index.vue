@@ -14,7 +14,7 @@
           <div class="col-md-9 mt-2">
             <div class="row">
               <div class="col-md-6">
-                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name }} (::{{ this.$store.state.currPatient.id }})</h5>  
+                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name }} </h5>  
               </div>
               <div class="col-md-6 text-right text-capitalize">
                 <img v-if="currPatient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
@@ -28,7 +28,7 @@
             
             <div class="row">
               <div class="col-md-6">
-                {{ currPatient.demographics.occupation }} <br>
+                {{ currPatient.demographics.occupation.name }} <br>
                 {{ currPatient.demographics.phone }} <br>
                 {{ currPatient.demographics.hswd }} <br><br>
                 {{ currPatient.demographics.location }}
@@ -38,7 +38,7 @@
                 {{ currPatient.demographics.address2 }} <br>
                 {{ currPatient.demographics.age }} years old <br>
                 <br>
-                {{ currPatient.demographics.police }}<br><br>
+                {{ currPatient.demographics.policeStation.name }}<br><br>
               </div>
             </div>
           </div>
@@ -52,7 +52,7 @@
     </div>
 
     <transition name="u-fade" :key="routerViewKey">
-      <nuxt-child />
+      <!-- <nuxt-child /> -->
     </transition>
   </div>
 </template>
