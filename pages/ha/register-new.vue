@@ -109,8 +109,13 @@
                     <option selected disabled value="state">State</option>
                     <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
                   </select>
-                  <label for="">Country</label>
-                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.country" placeholder="India" value="India">
+                  <label for="" class="pb-2">Country</label><br>
+                  <em>
+                    <strong>
+                      {{ patientData.country }}
+                    </strong>
+                  </em>
+                  <!-- <input type="text" class="w-100 p-2 mb-3" v-model="patientData.country" placeholder="India" value="India"> -->
                 </div>
               </div>
             </div>
@@ -488,7 +493,7 @@ export default {
         policeStation: "",
         phone: "",
         location: "",
-        country: '',
+        country: 'INDIA',
         patientHistory: {
           questions: {
             highBloodPressure: {

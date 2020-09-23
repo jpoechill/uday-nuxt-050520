@@ -53,9 +53,9 @@
                     </div>
                   </div>
                 </transition>
-                <div class="col-md-12 small text-muted fake-link">
+                <!-- <div class="col-md-12 small text-muted fake-link">
                   Is there another complaint?
-                </div>
+                </div> -->
               </div>
             </div>
             <div class="container mb-3">
@@ -89,11 +89,11 @@
                           <div v-for="(question, indexQuestion) in questions" class="col-md-12 mb-4" :key="indexQuestion">
                             <div v-if="question.type === 'text'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                              <input type="text" class="p-2 w-100" v-model="question.answer" :placeholder="question.placeholder || 'There is no placeholder.'">
+                              <input type="text" class="p-2 w-100" @keyup="handleQuestionsText(question, question.answer)" v-model="question.answer" :placeholder="question.placeholder || 'There is no placeholder.'">
                             </div>
                             <div v-if="question.type === 'button'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                              <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleSelectAnswer(indexQuestion, indexAnswer)">
+                              <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleSelectAnswer(indexQuestion, indexAnswer, question)">
                                 {{ option.name }}
                               </button>
                               <div v-if="question.showOther === true">
@@ -107,7 +107,7 @@
                             </div>
                             <div v-if="question.type === 'number'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                              <input type="number" value="0" min="0" v-model="question.answer" class="mt-1 p-2 mr-2 w-25" placeholder="0"> {{ question.caption }}
+                              <input type="number" value="0" min="0"  @click="handleQuestionsText(question, question.answer)"  @keyup="handleQuestionsText(question, question.answer)" v-model="question.answer" class="mt-1 p-2 mr-2 w-25" placeholder="0"> {{ question.caption }}
                             </div>
                           </div>
                         </div>
@@ -120,7 +120,7 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                    <button @click="goToNext()" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" :disabled="!questions.every(question => question.isComplete === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Vitals
                     </button>
                 </div>
@@ -383,8 +383,9 @@
                     </g>
                   </svg>
                 </div>
+
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="eyes">
-                  <small>Eyes</small>
+                  <small>Eyes (hover title for photo)</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
@@ -404,7 +405,7 @@
                   </button>
                 </div>
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="hands">
-                  <small>Hands</small>
+                  <small>Hands (hover title for photo)</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
@@ -424,7 +425,7 @@
                   </button>
                 </div>
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="legs">
-                  <small>Legs</small>
+                  <small>Legs (hover for photo)</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
@@ -440,7 +441,7 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                    <button @click="goToNext()" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" :disabled="!generalExamsQuestions.every(question => question.isComplete === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Specific Exams
                     </button>
                 </div>
@@ -713,7 +714,7 @@
                     <div class="col-md-6 mb-3" v-for="(question, qIndex) in organ.questions" :key="qIndex">
                       <div v-if="question.type === 'text'">
                         <label for="exampleFormControlSelect1">{{ question.title }}</label><br>
-                        <input type="text" class="p-2 w-100" placeholder="Describe in the subject area in further detail">
+                        <input type="text" class="p-2 w-100" @keyup="handleSpecExamQuestionsText(organ, question, qIndex)" v-model="question.answer" placeholder="Describe in the subject area in further detail">
                       </div>
                       <div v-else>
                         <label for="exampleFormControlSelect1">{{ question.title }}</label><br>
@@ -736,7 +737,7 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                    <button @click="goToNext()" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" :disabled="!showSpecificComplaintQuestions(currCategory, subCategory).every(organ => organ.isComplete === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Allocations
                     </button>
                 </div>
@@ -902,12 +903,42 @@ export default {
         }
       })
     },
-    handleSelectAnswer: function (indexQuestion, indexAnswer) {
+
+    handleAllocation: function (categoryName, categoryInd, subCategoryInd) {
+      const self = this
+      this.complaintItem = categoryName
+      this.showQuestions = true
+      // this.subCategory = categoryName
+      this.subCategoryInd = subCategoryInd
+
+      // console.log(categoryName)
+
+      this.categories[categoryInd].subCategories.forEach(function(subCategory, index){
+        // console.log(self.subCategory)
+        if (index === subCategoryInd) {
+          subCategory.isActive = true
+          self.questions = subCategory.questions
+          self.subCategory = subCategory.name
+        } else {
+          subCategory.isActive = false
+        }
+      })
+    },
+    handleQuestionsText: function (question, answer) {
+      console.log('click')
+      if (answer !== '') {
+        question.isComplete = true
+      } else {
+        question.isComplete = false
+      }
+    },
+    handleSelectAnswer: function (indexQuestion, indexAnswer, questionMain) {
       let self = this
 
       this.questions[indexQuestion].options.forEach((question, index) => {
         if (indexAnswer === index) {
           question.isActive = true
+          questionMain.isComplete = true
 
           // toggle secondary input
           if (self.questions[indexQuestion].showTextInput === false) {
@@ -960,8 +991,17 @@ export default {
         organ.isComplete = true
       }
     },
+    handleSpecExamQuestionsText: function (organ, question, qIndex) {
+      if (question.answer !== '') {
+        question.hasAnswer = true
+        question.isComplete = true
+      } else {
+        question.hasAnswer = false
+      }
+    },
     handleGenExamOptions: function (questionIndex, optionIndex) {
       let self = this
+
       this.generalExamsQuestions[questionIndex].options.forEach((option, index) => {
         if (index === optionIndex) {
           option.isActive = true
@@ -1028,8 +1068,10 @@ export default {
       // normalize specific exams
       let specificExams = this.specificExamQuestions.filter(x => x.isComplete === true)
       this.newEpisodeComplete.specificExams.push(...this.specificExamQuestions.filter(x => x.isComplete === true))
-      console.log('xx')
-      console.log(this.specificExamQuestions.filter(x => x.isComplete === true))
+      // console.log('xx')
+      console.log('list of completed questions')
+      console.log(this.newEpisodeComplete)
+      // console.log(this.specificExamQuestions.filter(x => x.isComplete === true))
 
       this.$store.commit('updateStatus', 'allocated')
       this.$store.commit('addPatientToQueue', this.$store.state.currPatient.id)
@@ -1048,10 +1090,8 @@ export default {
       }
 
       console.log('patWeight: ' + patWeight)
-      // console.log(patWeight)
       console.log('patHeight: ' + patHeight)
       console.log('BMI: ' + BMI)
-      // console.log('Console Testing')
     },
     showSpecificComplaintQuestions(currCategory, currSubCategory) {
       switch (currCategory) {
@@ -2299,8 +2339,9 @@ export default {
             {
               title: 'How many lumps/swellings',
               hasAnswer: false,
-              type: 'number',
-              answer: '0',
+              type: 'text',
+              answer: '',
+              placeholder: '0',
               caption: 'count.'
             },
             {
@@ -2689,7 +2730,7 @@ export default {
           isChecked: false,
         },
         {
-          question: "If you are examning a female patient, is there a female chaperon in the room?",
+          question: "If you are examining a female patient, is there a female chaperon in the room?",
           isChecked: false,
         },
         {
@@ -2823,16 +2864,20 @@ export default {
         {
           name: 'Acidity/Indigestion',
           isActive: false,
+          isComplete: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+              placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "Is there any abdominal pain?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2847,6 +2892,7 @@ export default {
             {
               question: "Is there any vomiting?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2861,6 +2907,7 @@ export default {
             {
               question: "Is there any nausea?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2875,6 +2922,7 @@ export default {
             {
               question: "Is there a loss of appetite?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -2889,6 +2937,7 @@ export default {
             {
               question: "Is there any constipation?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2903,6 +2952,7 @@ export default {
             {
               question: "Is there any diarrhea?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2917,6 +2967,7 @@ export default {
             {
               question: "Is there H/O jaundice?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2931,6 +2982,7 @@ export default {
             {
               question: "Is there H/O alcohol ingestion?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2945,6 +2997,7 @@ export default {
             {
               question: "Is there H/O smoking?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2959,6 +3012,7 @@ export default {
             {
               question: "Has there been a change weight?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -2975,11 +3029,13 @@ export default {
         {
           name: 'Bleeding with Stool',
           isActive: false,
+          isComplete: false,
           showOther: false,
           questions: [
             {
               question: "What is the color of the stool?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Bright Red',
@@ -2998,6 +3054,7 @@ export default {
             {
               question: "What is the amount of stool?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'A lot',
@@ -3012,6 +3069,7 @@ export default {
             {
               question: "Is there pain during the passing of stool?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3026,6 +3084,7 @@ export default {
             {
               question: "Has there been a change in bowel habit?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3040,6 +3099,7 @@ export default {
             {
               question: "Is there any constipation?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3054,6 +3114,7 @@ export default {
             {
               question: "Is there any diarrhoea?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3069,23 +3130,28 @@ export default {
         },
         {
           name: 'Boils',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long have the boils been there?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+              placeholder: '0',
               caption: 'days.'
             },
             {
               question: "Where is are the boils located?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body'
             },
             {
               question: "How did the boils start?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3105,6 +3171,7 @@ export default {
             {
               question: "Is there any pain or discomfort?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3132,6 +3199,7 @@ export default {
             {
               question: "Describe the color of the skin over the boils.",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Red',
@@ -3147,18 +3215,21 @@ export default {
         },
         {
           name: 'Difficulty Breathing',
+          isComplete: false,
           isActive: false,
           questions: [
             {
-                question: "How long has this been going on?",
-                type: 'number',
-                answer: '',
-                caption: 'days long.'
+              question: "How long has this been going on?",
+              type: 'number',
+              isComplete: false,
+              answer: '',
+              caption: 'days long.'
             },
             {
               question: "How has it progressed?",
               type: 'button',
               showOther: false,
+              isComplete: false,
               options: [
                 {
                   name: 'Same as Before',
@@ -3185,6 +3256,7 @@ export default {
             {
               question: "What brings it on?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3208,6 +3280,7 @@ export default {
             {
               question: "What is the difficulty relieved?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3231,6 +3304,7 @@ export default {
             {
               question: "Does it wake you up at night?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3245,6 +3319,7 @@ export default {
             {
               question: "Is there a cough?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3259,6 +3334,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3283,17 +3359,20 @@ export default {
         },
         {
           name: 'Diarrhoea',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
               caption: 'days long.'
             },
             {
               question: "What is the stool type?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3317,6 +3396,7 @@ export default {
             {
               question: "What is the nature of this complaint?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Happens Everyday',
@@ -3331,12 +3411,14 @@ export default {
             {
               question: "What is the frequency?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the # of times per day',
             }, 
             {
               question: "Is there blood in the stool?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3351,6 +3433,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3378,6 +3461,7 @@ export default {
             {
               question: "Is there any relation to food?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3392,6 +3476,7 @@ export default {
             {
               question: "Are there any current medications?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3407,17 +3492,21 @@ export default {
         },
         {
           name: 'Dizziness',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+              placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "What is the nature of the dizziness?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Happens Everyday',
@@ -3432,6 +3521,7 @@ export default {
             {
               question: "When does the dizziness occur?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3459,18 +3549,21 @@ export default {
             {
               question: "What causes the dizziness?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any possible causes',
             },
             {
               question: "What provides relief?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any possible causes',
             },
             {
               question: "Is there a relation with positioning?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3498,6 +3591,7 @@ export default {
             {
               question: "Is there H/O fainting?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3512,6 +3606,7 @@ export default {
             {
               question: "Is there H/O fall?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3526,6 +3621,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3557,6 +3653,7 @@ export default {
             {
               question: "Has there been a change in hearing?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -3571,6 +3668,7 @@ export default {
             {
               question: "Has there been a change in vision?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -3586,17 +3684,21 @@ export default {
         },
         {
           name: 'Fever',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been going on?",
               type: 'number',
-              answer: '0', 
+              isComplete: false,
+              answer: '', 
+              placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "How has it progressed?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3624,6 +3726,7 @@ export default {
             {
               question: "What is the nature of the fever?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3647,6 +3750,7 @@ export default {
             {
               question: "When does the fever come on?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3674,6 +3778,7 @@ export default {
             {
               question: "What is the temperature of the patient?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3701,6 +3806,7 @@ export default {
             {
               question: "Is there shivering?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3715,6 +3821,7 @@ export default {
             {
               question: "Is there a cough?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3729,6 +3836,7 @@ export default {
             {
               question: "Is there a cough with blood?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3743,6 +3851,7 @@ export default {
             {
               question: "Is there pain?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3757,6 +3866,7 @@ export default {
             {
               question: "Is there general weakness?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3771,6 +3881,7 @@ export default {
             {
               question: "Is there loss of weight?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3785,6 +3896,7 @@ export default {
             {
               question: "Is there burning, or more frequency in urine?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3804,6 +3916,7 @@ export default {
             {
               question: "Are there any reliefs?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3831,17 +3944,21 @@ export default {
             {
               name: 'Headache',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['eye', 'head', 'hand'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Front (R)',
@@ -3872,6 +3989,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -3907,6 +4025,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -3926,6 +4045,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -3948,6 +4068,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -3966,6 +4087,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -3993,6 +4115,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4008,6 +4131,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4032,18 +4156,22 @@ export default {
             },
             {
               name: 'Ear Pain',
+              isComplete: false,
               isActive: false,
               organsToExamine: ['ear', 'cheek&mouth'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Right',
@@ -4062,6 +4190,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4077,6 +4206,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4096,6 +4226,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4118,6 +4249,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4136,6 +4268,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4151,6 +4284,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4166,6 +4300,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4199,17 +4334,21 @@ export default {
             {
               name: 'Teeth Pain',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['cheek&mouth'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Upper Right',
@@ -4232,6 +4371,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4247,6 +4387,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4266,6 +4407,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4288,6 +4430,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4306,6 +4449,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4321,6 +4465,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4336,6 +4481,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4369,17 +4515,21 @@ export default {
             {
               name: 'Throat Pain',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['neck', 'cheek&mouth', 'eyes'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Back of Mouth',
@@ -4394,6 +4544,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4409,6 +4560,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4428,6 +4580,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4450,6 +4603,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4468,6 +4622,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4483,6 +4638,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4498,6 +4654,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4531,17 +4688,21 @@ export default {
             {
               name: 'Back Pain',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['back', 'eyes&mouth', 'lowerleg&ankle'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Upper Right',
@@ -4576,6 +4737,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4615,6 +4777,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4634,6 +4797,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4656,6 +4820,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4674,6 +4839,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4701,6 +4867,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4720,6 +4887,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4748,18 +4916,22 @@ export default {
             },
             {
               name: 'Joint Pain',
+              isComplete: false,
               isActive: false,
               organsToExamine: ['joints'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4947,6 +5119,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5134,6 +5307,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Sudden',
@@ -5152,6 +5326,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -5174,6 +5349,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -5192,6 +5368,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5215,6 +5392,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5238,6 +5416,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5266,18 +5445,22 @@ export default {
             },
             {
               name: 'Chest Pain',
+              isComplete: false,
               isActive: false,
               organsToExamine: ['eyes', 'lowerleg&ankle', 'hands', 'chest'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Upper (R)',
@@ -5312,6 +5495,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5367,6 +5551,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5386,6 +5571,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -5408,6 +5594,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Dull',
@@ -5430,6 +5617,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5457,6 +5645,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5476,6 +5665,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5509,17 +5699,21 @@ export default {
             {
               name: 'Abdominal Pain',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['eye', 'lowerleg&ankle', 'hands', 'abdomen'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Upper (R)',
@@ -5566,6 +5760,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Upper (R)',
@@ -5616,6 +5811,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5635,6 +5831,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -5657,6 +5854,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -5675,6 +5873,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5702,6 +5901,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5725,6 +5925,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5758,17 +5959,21 @@ export default {
             {
               name: 'Breast Pain',
               isActive: false,
+              isComplete: false,
               organsToExamine: [],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'RUO (R)',
@@ -5811,6 +6016,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'RUO (R)',
@@ -5853,6 +6059,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5872,6 +6079,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -5894,6 +6102,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -5912,6 +6121,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5935,6 +6145,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5958,6 +6169,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5983,17 +6195,20 @@ export default {
             {
               name: 'Scrotal Pain',
               isActive: false,
+              isComplete: false,
               organsToExamine: [],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Left',
@@ -6012,6 +6227,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6031,6 +6247,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6050,6 +6267,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -6072,6 +6290,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -6090,6 +6309,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6109,6 +6329,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6128,6 +6349,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6153,17 +6375,21 @@ export default {
             {
               name: 'Perianal Pain',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['neck', 'cheek&mouth', 'eyes'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6183,6 +6409,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6206,6 +6433,7 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Sudden',
@@ -6224,6 +6452,7 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -6246,6 +6475,7 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -6264,6 +6494,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6283,6 +6514,7 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6302,6 +6534,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6333,15 +6566,18 @@ export default {
         {
           name: 'Swelling/Tumor',
           isActive: false,
+          isComplete: false,
           organsToExamine: ['eye', 'hands', 'neck&throat', 'chest', 'lowerleg&ankle'],
           subCategories: [
             {
               name: 'Throat Swelling',
+              isComplete: false,
               isActive: false,
               questions: [
                 {
                   question: "Where is it swelling?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Back of Mouth',
@@ -6356,12 +6592,15 @@ export default {
                 {
                   question: "How long has it been there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'day(s)'
                 },
                 {
                   question: "How did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Gradually',
@@ -6376,6 +6615,7 @@ export default {
                 {
                   question: "Is it painful?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6390,6 +6630,7 @@ export default {
                 {
                   question: "Has it changed in size?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'No Change',
@@ -6408,6 +6649,7 @@ export default {
                 {
                   question: "Has there been a change in skin color?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'No Change',
@@ -6422,6 +6664,7 @@ export default {
                 {
                   question: "Are there any other symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6445,6 +6688,7 @@ export default {
                 {
                   question: "Is there any history of injury?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6459,6 +6703,7 @@ export default {
                 {
                   question: "Is there excessive sweating?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6473,6 +6718,7 @@ export default {
                 {
                   question: "Is there constipation?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6487,6 +6733,7 @@ export default {
                 {
                   question: "Are there any period problems?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6501,6 +6748,7 @@ export default {
                 {
                   question: "Has there been an excess in appetite?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6515,6 +6763,7 @@ export default {
                 {
                   question: "Is there a general weakness?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6531,11 +6780,13 @@ export default {
             {
               name: 'Abdomen Swelling',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['eye', 'neck', 'adbomen', 'cheek&mouth', 'lump&swelling', 'lowerleg&ankle'],
               questions: [
                 {
                   question: "Where is the swelling?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6550,18 +6801,23 @@ export default {
                 {
                   question: "How many tumors are there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'tumor(s)'
                 },
                 {
                   question: "How long has it been there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days(s)'
                 },
                 {
                   question: "How did it start?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6576,6 +6832,7 @@ export default {
                 {
                   question: "Is it painful?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6590,6 +6847,7 @@ export default {
                 {
                   question: "Has it changed in size?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6604,6 +6862,7 @@ export default {
                 {
                   question: "Are there any other symptoms?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6618,6 +6877,7 @@ export default {
                 {
                   question: "Is there any history of injury?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6632,6 +6892,7 @@ export default {
                 {
                   question: "Is it general abdominal pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6646,6 +6907,7 @@ export default {
                 {
                   question: "Has there been a change in weight?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6660,12 +6922,15 @@ export default {
                 {
                   question: "What is the bowel habit?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'time(s) per day'
                 },
                 {
                   question: "Is there yellow colour in urine?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6680,6 +6945,7 @@ export default {
                 {
                   question: "Has there been any vomiting?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6694,6 +6960,7 @@ export default {
                 {
                   question: "Has there been a change in appetite?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6708,6 +6975,7 @@ export default {
                 {
                   question: "Are there any flucuations in swelling size?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6724,70 +6992,83 @@ export default {
             {
               name: 'Swelling (Other)',
               isActive: false,
+              isComplete: false,
               organsToExamine: ['eye', 'hands', 'neck&throat', 'chest', 'lowerleg&ankle'],
               questions: [
                 {
                   question: "Where is the swelling?",
                   type: 'text',
+                  isComplete: false,
                   answer: '',
                   placeholder: 'Describe the location of the swelling'
                 },
                 {
                   question: "How many swellings are there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'swelling(s)'
                 },
                 {
                   question: "How long has it been there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days(s)'
                 },
                 {
                   question: "How did it start?",
-                  type: 'text'
+                  type: 'text',
+                  isComplete: false,
                 }, 
                 {
                   question: "Is it painful?",
-                  type: 'text'
+                  type: 'text',
+                  isComplete: false,
                 },
                 {
                   question: "Has it changed in size?",
-                  type: 'text'
+                  type: 'text',
+                  isComplete: false,
                 },
                 {
                   question: "Has there been a change in skin color?",
-                  type: 'text'
+                  type: 'text',
+                  isComplete: false,
                 },
                 {
                   question: "Are there any other symptoms?",
-                  type: 'text'
+                  type: 'text',
+                  isComplete: false,
                 },
                 {
                   question: "Is there any history of injury?",
-                  type: 'text'
+                  type: 'text',
+                  isComplete: false,
                 },
               ]
             },
           ]
         },
-        
-
-
         {
           name: 'Vomiting',
           isActive: false,
+          isComplete: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+                  placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "What is the nature of the vomiting?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Happens Everyday',
@@ -6802,12 +7083,14 @@ export default {
             {
               question: "What is the frequency?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the # of days between incidents',
             },
             {
               question: "Has appetitie changed?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -6826,18 +7109,21 @@ export default {
             {
               question: "What causes the vomiting?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             },
             {
               question: "Is there any relief?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             },
             {
               question: "Is there blood?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -6852,6 +7138,7 @@ export default {
             {
               question: "Is there nausea?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -6866,6 +7153,7 @@ export default {
             {
               question: "Any associated symptoms?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -6900,26 +7188,29 @@ export default {
             },
           ]
         },
-
         {
           name: 'Skin Rash',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "Where are the rash(es) located?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body',
             },
             {
               question: "How big are the rash(es)?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the size in cm x cm',
             },
             {
               question: "How many rashes are there?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Single',
@@ -6938,6 +7229,7 @@ export default {
             {
               question: "Provide a description of the rash surface.",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Smooth',
@@ -6952,6 +7244,7 @@ export default {
             {
               question: "Provide a description of the rash color.",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             },
@@ -6959,17 +7252,21 @@ export default {
         },
         {
           name: 'Yellow Urine',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+                  placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "Is there any abdominal pain?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -6984,6 +7281,7 @@ export default {
             {
               question: "Is there any fever?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -6998,6 +7296,7 @@ export default {
             {
               question: "What is the color of stool?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Bright Red',
@@ -7016,6 +7315,7 @@ export default {
             {
               question: "Is there any bleeding with urine?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7030,6 +7330,7 @@ export default {
             {
               question: "Is there a general weakness?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7043,19 +7344,20 @@ export default {
             },
           ]
         },
-
-
         {
           name: 'Gynae Problems',
+          isComplete: false,
           isActive: false,
           subCategories: [
             {
               name: 'Period Problem',
               isActive: false,
+              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7070,18 +7372,23 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days ago.'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days.',
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
+                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -7101,6 +7408,7 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -7123,30 +7431,39 @@ export default {
                 {
                   question: "How many children are there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'children'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'pregnancies'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7161,6 +7478,7 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Not Started Yet',
@@ -7175,6 +7493,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -7190,6 +7509,7 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7205,11 +7525,13 @@ export default {
             },
             {
               name: 'Ante-natal Problem',
+              isComplete: false,
               isActive: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7224,18 +7546,23 @@ export default {
                 ,{
                   question: "When was the last LMP?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days.'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
+                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -7254,6 +7581,7 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -7276,30 +7604,39 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'children'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'pregnancies'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7314,12 +7651,15 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -7335,6 +7675,7 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7351,10 +7692,12 @@ export default {
             {
               name: 'Infertility Problem',
               isActive: false,
+              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7369,18 +7712,23 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days ago.'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number', 
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
+                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -7400,6 +7748,7 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -7422,30 +7771,39 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7460,12 +7818,15 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -7481,6 +7842,7 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7497,10 +7859,12 @@ export default {
             {
               name: 'Private Parts Problem',
               isActive: false,
+              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7515,18 +7879,23 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days ago.'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
+                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -7546,6 +7915,7 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -7568,30 +7938,39 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7606,12 +7985,15 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -7627,6 +8009,7 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7643,10 +8026,12 @@ export default {
             {
               name: 'Intercourse Problem',
               isActive: false,
+              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7661,18 +8046,23 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days ago.'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
+                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -7692,6 +8082,7 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -7714,30 +8105,39 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7752,12 +8152,15 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -7773,6 +8176,7 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7791,16 +8195,19 @@ export default {
         {
           name: 'Injury',
           isActive: false,
+          isComplete: false,
           questions: [
             {
               question: "Where is the injury located?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body'
             },
             {
               question: "How was the injury sustained?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Fall (at home)',
@@ -7843,12 +8250,15 @@ export default {
             {
               question: "When was the injury sustained?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+              placeholder: '0',
               caption: 'days ago.',
             },
             {
               question: "Describe other problems and issues resulting from the injury.",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Can\'t Walk',
@@ -7867,6 +8277,7 @@ export default {
             {
               question: "Is there any bleeding?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7880,21 +8291,23 @@ export default {
             }
           ]
         },
-
-
         {
           name: 'Palpitation',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long do the palpitations last?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+              placeholder: '0',
               caption: 'days.',
             },
             {
               question: "What is the type of palpitation?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Intermittent',
@@ -7909,6 +8322,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -7924,6 +8338,7 @@ export default {
             {
               question: "Is there Fainting?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7938,6 +8353,7 @@ export default {
             {
               question: "Was there a Fall?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7952,6 +8368,7 @@ export default {
             {
               question: "Is there Dizziness?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7966,6 +8383,7 @@ export default {
             {
               question: "What brings the palpitations on?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7980,6 +8398,7 @@ export default {
             {
               question: "How are the palpitation relieved?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             }
@@ -7987,17 +8406,21 @@ export default {
         },
         {
           name: 'Fainting',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How many episodes have there been?",
               type: 'number',
-              answer: '0',
+              isComplete: false,
+              answer: '',
+              placeholder: '0',
               caption: 'episodes'
             },
             {
               question: "What is the interval between episodes?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: '1',
@@ -8024,6 +8447,7 @@ export default {
             {
               question: "Is consciousness loss during fainting?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8038,6 +8462,7 @@ export default {
             {
               question: "Are there any associated fits?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8052,6 +8477,7 @@ export default {
             {
               question: "Is there dizziness?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8066,6 +8492,7 @@ export default {
             {
               question: "Was there a fall?",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8080,12 +8507,14 @@ export default {
             {
               question: "What brings on the fainting?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information'
             },
             {
               question: "How is the fainting relieved?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information'
             },
@@ -8093,23 +8522,27 @@ export default {
         },
         {
           name: 'Ulcer',
+          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has the ulcer been there?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the # of days',
             },
             {
               question: "Where is the ulcer located?",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body',
             },
             {
               question: "How did the ulcer start?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -8129,6 +8562,7 @@ export default {
             {
               question: "Is there any pain or discomfort?",
               type: 'button',
+              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -8156,6 +8590,7 @@ export default {
             {
               question: "Describe the surface of the ulcer.",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Clean',
@@ -8186,6 +8621,7 @@ export default {
             {
               question: "Describe the edges of the ulcer.",
               type: 'button',
+              isComplete: false,
               options: [
                 {
                   name: 'Raised',
@@ -8200,6 +8636,7 @@ export default {
             {
               question: "What is the size of the ulcer??",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Small, medium, large'
             },
@@ -8207,21 +8644,26 @@ export default {
         },
         {
           name:  'Weakness',
+          isComplete: false,
           isActive: false,
           subCategories: [
             {
               name: 'General Weakness',
               isActive: false,
+              isComplete: false,
               questions: [
                 {
                   question: "What has been the duration of the weakness?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days.',
                 },
                 {
                   question: "Is there a loss of appetite?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8236,6 +8678,7 @@ export default {
                 {
                   question: "Has there been a change in weight?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8250,6 +8693,7 @@ export default {
                 {
                   question: "Is there any abdominal pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8264,6 +8708,7 @@ export default {
                 {
                   question: "Is there any chest pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8278,6 +8723,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8294,16 +8740,20 @@ export default {
             {
               name: 'Particular Weakness',
               isActive: false,
+              isComplete: false,
               questions: [
                 {
                   question: "What has been the duration of the weakness?",
                   type: 'number',
-                  answer: '0',
+                  isComplete: false,
+                  answer: '',
+                  placeholder: '0',
                   caption: 'days.',
                 },
                 {
                   question: "Is there a loss appetite?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -8318,6 +8768,7 @@ export default {
                 {
                   question: "Has there been a change in weight?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'No Change',
@@ -8336,6 +8787,7 @@ export default {
                 {
                   question: "Is there any abdominal pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8350,6 +8802,7 @@ export default {
                 {
                   question: "Is there any chest pain?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8364,6 +8817,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isComplete: false,
                   options: [
                     {
                       name: 'Fever',

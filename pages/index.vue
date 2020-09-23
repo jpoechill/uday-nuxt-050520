@@ -69,54 +69,30 @@ export default {
     }
   },
   mounted() {
-    console.log('Local Storage')
-    console.log(localStorage)
+    // console.log('Local Storage')
+    // console.log(localStorage)
 
-    console.log('Set data')
-    localStorage.setItem('key', 'value')
+    // console.log('Set data')
+    // localStorage.setItem('key', 'value')
 
-    console.log('Get data')
-    localStorage.getItem('key')
+    // console.log('Get data')
+    // localStorage.getItem('key')
 
   },
   methods: {
     login: function () {
-      var headers = {      
-        'Content-Type': 'application/json;charset=UTF-8',
-      }
-
-      var data = {
-        email: this.email,
-        password: this.password,
-        type: 'HA'
-      }
-      
-      const self = this
-
       this.showLoading = true
 
-      // axios.post(this.$store.state.baseURL + '/login', data, headers)
-      //   .then(function (response) {
-      //     console.log(response.data);
-      //     alert('Welcome ' + response.data[0].name + '.')
-          
-      self.$store.commit('updateCurrUser', {
+      this.$store.commit('updateCurrUser', {
         HaId: "5f3eaf404be1fce03b7a5655",
         cluster: "5f3eacbde0dc1a1675cd2c1a",
-        name: "Poulami Chakraborty"
+        name: "Poulami Chakraborty",
+        email: "poulami.chakraborty@udayhealth.org"
       })
 
-      self.$router.push({
-            path: '/ha'
-          })
-        // })
-        // .catch(function (error) {
-        //   console.log(error);
-
-        //   self.showLoading = false
-
-        //   alert('Could not login.')
-        // });
+      this.$router.push({
+        path: '/ha'
+      })
     }
   }
 }

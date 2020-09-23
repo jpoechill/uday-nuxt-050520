@@ -11,8 +11,9 @@ export const state = () => ({
   ],
   currCluster: 'cluster001',
   currUser: {
-    name: 'User',
-    id: 'xxxx'
+    name: 'Uday Health Assistant',
+    id: 'xxxx',
+    email: 'udayuser@udayehealth.com'
   },
   baseURL: 'https://powerful-thicket-49412.herokuapp.com',
   currPatient: {

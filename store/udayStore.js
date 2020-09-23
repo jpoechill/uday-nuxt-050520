@@ -10,12 +10,21 @@ export default {
       cluster001: {
         admins: [],
         patientsInQueue: [],
-        mds: [{
+        mds: [
+          {
             id: "md001",
             status: "offline",
-            allocatedPatients: ['pa001', 'pa002', 'pa003'],
+            allocatedPatients: [],
             demographics: {
               name: "Dr. Abhigyan Bose"
+            }
+          }, 
+          {
+            id: "md002",
+            status: "offline",
+            allocatedPatients: [],
+            demographics: {
+              name: "Dr. Ritwika Ghosh"
             }
           },
         ],
@@ -35,13 +44,6 @@ export default {
         ],
         patients: []
       },
-      cluster002: {
-        admins: [],
-        patientsInQueue: [],
-        mds: [],
-        has: [],
-        patients: []
-      }
     }
   }
 }

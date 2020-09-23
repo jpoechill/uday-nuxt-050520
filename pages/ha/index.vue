@@ -111,16 +111,6 @@
           </div>
         </div>
 
-        <!-- <div class="container mt-3">
-          <div class="row">
-            <div class="col-md-12 text-muted mb-2">
-              <small>
-                dev server | <span class="fake-link" @click="getPatientListOnline()">refresh</span>
-              </small>
-            </div>
-          </div>
-        </div> -->
-
       <div class="container d-none">
         <div class="row pt-5">
           <div class="col-md-12 my-5">
@@ -252,42 +242,12 @@ export default {
     ]
 
     window.scrollTo(0, 0);
-
-    setTimeout(function () {
-      self.vuexLoaded = true
-    }, 1000)
   
     this.list = this.patientList.filter(patient => patient.regBy == this.$store.state.currUser.name)
 
     this.$store.commit('updatePath', path)
-
-    let self = this
-
-    setTimeout(function () {
-      self.vuexLoaded = true
-    }, 1000)
-
-    // this.getPatientListOnline()
   },
   methods: {
-    getPatientListOnline: function () {
-      let self = this
-      let data = {}
-      let headers = {}
-
-      self.patientListOnline = []
-
-      axios.get(this.baseURL + '/getpatientlist')
-        .then(function (response) {
-          console.log(response.data);
-          self.patientListOnline = response.data
-
-          self.onlineLoaded = true
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
     getList: function (tabName) {
       if (tabName == 'patients') {
         this.list = this.filterMyPatients
@@ -333,9 +293,6 @@ export default {
   },
   data() {
     return {
-      onlineLoaded: false,
-      vuexLoaded: false,
-      baseURL: 'https://powerful-thicket-49412.herokuapp.com',
       list: [],
       patientListOnline: [],
       tabs: [
@@ -359,11 +316,6 @@ export default {
           title: 'All Cluster Patients',
           isActive: false,
         }
-        // {
-        //   name: 'global',
-        //   title: 'Search Global',
-        //   isActive: false,
-        // }
       ],
     }
   },

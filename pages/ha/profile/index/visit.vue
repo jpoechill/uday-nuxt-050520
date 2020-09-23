@@ -817,6 +817,7 @@
                 </svg>
               </div>
             </div>
+
             <div class="row" v-for="(organ, index) in visitData.specificExams" :key="index">
               <div class="col-md-12 mb-2 text-muted">
                 <small>{{ organ.name }}</small>
@@ -825,7 +826,8 @@
               <div class="col-md-6 mb-3" v-for="(question, qIndex) in organ.questions" :key="qIndex">
                 <div v-if="question.type === 'text'">
                   <label for="exampleFormControlSelect1">{{ question.title }}</label><br>
-                  <input type="text" class="p-2 w-100" placeholder="Describe in the subject area in further detail">
+                  {{ question.answer }}
+                  <!-- <input type="text" class="p-2 w-100" v-model="question.answer" placeholder="Describe in the subject area in further detail"> -->
                 </div>
                 <div v-else>
                   <label for="exampleFormControlSelect1">{{ question.title }}</label><br>

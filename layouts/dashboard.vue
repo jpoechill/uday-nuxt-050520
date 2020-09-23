@@ -18,16 +18,18 @@
                     <span class="dropdown-toggle dropdown-no-caret pointer" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                       <!-- ritwikaghosh48@gmail.org -->
                       <!-- {{ this.$store.state.currUser.name }} -->
-                      {{ this.$store.state.currUser.name.replace(' ', '').toLowerCase() || 'healthuser' }}@udayhealth.org
+                      {{ this.$store.state.currUser.email }}
                     </span>
                     <div class="dropdown-menu">
                       <div class="dropdown-item fake-link">MIS Reports</div>
                       <div class="dropdown-divider"></div>
                       <nuxt-link to="/ha/edit-profile" class="dropdown-item">Edit Profile</nuxt-link>
                       <nuxt-link to="/ha/edit-password" class="dropdown-item">Change Password</nuxt-link>
+                      <div class="dropdown-divider"></div>
+                      <div class="dropdown-item fake-link" @click="clearCache()">Clear Cache</div>
                     </div>
                       | 
-                    <nuxt-link to="/" class="text-white">Logout</nuxt-link>
+                    <a href="/" class="text-white">Logout</a>
                   </div>
                 </div>
               </div>
@@ -114,6 +116,9 @@ export default {
     this.setPath()
   },
   methods: {
+    clearCache() {
+      localStorage.clear();
+    },
     setPath () {
       // this.$store.commit('increment', this.path)
     },

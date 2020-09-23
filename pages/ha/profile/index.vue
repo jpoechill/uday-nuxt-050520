@@ -16,7 +16,7 @@
           <div class="col-md-9">
             <div class="row">
               <div class="col-md-12 text-capitalize">
-                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name ? currPatient.demographics.name : '' }} ({{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old) </h5>  
+                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name ? currPatient.demographics.name : '' }} </h5>  
                 <div class="d-inline float-right">
                   <!-- {{ currPatient }} -->
                   <img v-if="currPatient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
@@ -31,16 +31,14 @@
             
             <div class="row">
               <div class="col-md-6"> 
-                <!-- {{ currPatient.demographics }} -->
-                {{ currPatient.demographics.occupation.name }}
-                <br><br>
-                <!-- {{ currPatient.demographics.phone }} <br><br>
-                {{ currPatient.demographics.state.name }} -->
+                {{ currPatient.demographics.occupation.name }} | {{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old <br>
+                {{ currPatient.demographics.phone }} <br>
+                {{ currPatient.demographics.policeStation.name }}
               </div>
               <div class="col-md-6">
-                {{ currPatient.demographics.address }} <br><br>
-                {{ currPatient.demographics.district.name }} <br><br>
-                {{ currPatient.demographics.policeStation.name }}
+                {{ currPatient.demographics.address }} <br>
+                {{ currPatient.demographics.district.name }} <br>
+                {{ currPatient.demographics.state.name }}, IN
               </div>
               <div class="col-md-12 mt-1">
                 <hr>
@@ -113,6 +111,8 @@ export default {
     }
   },
   mounted () {
+    console.log('ooga booga') 
+
     let queryID = this.$route.query.id
     console.log('Query ID: ' + queryID)
     console.log('Curr Pateint ID: ' + this.$store.state.currPatient.id)
