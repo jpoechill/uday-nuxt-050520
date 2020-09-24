@@ -54,9 +54,10 @@
                   <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
                   <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
                     <option disabled selected value="">Select Age Type</option>
-                    <option value="days">Days</option>
-                    <option value="months">Months</option>
                     <option value="years">Years</option>
+                    <option value="months">Months</option>
+                    <option value="days">Days</option>
+                    
                   </select>
                   <transition name="u-fade" mode="out-in" appear>
                     <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.ageErr">
@@ -586,6 +587,16 @@ export default {
         selected: 'policestation',
         options: [
           {
+            district: "5f6ccadc3a7d3d5dd5174782",
+            name: "Pindar Valley",
+            objectid: "5f6ccc723a7d3d5dd5174783"
+          },
+          {
+            district: "5f6ccadc3a7d3d5dd5174782",
+            name: "Supi Village",
+            objectid: "5f6ccca63a7d3d5dd5174785"
+          },
+          {
             district: "5f3e7eba43bec66f97b8f6ef",
             name: "Regent Park",
             objectid: "5f3e7f8843bec66f97b8f6f0"
@@ -683,6 +694,11 @@ export default {
       districts: {
         selected: 'district',
         options: [
+          {
+            name: "Bageshwar",
+            objectid: "5f6ccadc3a7d3d5dd5174782",
+            state: "5f6cc9ce3a7d3d5dd5174781"
+          },
           {
             name:  "Kolkata",
             objectid:  "5f3e7eba43bec66f97b8f6ef",
@@ -788,7 +804,11 @@ export default {
           {
             "name": "West Bengal",
             "objectid": "5f3e7e6f43bec66f97b8f6ee"
-          }, 
+          },
+          {
+            "name": "Uttarakhand",
+            "objectid": "5f6cc9ce3a7d3d5dd5174781"
+          },
           {
             "name": "None",
             "objectid": "xxxxx"
@@ -802,7 +822,7 @@ export default {
         occupation: "",
         gender: "",
         age: "",
-        ageType: '',
+        ageType: 'years',
         hswd: '',
         address: "",
         address2: "",
