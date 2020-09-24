@@ -49,9 +49,10 @@
                   <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
                   <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
                     <option disabled value="">Age Type</option>
-                    <option value="days">Days</option>
+                    <option value="years">Years</option>
                     <option value="months">Months</option>
-                    <option selected value="years">Years</option>
+                    <option value="days">Days</option>
+                    
                   </select>
                 </div>
               </div>
@@ -745,7 +746,7 @@ export default {
         name: "",
         occupation: "",
         gender: "m",
-        age: "29",
+        age: "",
         ageType: 'years',
         hswd: '',
         address: "",
