@@ -1,6 +1,6 @@
 <template>
   <div>
-    <form v-on:submit.prevent="registerPatientOnline">
+    <form v-on:submit.prevent="registerPatientOnline" @change="formHasBeenUpdated = true">
     <div class="container">
       <div class="row">
         <div class="col-md-12">
@@ -41,41 +41,73 @@
                 </div>
                 <div class="col-md-6">
                   <label for="">Name</label>
-                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.name" placeholder="Full Name">
-                  
+                  {{ patientData.name }} | {{ formErrs.nameErr }}
+                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.name" @keyup="patientData.name !== '' ? formErrs.nameErr = false : formErrs.nameErr = true" placeholder="Full Name">
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                      Please provide a valid name.
+                    </div>
+                  </transition>
                 </div>
                 <div class="col-md-6">
                   <label for="">Age</label><br>
                   <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
                   <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
-                    <option disabled value="">Age Type</option>
+                    <option disabled selected value="">Select Age Type</option>
                     <option value="days">Days</option>
                     <option value="months">Months</option>
-                    <option selected value="years">Years</option>
+                    <option value="years">Years</option>
                   </select>
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.ageErr">
+                      Please provide a valid age.
+                    </div>
+                  </transition>
                 </div>
               </div>
               
               <div class="row mt-3">
                 <div class="col-md-6">
                   <label for="">Gender</label>
-                  <select class="custom-select mb-3">
-                    <option selected disabled>Gender</option>
-                    <option value="1">Male</option>
-                    <option value="2">Female</option>
-                    <option value="3">Other</option>
+                  <select class="custom-select mb-3" v-model="patientData.gender" @change="patientData.gender !=='' ? formErrs.genderErr = false : formErrs.genderErr = true">
+                    <option selected disabled value="">Select Gender</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                   </select>
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.genderErr">
+                      Please provide a valid gender.
+                    </div>
+                  </transition>
+
                   <label for="">Phone Number</label>
-                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.phone" placeholder="Phone Number">
+                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.phone"  @keyup="patientData.phone !== '' ? formErrs.phoneErr = false : formErrs.phoneErr = true" placeholder="Phone Number">
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.phoneErr">
+                      Please provide a valid age.
+                    </div>
+                  </transition>
                 </div>
                 <div class="col-md-6">
                   <label for="occupation">Occupation</label>
-                  <select class="custom-select mb-3" v-model="occupations.selected">
-                    <option selected disabled value="occupation">Occupation</option>
+                  <select class="custom-select mb-3" v-model="occupations.selected" @change="(typeof occupations.selected) === 'object' ? formErrs.occupationErr = false : formErrs.occupationErr = true">
+                    <option selected disabled value="">Select Occupation</option>
                     <option v-for="(occupation, index) in occupations.options" :key="index" :value="{ name: occupation.name, id: occupation.objectid}">{{ occupation.name }}</option>
                   </select>
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.occupationErr">
+                      Please provide a valid occupation.
+                    </div>
+                  </transition>
+
                   <label for="">Husband/Wife/Son/Daughter of</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.hswd" placeholder="Family Members's Name">
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                      Please provide a valid relative name.
+                    </div>
+                  </transition>
                 </div>
               </div>
               <div class="row mt-3">
@@ -86,18 +118,34 @@
                 <div class="col-md-6">
 
                   <label for="">Address</label>
-                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.address" placeholder="Address 1">
-                  
-                  <label for="">District</label>
-                  <select class="custom-select mb-4" v-model="districts.selected">
-                    <option selected disabled value="district">District</option>
+                  <input type="text" class="w-100 p-2 mb-2" v-model="patientData.address" placeholder="Address 1">
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                      Please provide a valid address.
+                    </div>
+                  </transition>
+
+                  <label class="mt-2">District</label>
+                  <select class="custom-select mb-2" v-model="districts.selected">
+                    <option selected disabled value="district">Select District</option>
                     <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
                   </select>
-                  <label for="">Police Station</label>
-                  <select class="custom-select mb-4" v-model="policeStations.selected">
-                    <option selected disabled value="policestation">Police Station</option>
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                      Please provide a valid district.
+                    </div>
+                  </transition>
+
+                  <label class="mt-2">Police Station</label>
+                  <select class="custom-select mb-2" v-model="policeStations.selected">
+                    <option selected disabled value="policestation">Select Police Station</option>
                     <option v-for="(policeStation, index) in policeStations.options" :key="index" :value="{ name: policeStation.name, id: policeStation.objectid}">{{ policeStation.name }}</option>
                   </select>
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                      Please provide a valid police station.
+                    </div>
+                  </transition>
                 </div>
                 <div class="col-md-6">
 
@@ -106,9 +154,15 @@
                   
                   <label for="">State</label>
                   <select class="custom-select mb-4" v-model="states.selected">
-                    <option selected disabled value="state">State</option>
+                    <option selected disabled value="">Select State</option>
                     <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
                   </select>
+                  <transition name="u-fade" mode="out-in" appear>
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.stateErr">
+                      Please provide a valid state.
+                    </div>
+                  </transition>
+
                   <label for="" class="pb-2">Country</label><br>
                   <em>
                     <strong>
@@ -144,7 +198,7 @@
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
                   </label><br>
-                  <input type="number" v-model="patientQuestion.value" min="0" class="ml-3 mr-3 p-2 mt-3 w-5" placeholder="0"> Sticks/packs per day.
+                  <input type="number" v-model="patientQuestion.value" min="0" class="ml-3 mr-3 p-2 mt-3 w-5" placeholder="0"> {{ patientQuestion.title === 'Tobacco' ? 'Sticks/packs per day.' : 'Cups/bottles per day.'}}
                 </div>
                 <div class="form-check ml-5 mb-4" v-else>
                   <input class="form-check-input" v-model="patientQuestion.isActive" type="checkbox" value="" :id="'patientQuestions' + index">
@@ -188,7 +242,7 @@
                   <label class="form-check-label ml-3 fake-link" :for="'patientQuestions' + index">
                     {{ patientQuestion.title }}
                   </label><br>
-                  <input type="number" v-model="patientQuestion.value" min="0"  @change="handleFormChange(patientQuestion)" class="ml-3 mr-3 p-2 mt-3 w-25" placeholder="0"> Sticks/packs per day.
+                  <input type="number" v-model="patientQuestion.value" min="0"  @change="handleFormChange(patientQuestion)" class="ml-3 mr-3 p-2 mt-3 w-25" placeholder="0"> {{ patientQuestion.title === 'Tobacco' ? 'Sticks/packs per day.' : 'Cups/bottles per day.'}}
                 </div>
                 <div class="form-check ml-5 mb-4" v-else>
                   <input class="form-check-input" v-model="patientQuestion.isActive" type="checkbox" value="" :id="'patientQuestions' + index">
@@ -198,7 +252,7 @@
 
                   <div v-for="(relationship, index) in patientQuestion.relationship" :key="index">
                     <select v-model="patientQuestion.relationship[index]" @change="handleFormChange(patientQuestion); addRelation(patientQuestion, index)" value="" class="custom-select w-75 ml-3 mt-3">
-                      <option :selected="true" :disabled="true" value="">Relationship</option>
+                      <option :selected="true" :disabled="true" value="">Select Relationship</option>
                       <option value="Parent">Parent</option>
                       <option value="Spouse">Spouse</option>
                       <option value="Other Relationship">Other Relationship</option>
@@ -303,46 +357,6 @@ export default {
 
       console.log('Select menu updated')
     },
-    getPolice: function () {
-      let self = this
-      axios.get(this.baseURL + '/requestps')
-        .then(function (response) {
-          self.policeStations.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    getDistricts: function () {
-      let self = this
-      axios.get(this.baseURL + '/requestdistrict')
-        .then(function (response) {
-          self.districts.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    getStates: function () {
-      let self = this
-      axios.get(this.baseURL + '/requeststate')
-        .then(function (response) {
-          self.states.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
-    getOccupations: function () {
-      let self = this
-      axios.get(this.baseURL + '/requestoccupation')
-        .then(function (response) {
-          self.occupations.options = response.data
-        })
-        .catch(function (error) {
-          console.log(error);
-        });
-    },
     generateFakeCredentials: function name(params) {
       let self = this
       axios.get('https://cors-anywhere.herokuapp.com/https://randomuser.me/api/').then(res => {
@@ -357,21 +371,50 @@ export default {
         self.patientData.location = profile.location.city + ', ' + profile.location.state + ', ' + profile.location.country
       })
     },
+    checkFormErrs: function () {
+      // check if the form has empty fields
+      if (this.patientData.name === '') {
+        this.formErrs.nameErr = true
+      }
+      if (this.patientData.age === '' || patient.ageType === '') {
+        this.formErrs.ageErr = true
+      }
+      if (this.patientData.gender === '') {
+        this.formErrs.genderErr = true
+      }
+      if (this.occupations.selected === '') {
+        this.formErrs.occupationErr = true
+      }
+      if (this.patientData.phone === '') {
+        this.formErrs.phoneErr = true
+      }
+      if (this.patientData.address === '') {
+        this.formErrs.addressErr = true
+      }
+      if (this.occupations.selected === '') {
+        this.formErrs.occupationErr = true
+      }
+      if (this.patientData.phone === '') {
+        this.formErrs.phoneErr = true
+      }
+    },
     goToNext: function () {
       let tabs = this.tabs
       let ref = 0
 
-      for (let i = 0; i < tabs.length; i++) {
-        if (tabs[i].isActive === true) {
-          tabs[i].isActive = false
-          ref = i
-        }
-      }
+      this.checkFormErrs()
 
-      window.scrollTo(0, 0);
+      // for (let i = 0; i < tabs.length; i++) {
+      //   if (tabs[i].isActive === true) {
+      //     tabs[i].isActive = false
+      //     ref = i
+      //   }
+      // }
 
-      tabs[ref + 1].isActive = true
-      tabs[ref + 1].isEnabled = true
+      // window.scrollTo(0, 0);
+
+      // tabs[ref + 1].isActive = true
+      // tabs[ref + 1].isEnabled = true
     },
     getTab: function (tabName) {
       let tabs = this.tabs
@@ -467,9 +510,23 @@ export default {
   data() {
     return {
       formIsCompelete: false,
+      formHasBeenUpdated: false,
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
+      formErrs: {
+        nameErr: false,
+        ageErr: false,
+        genderErr: false,
+        ageErr: false,
+        occupationErr: false,
+        phoneErr: false,
+        hwsdErr: false,
+        addressErr: false,
+        districtErr: false,
+        stateErr: false,
+        policestationErr: false,
+      },
       occupations: {
-        selected: 'occupation',
+        selected: '',
         options: [
           {
             name: "Student",
@@ -525,7 +582,6 @@ export default {
           }
         ]
       },
-      patientList: '',
       policeStations: {
         selected: 'policestation',
         options: [
@@ -727,7 +783,7 @@ export default {
         ]
       },
       states: {
-        selected: 'state',
+        selected: '',
         options: [
           {
             "name": "West Bengal",
@@ -744,9 +800,9 @@ export default {
         patientRegID: '',
         name: "",
         occupation: "",
-        gender: "m",
-        age: "29",
-        ageType: 'years',
+        gender: "",
+        age: "",
+        ageType: '',
         hswd: '',
         address: "",
         address2: "",

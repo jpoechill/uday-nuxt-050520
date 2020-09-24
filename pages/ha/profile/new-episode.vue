@@ -83,7 +83,7 @@
                       <div class="container">
                         <div class="row">
                           <div class="col-md-12 mb-3">
-                            <button class="btn mb-2 btn-dark mr-2" v-if="currCategory">{{ currCategory }}</button>
+                            <button class="btn mb-2 btn-dark mr-2" v-if="currCategory && subCategoryInd <= 0">{{ currCategory }}</button>
                             <button class="btn mb-2 btn-dark mr-2" v-if="subCategoryInd >= 0">{{ subCategory }}</button><br>
                           </div>
                           <div v-for="(question, indexQuestion) in questions" class="col-md-12 mb-4" :key="indexQuestion">
@@ -786,8 +786,8 @@
                   Who would you like to allocate this complaint record to?
                 </div>
                 <div class="col-md-12">
-                  <button v-for="(md, index) in this.$store.state.udayDb.clusters['cluster001'].mds" :key="index" class="btn mb-2 mr-2 btn-light">
-                    {{ md.demographics.name }} ({{ md.status }})
+                  <button v-for="(md, index) in this.mds" :key="index" class="btn mb-2 mr-2 btn-light">
+                    {{ md.name }} ({{ md.status }})
                   </button>
                   <!-- <button class="btn mb-2 btn-light">
                     Add to General Queue
@@ -1274,6 +1274,26 @@ export default {
       hasSubCategory: false,
       showQuestions: false,
       complaintItem: '',
+      mds: [
+        {
+          id: "md001", 
+          status: "offline", 
+          allocatedPatients: [], 
+          demographics: 
+          {
+            name: "Dr. Ritwika Ghosh"
+          }
+        },
+        {
+          id: "md002", 
+          status: "offline", 
+          allocatedPatients: [], 
+          demographics: 
+          {
+            name: "Dr. Abhigyan Bose"
+          }
+        }
+      ],
       newEpisodeComplete: {
         chiefComplaints: [],
         chiefComplaintsFixedQuestions: [],

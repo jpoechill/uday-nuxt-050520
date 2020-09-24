@@ -80,7 +80,7 @@
 
                   <div v-for="(relationship, index) in patientQuestion.relationship" :key="index">
                     <select v-model="patientQuestion.relationship[index]" @change="handleFormChange(patientQuestion); addRelation(patientQuestion, index)" value="" class="custom-select w-75 ml-3 mt-3">
-                      <option :selected="true" :disabled="true" value="">Relationship</option>
+                      <option :selected="true" :disabled="true" value="">Select Relationship</option>
                       <option value="Parent">Parent</option>
                       <option value="Spouse">Spouse</option>
                       <option value="Other Relationship">Other Relationship</option>
