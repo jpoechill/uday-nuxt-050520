@@ -41,7 +41,6 @@
                 </div>
                 <div class="col-md-6">
                   <label for="">Name</label>
-                  {{ patientData.name }} | {{ formErrs.nameErr }}
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.name" @keyup="patientData.name !== '' ? formErrs.nameErr = false : formErrs.nameErr = true" placeholder="Full Name">
                   <transition name="u-fade" mode="out-in" appear>
                     <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
