@@ -11,12 +11,11 @@
             </li> -->
             <li class="list-inline-item">
               <button class="btn btn-dark px-3 small">
-                New Episode
+                New Follow Up
               </button>
             </li>
           </ul>
         </div>
-
         <div class="col-md-12 rounded">
           <ul class="list-inline mb-2">
             <li class="list-inline-item mr-0" v-for="(tab, index) in tabs" :key="index">
@@ -34,14 +33,16 @@
               <div class="row mt-1">
                 <div class="col-md-12 text-muted small mb-0">
                   Please generalize the chief complaint. <br>
-                  <!-- <hr> -->
+                  <hr>
                 </div>
 
-                <!-- <div class="col-md-12 mb-1">
+                <!-- General Category -->
+                <div class="col-md-12 mb-3">
                   <label for="exampleFormControlSelect1">What is the category of the complaint?
                      </label><br>
                   <button  v-for="(category, index) in categories" :class="category.isActive ? 'btn-dark text-white' : 'btn-light'" class="btn mb-2 mr-2" @click="makeCategoryActive(category.name)" :key="index">{{category.name}}</button>
                 </div>
+                <!-- General SubCategory -->
                 <transition  appear name="u-fade"  mode="out-in" tag="div">
                   <div class="col-md-12 mb-3" v-if="hasSubCategory">
                     <label for="exampleFormControlSelect1">What is the specific complaint? 
@@ -50,53 +51,16 @@
                       <button v-for="(complaintItem, index) in categories[categoryItemInd].subCategories" :key="index" class="btn mb-2 mr-2" :class="complaintItem.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleSubCategory(currCategory, categoryItemInd, index)">{{ complaintItem.name }}</button>
                     </div>
                   </div>
-                </transition> -->
-<!-- 
-                {{
-                  complaints
-                }} -->
-
-
-                <div v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
-                  <transition  appear name="u-fade"  mode="out-in" tag="div">
-                    <div>
-                      <div class="col-md-12">
-                        <hr>
-                      </div>
-                      <!-- General Category -->
-                      <div class="col-md-12 mb-1">
-                        <label for="exampleFormControlSelect1">What is the category of the complaint?
-                          </label><br>
-                        <button v-for="(category, categoryIndex) in complaint.categories" :class="category.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeCategoryActiveMulti(category.name, questionIndex, categoryIndex)"  class="btn mb-2 mr-2" :key="categoryIndex">{{category.name}}</button>
-                      </div>
-
-                      <!-- General SubCategory -->
-                      <transition  appear name="u-fade"  mode="out-in" tag="div">
-                        <div class="col-md-12 mt-4 mb-1" v-if="complaint.hasSubcategories">
-                          <label for="exampleFormControlSelect1">What is the specific complaint? 
-                            </label><br>
-                          <!-- <div v-if="categoryItemInd !== null" class="w-100"> -->
-                            <button v-for="(subCategory, subCategoryIndex) in complaint.subCategories" :key="subCategoryIndex" class="btn mb-2 mr-2" :class="subCategory.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeSubCategoryActiveMulti(questionIndex, subCategoryIndex)">{{ subCategory.name }}</button>
-                          <!-- </div> -->
-                        </div>
-                      </transition>
-                    </div>
-                  </transition>
-                </div>
-
-                <transition  appear name="u-fade"  mode="out-in" tag="div">
-                  <div class="col-md-12 small text-muted mt-3 mb-2 fake-link" @click="makeNewComplaint()" v-if="(complaints[complaints.length-1].chiefComplaint !== '' && complaints[complaints.length-1].hasSubcategories === false) || (complaints[complaints.length-1].chiefSubComplaint !== '' && complaints[complaints.length-1].hasSubcategories === true)">
-                    Is there another complaint?
-                  </div>
                 </transition>
-
+                <div class="col-md-12 small text-muted fake-link">
+                  Is there another complaint?
+                </div>
               </div>
             </div>
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                  <!-- {{  !(complaints[complaints.length-1].chiefComplaint == '' || complaints[complaints.length-1].hasSubcategories === false) }} -->
-                    <button @click="goToNext()" :disabled="(complaints[complaints.length-1].chiefComplaint === '' && complaints[complaints.length-1].hasSubcategories === false) || (complaints[complaints.length-1].chiefSubComplaint === '' && complaints[complaints.length-1].hasSubcategories === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" :disabled="(categoryIndex <= -1 && !hasSubCategory) || (hasSubCategory && subCategoryInd <= -1)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Fixed Questions
                     </button>
                 </div>
@@ -114,23 +78,21 @@
                     <hr>
                   </div>
                   <transition  appear name="u-fade"  mode="out-in" tag="div">
-                    <div class="w-100">
+                    <div v-show="showQuestions" class="w-100">
                       <div class="container">
-                        <div class="row" v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
+                        <div class="row">
                           <div class="col-md-12 mb-3">
-                            <div>
-                              <button class="btn mb-2 btn-dark mr-2">{{ complaint.chiefComplaint }}</button>
-                              <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint !== ''">{{ complaint.chiefSubComplaint }}</button>
-                            </div>
+                            <button class="btn mb-2 btn-dark mr-2" v-if="currCategory">{{ currCategory }}</button>
+                            <button class="btn mb-2 btn-dark mr-2" v-if="subCategoryInd >= 0">{{ subCategory }}</button><br>
                           </div>
-                          <div v-for="(question, indexQuestion) in complaint.questions" class="col-md-12 mb-4" :key="indexQuestion">
+                          <div v-for="(question, indexQuestion) in questions" class="col-md-12 mb-4" :key="indexQuestion">
                             <div v-if="question.type === 'text'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                              <input type="text" class="p-2 w-100" @keyup="handleQuestionsText(question, question.answer)" v-model="question.answer" :placeholder="question.placeholder || 'There is no placeholder.'">
+                              <input type="text" class="p-2 w-100" v-model="question.answer" :placeholder="question.placeholder || 'There is no placeholder.'">
                             </div>
                             <div v-if="question.type === 'button'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                              <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleSelectAnswer(questionIndex, indexQuestion, indexAnswer, question)">
+                              <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleSelectAnswer(indexQuestion, indexAnswer)">
                                 {{ option.name }}
                               </button>
                               <div v-if="question.showOther === true">
@@ -144,11 +106,8 @@
                             </div>
                             <div v-if="question.type === 'number'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                              <input type="number" value="" min="0"  @click="handleQuestionsText(question, question.answer)"  @keyup="handleQuestionsText(question, question.answer)" v-model="question.answer" class="mt-1 p-2 mr-2 w-25" placeholder="0"> {{ question.caption }}
+                              <input type="number" min="0" v-model="question.answer" class="mt-1 p-2 mr-2 w-25" placeholder="0"> {{ question.caption }}
                             </div>
-                          </div>
-                          <div class="col-md-12" v-if="questionIndex !== (complaints.length - 1)">
-                            <hr>
                           </div>
                         </div>
                       </div>
@@ -160,7 +119,7 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                    <button @click="goToNext()" :disabled="!complaints.every(category => category.questions.every(question => question.isComplete === true))" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Vitals
                     </button>
                 </div>
@@ -206,22 +165,22 @@
                 <div class="mb-3" v-for="(vitalQuestion, index) in newEpisodeComplete.vitals" :class="[vitalQuestion.fullLength ? 'col-md-12' : 'col-md-6']" :key="index">
                   <div v-if="vitalQuestion.options">
                     <label for="exampleFormControlSelect1">{{ vitalQuestion.title }}</label><br>
-                    <button v-for="(option, optionIndex) in vitalQuestion.options" :class="option.isActive ? 'btn-dark' : 'btn-light'" :key="optionIndex" @click="handleVitalsQuestions(index, optionIndex, vitalQuestion)" class="btn mb-2 mr-2">
+                    <button v-for="(option, optionIndex) in vitalQuestion.options" :class="option.isActive ? 'btn-dark' : 'btn-light'" :key="optionIndex" @click="handleVitalsQuestions(index, optionIndex)" class="btn mb-2 mr-2">
                       {{ option.name }}
                     </button>
                   </div>
                   <div v-else-if="!vitalQuestion.options && vitalQuestion.name === 'bp'">
                     <label for="exampleFormControlSelect1">{{ vitalQuestion.title }}</label><br>
                     <input class="form-control d-inline w-25 mr-2" type="number" min="0" v-model="vitalQuestion.valueFirst"> /
-                    <input class="form-control d-inline w-25 mx-2 mr-2" type="number" min="0" v-model="vitalQuestion.valueSecond" @change=" vitalQuestion.valueFirst !== '' && vitalQuestion.valueSecond !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false"> {{ vitalQuestion.caption }}
+                    <input class="form-control d-inline w-25 mx-2 mr-2" type="number" min="0" v-model="vitalQuestion.valueSecond"> {{ vitalQuestion.caption }}
                   </div>
                   <div v-else-if="!vitalQuestion.options && vitalQuestion.name === 'height'">
                     <label for="exampleFormControlSelect1 mb-2">{{ vitalQuestion.title }}</label><br>
-                    <input class="form-control d-inline w-25 mr-2" @keyup="calculateBMI" @click="calculateBMI(); vitalQuestion.isComplete = true" @change=" vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" type="number" min="0" v-model="vitalQuestion.value" value=""> {{ vitalQuestion.caption }}
+                    <input class="form-control d-inline w-25 mr-2" @keyup="calculateBMI" @click="calculateBMI" type="number" min="0" v-model="vitalQuestion.value" value="0"> {{ vitalQuestion.caption }}
                   </div>
                   <div v-else-if="!vitalQuestion.options && vitalQuestion.name === 'weight'">
                     <label for="exampleFormControlSelect1 mb-2">{{ vitalQuestion.title }} </label><br>
-                    <input class="form-control d-inline w-25 mr-2" @keyup="calculateBMI(); vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" @click="calculateBMI" @change=" vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" type="number" min="0" v-model="vitalQuestion.value" value=""> {{ vitalQuestion.caption }}
+                    <input class="form-control d-inline w-25 mr-2" @keyup="calculateBMI" @click="calculateBMI" type="number" min="0" v-model="vitalQuestion.value" value="0"> {{ vitalQuestion.caption }}
                   </div>
                   <div v-else-if="!vitalQuestion.options && vitalQuestion.name === 'bmi'">
                     <label for="exampleFormControlSelect1 mb-2">{{ vitalQuestion.title }}</label><br>
@@ -229,7 +188,7 @@
                   </div>
                   <div v-else>
                     <label for="exampleFormControlSelect1">{{ vitalQuestion.title }}</label><br>
-                    <input class="form-control d-inline w-25 mr-2" type="number" min="0" @change="vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" v-model="vitalQuestion.value" value=""> {{ vitalQuestion.caption }}
+                    <input class="form-control d-inline w-25 mr-2" type="number" min="0" v-model="vitalQuestion.value" value="0"> {{ vitalQuestion.caption }}
                   </div>
                 </div>
               </div>
@@ -237,7 +196,7 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                    <button @click="goToNext()" :disabled="!newEpisodeComplete.vitals.every(question => question.isComplete === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to General Exams
                     </button>
                 </div>
@@ -423,9 +382,8 @@
                     </g>
                   </svg>
                 </div>
-
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="eyes">
-                  <small>Eyes (hover title for photo)</small>
+                  <small>Eyes</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
@@ -445,7 +403,7 @@
                   </button>
                 </div>
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="hands">
-                  <small>Hands (hover title for photo)</small>
+                  <small>Hands</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
@@ -465,7 +423,7 @@
                   </button>
                 </div>
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="legs">
-                  <small>Legs (hover for photo)</small>
+                  <small>Legs</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
@@ -481,7 +439,7 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                    <button @click="goToNext()" :disabled="!generalExamsQuestions.every(question => question.isComplete === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Specific Exams
                     </button>
                 </div>
@@ -640,113 +598,113 @@
                                       <path d="M531.67505,0.00518 L618.819752,0.00518 C620.573286,0.00518 621.994807,1.42670077 621.994807,3.1802355 L621.994807,84.2699205 C621.994807,86.0234552 620.573286,87.444976 618.819752,87.444976 L531.67505,87.444976 C529.921516,87.444976 528.499995,86.0234552 528.499995,84.2699205 L528.499995,3.1802355 C528.499995,1.42670077 529.921516,0.00518 531.67505,0.00518 Z" id="rect3164" stroke-width="0.9276551" stroke-dasharray="0.9276551,0.9276551"/>
                                   </g>
                               </g>
-                              <g id="Group-8" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'lowerleg&ankle')" transform="translate(13.000000, 656.000000)">
-                                  <rect id="Rectangle-Copy-3" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'lowerleg&ankle').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-8" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'lowerleg&ankle')" transform="translate(13.000000, 656.000000)">
+                                  <rect id="Rectangle-Copy-3" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'lowerleg&ankle').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Lower-Leg-&amp;-Ankle" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="15.6011875" y="32">Lower Leg &amp; Ankle</tspan>
                                   </text>
                               </g>
-                              <g id="Group-4" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'cheek&mouth')" transform="translate(13.000000, 315.000000)">
-                                  <rect id="Rectangle-Copy-4" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'cheek&mouth').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-4" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'cheek&mouth')" transform="translate(13.000000, 315.000000)">
+                                  <rect id="Rectangle-Copy-4" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'cheek&mouth').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Cheek-&amp;-Mouth" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="32.7144375" y="32">Cheek &amp; Mouth</tspan>
                                   </text>
                               </g>
-                              <g id="Group-2" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'head')" transform="translate(13.000000, 59.000000)">
-                                  <rect id="Rectangle-Copy-9" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'head').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-2" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'head')" transform="translate(13.000000, 59.000000)">
+                                  <rect id="Rectangle-Copy-9" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'head').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Head" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="85.46975" y="32">Head</tspan>
                                   </text>
                               </g>
-                              <g id="Group-3" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'ears')" transform="translate(13.000000, 230.000000)">
-                                  <rect id="Rectangle-Copy-10" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'ears').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-3" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'ears')" transform="translate(13.000000, 230.000000)">
+                                  <rect id="Rectangle-Copy-10" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'ears').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Ears" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="89.95775" y="32">Ears</tspan>
                                   </text>
                               </g>
-                              <g id="Group-3-Copy" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'eyes')" transform="translate(13.000000, 144.000000)">
-                                  <rect id="Rectangle-Copy-10" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'eyes').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-3-Copy" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'eyes')" transform="translate(13.000000, 144.000000)">
+                                  <rect id="Rectangle-Copy-10" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'eyes').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Eyes" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="88.12075" y="32">Eyes</tspan>
                                   </text>
                               </g>
-                              <g id="Group-10" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'joints')" transform="translate(1131.000000, 315.000000)">
-                                  <rect id="Rectangle-Copy-11" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'joints').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-10" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'joints')" transform="translate(1131.000000, 315.000000)">
+                                  <rect id="Rectangle-Copy-11" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'joints').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Joints" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="81.577125" y="32">Joints</tspan>
                                   </text>
                               </g>
-                              <g id="Group-11" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'ulcers')" transform="translate(1131.000000, 400.000000)">
-                                  <rect id="Rectangle-Copy-12" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'ulcers').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-11" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'ulcers')" transform="translate(1131.000000, 400.000000)">
+                                  <rect id="Rectangle-Copy-12" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'ulcers').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Ulcers" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="79.762125" y="32">Ulcers</tspan>
                                   </text>
                               </g>
-                              <g id="Group-7" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'chest')" transform="translate(13.000000, 485.000000)">
-                                  <rect id="Rectangle-Copy-5" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'chest').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-7" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'chest')" transform="translate(13.000000, 485.000000)">
+                                  <rect id="Rectangle-Copy-5" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'chest').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Chest" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="82.5059375" y="32">Chest</tspan>
                                   </text>
                               </g>
-                              <g id="Group-6" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'abdomen')" transform="translate(13.000000, 571.000000)">
-                                  <rect id="Rectangle-Copy-7" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'abdomen').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-6" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'abdomen')" transform="translate(13.000000, 571.000000)">
+                                  <rect id="Rectangle-Copy-7" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'abdomen').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Abdomen" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="62.9163125" y="32">Abdomen</tspan>
                                   </text>
                               </g>
-                              <g id="Group-9" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'back')" transform="translate(1131.000000, 59.000000)">
-                                  <rect id="Rectangle-Copy-8" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'back').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-9" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'back')" transform="translate(1131.000000, 59.000000)">
+                                  <rect id="Rectangle-Copy-8" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'back').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Back" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="86.69075" y="32">Back</tspan>
                                   </text>
                               </g>
-                              <g id="Group-12" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'lump&swelling')" transform="translate(1131.000000, 486.000000)">
-                                  <rect id="Rectangle-Copy-13" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'lump&swelling').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-12" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'lump&swelling')" transform="translate(1131.000000, 486.000000)">
+                                  <rect id="Rectangle-Copy-13" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'lump&swelling').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Lumps-&amp;-Swelling" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="20.182" y="32">Lumps &amp; Swelling</tspan>
                                   </text>
                               </g>
-                              <g id="Group-13" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'rash')" transform="translate(1131.000000, 571.000000)">
-                                  <rect id="Rectangle-Copy-14" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'rash').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-13" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'rash')" transform="translate(1131.000000, 571.000000)">
+                                  <rect id="Rectangle-Copy-14" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'rash').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Rash" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="86.69075" y="32">Rash</tspan>
                                   </text>
                               </g>
-                              <g id="Group-14" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'injury')" transform="translate(1131.000000, 656.000000)">
-                                  <rect id="Rectangle-Copy-15" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'injury').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-14" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'injury')" transform="translate(1131.000000, 656.000000)">
+                                  <rect id="Rectangle-Copy-15" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'injury').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Injury" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="84.437125" y="32">Injury</tspan>
                                   </text>
                               </g>
-                              <g id="Group-5" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'neck')" transform="translate(13.000000, 400.000000)">
-                                  <rect id="Rectangle-Copy-6" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'neck').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-5" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'neck')" transform="translate(13.000000, 400.000000)">
+                                  <rect id="Rectangle-Copy-6" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'neck').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Neck" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="86.28375" y="32">Neck</tspan>
                                   </text>
                               </g>
-                              <g id="Group-35" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'hands')" transform="translate(1118.000000, 144.000000)">
-                                  <rect id="Rectangle-Copy-20" :fill="getAllSpecificComplaintQuestions().find(e => e.examination === 'hands').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <g id="Group-35" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'hands')" transform="translate(1118.000000, 144.000000)">
+                                  <rect id="Rectangle-Copy-20" :fill="showSpecificComplaintQuestions(currCategory, subCategory).find(e => e.examination === 'hands').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                                   <text id="Hands" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                       <tspan x="79.4479375" y="32">Hands</tspan>
                                   </text>
                               </g>
-                              <path d="M258.5,82.5 L419.956547,82.5" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'head')" id="Line" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M974.746094,82.5 L1104.95655,82.5" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'back')" id="Line-Copy" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M258,173 L419.956547,114.67763" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'eyes')" id="Line-2" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M258.5,251 L419.956547,142.5" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'ears')" id="Line-2-Copy" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M258.5,337 L428,164" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'cheek&mouth')" id="Line-2-Copy-6" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M258,420 L445,173" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'neck')" id="Line-2-Copy-2" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M258,511 L462,237" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'chest')" id="Line-2-Copy-3" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M258,595 L445,326" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'abdomen')" id="Line-2-Copy-4" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M258.5,674 L365.46875,674" v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'lowerleg&ankle')" id="Line-2-Copy-5" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
-                              <path d="M657,404.5 L1104.95655,163.5"  v-if="getAllSpecificComplaintQuestions().some(e => e.examination === 'hands')" id="Line-Copy-2" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258.5,82.5 L419.956547,82.5" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'head')" id="Line" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M974.746094,82.5 L1104.95655,82.5" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'back')" id="Line-Copy" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258,173 L419.956547,114.67763" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'eyes')" id="Line-2" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258.5,251 L419.956547,142.5" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'ears')" id="Line-2-Copy" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258.5,337 L428,164" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'cheek&mouth')" id="Line-2-Copy-6" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258,420 L445,173" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'neck')" id="Line-2-Copy-2" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258,511 L462,237" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'chest')" id="Line-2-Copy-3" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258,595 L445,326" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'abdomen')" id="Line-2-Copy-4" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M258.5,674 L365.46875,674" v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'lowerleg&ankle')" id="Line-2-Copy-5" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
+                              <path d="M657,404.5 L1104.95655,163.5"  v-if="showSpecificComplaintQuestions(currCategory, subCategory).some(e => e.examination === 'hands')" id="Line-Copy-2" stroke="#111111" stroke-width="2" stroke-linecap="square"/>
                           </g>
                       </g>
                   </svg>
                 </div>
 
                 <div class="container">
-                  <div class="row" v-for="(organ, index) in getAllSpecificComplaintQuestions()" :key="index">
+                  <div class="row" v-for="(organ, index) in showSpecificComplaintQuestions(currCategory, subCategory)" :key="index">
                     <div class="col-md-12 mt-4 mb-2 text-muted">
                       <small>{{ organ.name }}</small>
                       <hr class="mb-1 mt-1">
@@ -754,7 +712,7 @@
                     <div class="col-md-6 mb-3" v-for="(question, qIndex) in organ.questions" :key="qIndex">
                       <div v-if="question.type === 'text'">
                         <label for="exampleFormControlSelect1">{{ question.title }}</label><br>
-                        <input type="text" class="p-2 w-100" @keyup="handleSpecExamQuestionsText(organ, question, qIndex)" v-model="question.answer" placeholder="Describe in the subject area in further detail">
+                        <input type="text" class="p-2 w-100" placeholder="Describe in the subject area in further detail">
                       </div>
                       <div v-else>
                         <label for="exampleFormControlSelect1">{{ question.title }}</label><br>
@@ -765,7 +723,7 @@
                     </div>
                   </div>
 
-                  <div class="row" v-if="getAllSpecificComplaintQuestions().length === 0">
+                  <div class="row" v-if="showSpecificComplaintQuestions(currCategory, subCategory).length === 0">
                     <div class="col-md-12 my-4 small text-center">
                       There are no specific complaint questions.
                     </div>
@@ -777,7 +735,7 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                    <button @click="goToNext()" :disabled="!getAllSpecificComplaintQuestions().every(organ => organ.isComplete === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                    <button @click="goToNext()" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Allocations
                     </button>
                 </div>
@@ -826,8 +784,8 @@
                   Who would you like to allocate this complaint record to?
                 </div>
                 <div class="col-md-12">
-                  <button v-for="(md, index) in this.mds" :key="index" class="btn mb-2 mr-2 btn-light">
-                    {{ md.name }} ({{ md.status }})
+                  <button v-for="(md, index) in this.$store.state.udayDb.clusters['cluster001'].mds" :key="index" class="btn mb-2 mr-2 btn-light">
+                    {{ md.demographics.name }} ({{ md.status }})
                   </button>
                   <!-- <button class="btn mb-2 btn-light">
                     Add to General Queue
@@ -837,9 +795,9 @@
             </div>
             <div class="row">
               <div class="col-md-12">
-                  <nuxt-link to="/ha/profile" class="w-100">
+                  <nuxt-link :to="'/ha/profile/visit?id=' + this.$store.state.currEpisode.episodeID" class="w-100">
                     <button @click="addToQueue" type="button" data-dismiss="modal" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
-                      Record New Episode
+                      Record New Follow Up
                     </button>
                   </nuxt-link>
               </div>
@@ -860,79 +818,6 @@
 export default {
   layout: 'dashboard',
   methods: {
-    makeCategoryActiveMulti: function (categoryName, questionIndex, categoryIndex) {
-      // alert('Complaint name: ' + categoryName)
-      // alert('Complaint index: ' + categoryIndex)
-      let self = this
-
-      this.complaints[questionIndex].chiefComplaint = categoryName
-
-      this.complaints[questionIndex].categories[categoryIndex].isActive = true
-
-      this.complaints[questionIndex].categories.forEach((category, index) => {
-        if (categoryIndex === index) {
-          category.isActive = true
-
-          if (category.subcategories) {
-            this.complaints[questionIndex].hasSubcategories = true
-            this.complaints[questionIndex].subCategories = JSON.parse(JSON.stringify(category.subcategories))
-          } else {
-            this.complaints[questionIndex].hasSubcategories = false
-            this.complaints[questionIndex].subCategories = []
-            this.complaints[questionIndex].chiefSubComplaint = ''
-
-            // clone fixed questions
-            let categoryQuestions = JSON.parse(JSON.stringify(self.categories.find(x => x.name === categoryName).questions))
-            // console.log('Start questions')
-            // console.log(categoryQuestions)
-            // console.log('End questions')
-
-            console.log('Before allocate')
-            console.log(self.complaints[questionIndex].questions)
-            
-            // Allocate questions
-            this.complaints[questionIndex].questions = categoryQuestions
-
-            console.log('After allocate')
-            console.log(self.complaints[questionIndex].questions)
-            
-          }
-        } else {
-          category.isActive = false
-        }
-      })
-    },
-    makeSubCategoryActiveMulti: function (questionIndex, subCategoryIndex) {
-      let self = this
-
-      this.complaints[questionIndex].subCategories.forEach((subCategory, index) => {
-        if (subCategoryIndex === index) {
-          subCategory.isActive = true
-          this.complaints[questionIndex].chiefSubComplaint = subCategory.name
-          
-          // clone fixed questions (for subcategories)
-          console.log(self.categories.find(x => x.name === this.complaints[questionIndex].chiefComplaint).subCategories.find(y => y.name === subCategory.name).questions)
-          let subCategoryQuestions = JSON.parse(JSON.stringify(self.categories.find(x => x.name === this.complaints[questionIndex].chiefComplaint).subCategories.find(y => y.name === subCategory.name).questions))
-          self.complaints[questionIndex].questions = subCategoryQuestions
-        } else {
-          subCategory.isActive = false
-        }
-      })
-    },
-    makeNewComplaint: function () {
-      let categoriesClone = JSON.parse(JSON.stringify(this.categoriesShallow))
-
-      this.complaints.push(
-        {
-          chiefComplaint: '',
-          chiefSubComplaint: '',
-          hasSubcategories: false,
-          categories: categoriesClone,
-          subCategories: [],
-          questions: []
-        }
-      )
-    },
     showRefs: function () {
       console.log(this.$refs)
       // this.$refs
@@ -944,7 +829,6 @@ export default {
     },
     scrollToAddress: function (bodyPart) {
       let elTopPos
-
 
       switch (bodyPart) {
         case 'eyes':
@@ -1016,64 +900,33 @@ export default {
         }
       })
     },
-
-    handleAllocation: function (categoryName, categoryInd, subCategoryInd) {
-      const self = this
-      this.complaintItem = categoryName
-      this.showQuestions = true
-      // this.subCategory = categoryName
-      this.subCategoryInd = subCategoryInd
-
-      // console.log(categoryName)
-
-      this.categories[categoryInd].subCategories.forEach(function(subCategory, index){
-        // console.log(self.subCategory)
-        if (index === subCategoryInd) {
-          subCategory.isActive = true
-          self.questions = subCategory.questions
-          self.subCategory = subCategory.name
-        } else {
-          subCategory.isActive = false
-        }
-      })
-    },
-    handleQuestionsText: function (question, answer) {
-      if (answer !== '') {
-        question.isComplete = true
-      } else {
-        question.isComplete = false
-      }
-    },
-    handleSelectAnswer: function (questionIndex, indexQuestion, indexAnswer, questionMain) {
+    handleSelectAnswer: function (indexQuestion, indexAnswer) {
       let self = this
 
-      this.complaints[questionIndex].questions[indexQuestion].options.forEach((question, index) => {
+      this.questions[indexQuestion].options.forEach((question, index) => {
         if (indexAnswer === index) {
           question.isActive = true
-          questionMain.isComplete = true
 
           // toggle secondary input
-          if (self.complaints[questionIndex].questions[indexQuestion].showTextInput === false) {
-            self.complaints[questionIndex].questions[indexQuestion].showTextInput = true
+          if (self.questions[indexQuestion].showTextInput === false) {
+            self.questions[indexQuestion].showTextInput = true
           }
 
           if (question.name === "Other") {
-            // console.log('Click')
-            // console.log(self.questions[indexQuestion].showOther)
-            self.complaints[questionIndex].questions[indexQuestion].showOther = true
-            // console.log(self.questions[indexQuestion].showOther)
+            console.log('Click')
+            console.log(self.questions[indexQuestion].showOther)
+            self.questions[indexQuestion].showOther = true
+            console.log(self.questions[indexQuestion].showOther)
           } else {
-            self.complaints[questionIndex].questions[indexQuestion].showOther = false
+            self.questions[indexQuestion].showOther = false
           }
         } else {
           question.isActive = false
         }
       })
     },
-    handleVitalsQuestions: function (questionIndex, optionIndex, vitalQuestion) {
+    handleVitalsQuestions: function (questionIndex, optionIndex) {
       let self = this
-
-      vitalQuestion.isComplete = true
 
       self.newEpisodeComplete.vitals[questionIndex].options.forEach((vitalQuestionOption, index) => {
         if (index === optionIndex) {
@@ -1105,27 +958,8 @@ export default {
         organ.isComplete = true
       }
     },
-    handleSpecExamQuestionsText: function (organ, question, qIndex) {
-      if (question.answer !== '') {
-        question.hasAnswer = true
-      } else {
-        question.hasAnswer = false
-      }
-
-      let questionsAnswered = 0
-      organ.questions.forEach((question, index) => { 
-        if (question.hasAnswer === true) {
-          questionsAnswered += 1
-        }
-      })
-
-      if (questionsAnswered === organ.questions.length) {
-        organ.isComplete = true
-      }
-    },
     handleGenExamOptions: function (questionIndex, optionIndex) {
       let self = this
-
       this.generalExamsQuestions[questionIndex].options.forEach((option, index) => {
         if (index === optionIndex) {
           option.isActive = true
@@ -1156,8 +990,6 @@ export default {
       }
     },
     goToNext: function () {
-      this.scrollToTop()
-
       let tabs = this.tabs
       let ref = 0
 
@@ -1168,21 +1000,20 @@ export default {
         }
       }
 
+      this.scrollToTop()
+
       tabs[ref + 1].isActive = true
       tabs[ref + 1].isEnabled = true
     },
     addToQueue: function () {
-      alert('The patient has been allocated.')
+      alert('The patient follow has been recorded.')
 
       // normalize answers to new episode questions
-      // this.newEpisodeComplete.chiefComplaints.push([this.currCategory, this.subCategory])
-
-      // normalize answers to new episode questions
-      this.newEpisodeComplete.complaints.push(...this.complaints)
+      this.newEpisodeComplete.chiefComplaints.push([this.currCategory, this.subCategory])
 
       // normalize fixed questions
-      // let questions = this.questions
-      // this.newEpisodeComplete.chiefComplaintsFixedQuestions.push(...questions)
+      let questions = this.questions
+      this.newEpisodeComplete.chiefComplaintsFixedQuestions.push(...questions)
 
       // normalize general exams
       let generalExams = this.generalExamsQuestions
@@ -1190,20 +1021,19 @@ export default {
 
       // // normalize vitals
       // let vitals = this.vitals
-      console.log(this.newEpisodeComplete.vitals)
+      // console.log(this.newEpisodeComplete.vitals)
 
       // normalize specific exams
-      let specificExams = this.getAllSpecificComplaintQuestions()
-      this.newEpisodeComplete.specificExams.push(...specificExams)
-      
-      // console.log('xx')
-      console.log('list of completed questions')
-      console.log(this.newEpisodeComplete)
+      let specificExams = this.specificExamQuestions.filter(x => x.isComplete === true)
+      this.newEpisodeComplete.specificExams.push(...this.specificExamQuestions.filter(x => x.isComplete === true))
+      // console.log(this.specificExamQuestions.filter(x => x.isComplete === true))
 
-      this.$store.commit('updateStatus', 'allocated')
-      this.$store.commit('addPatientToQueue', this.$store.state.currPatient.id)
-      this.$store.commit('recordNewEpisode', this.newEpisodeComplete)
-      this.$store.commit('updateCurrPatient')
+      // this.$store.commit('updateStatus', 'allocated')
+      // this.$store.commit('addPatientToQueue', this.$store.state.currPatient.id)
+
+
+      this.$store.commit('recordNewFollowUp', [this.$store.state.currEpisode.episodeID, this.newEpisodeComplete])
+      // this.$store.commit('updateCurrPatient')
     },
     calculateBMI: function () {
       let patWeight = this.newEpisodeComplete.vitals.filter(question => question.name === 'weight')[0].value
@@ -1217,25 +1047,10 @@ export default {
       }
 
       console.log('patWeight: ' + patWeight)
+      // console.log(patWeight)
       console.log('patHeight: ' + patHeight)
       console.log('BMI: ' + BMI)
-    },
-    getAllSpecificComplaintQuestions() {
-      let self = this
-
-      let aggregate = []
-
-      this.complaints.forEach(complaint => {
-        let selectedOrgans = self.showSpecificComplaintQuestions(complaint.chiefComplaint, complaint.chiefSubComplaint)
-        
-        selectedOrgans.forEach(organ => {
-          if (!aggregate.includes(organ)) {
-            aggregate.push(organ)
-          }
-        })
-      })
-
-      return aggregate
+      // console.log('Console Testing')
     },
     showSpecificComplaintQuestions(currCategory, currSubCategory) {
       switch (currCategory) {
@@ -1313,7 +1128,7 @@ export default {
         case 'Injury':
           return this.specificExamQuestions.filter(organ => organ.examination === 'injury')
         case 'Boils':
-          return this.specificExamQuestions.filter(organ => organ.examination === 'lump&swelling')
+          return this.specificExamQuestions.filter(organ => organ.examination === 'lumps')
         case 'Ulcer':
           return this.specificExamQuestions.filter(organ => organ.examination === 'ulcers')
         case 'Palpitation':
@@ -1374,29 +1189,12 @@ export default {
       this.save(formData);
     }
   },
-  beforeRouteLeave (to, from , next) {
-    const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
-    
-    answer ? next() : next(false);
-  },
-  created() {
-    // init complaint categories
-    this.makeNewComplaint()
-  },
   mounted () {
     this.reset();
     this.$store.commit('updatePath', this.fullPath)
 
-
     let self = this
     
-    for (let category in this.categories) {
-      console.log(this.categories[category].name)
-      if (this.categories[category].subCategories) {
-        this.categories[category].subCategories.forEach(x => console.log(':: ' + x.name))
-      }
-    }
-
     setTimeout(function() {
       console.log('xx')
       console.log(self.$refs['eyes'])
@@ -1419,7 +1217,6 @@ export default {
   },
   data() {
     return {
-      complaints: [],
       patHeight: 0,
       patWeight: 0,
       patBMI: 0,
@@ -1431,29 +1228,14 @@ export default {
       hasSubCategory: false,
       showQuestions: false,
       complaintItem: '',
-      mds: [
-        {
-          id: "md001", 
-          status: "offline", 
-          name: "Dr. Ritwika Ghosh",
-          allocatedPatients: [], 
-          demographics: {}
-        },
-        {
-          id: "md002", 
-          status: "offline", 
-          name: "Dr. Abhigyan Bose",
-          allocatedPatients: [], 
-          demographics: {}
-        }
-      ],
       newEpisodeComplete: {
-        complaints: [],
+        chiefComplaints: [],
+        chiefComplaintsFixedQuestions: [],
+        preCheckQuestions: [],
         vitals: [
           {
             title: 'Patient Appearance',
             name: 'appearance',
-            isComplete: false,
             fullLength: true,
             options: [
               {
@@ -1485,7 +1267,6 @@ export default {
           {
             title: 'Patient Gait',
             name: 'gait',
-            isComplete: false,
             fullLength: true,
             options: [
               {
@@ -1508,52 +1289,50 @@ export default {
           },
           {
             title: 'Blood Pressure',
-            isComplete: false,
             name: 'bp',
             caption: 'mmHg',
-            valueFirst: '',
-            valueSecond: ''
+            valueFirst: '0',
+            valueSecond: '0'
           },
           {
             title: 'Sp02',
-            isComplete: false,
             name: 'sp02',
             caption: '%',
-            value: ''
+            value: '0'
           },
           {
             title: 'Patient Temperature',
-            isComplete: false,
             name: 'temperature',
-            caption: '°F',
-            value: ''
+            caption: 'F°',
+            value: '0'
           },
           {
             title: 'Patient Height',
-            isComplete: false,
             name: 'height',
             caption: 'cm',
-            value: ''
+            value: '0'
           },
           {
             title: 'Patient Weight',
-            isComplete: false,
             name: 'weight',
             caption: 'kg',
-            value: ''
+            value: '0'
           },
           {
             title: 'Patient BMI',
-            isComplete: true,
             name: 'bmi',
             caption: 'kg/m^2',
-            value: ''
+            value: '0'
           },
         ],
         generalExams: [],
-        specificExams: [],
+        specificExams: [
+
+        ],
         allocation: {},
         meta: {
+          visitID: '',
+          visitType: 'followup',
           createDate: '',
           createdBy: '',
           lastUpdated: '',
@@ -1568,172 +1347,6 @@ export default {
       currentStatus: null,
       uploadFieldName: 'photos',
       // end file upload
-      categoriesShallow:[
-        {
-          name: 'Acidity/Indigestion',
-          isActive: false
-        },
-        {
-          name: 'Bleeding with Stool',
-          isActive: false
-        },
-        {
-          name: 'Boils',
-          isActive: false
-        },
-        {
-          name: 'Difficulty Breathing',
-          isActive: false
-        },
-        {
-          name: 'Diarrhoea',
-          isActive: false
-        },
-        {
-          name: 'Dizziness',
-          isActive: false
-        },
-        {
-          name: 'Fever',
-          isActive: false
-        },
-        {
-          name: 'Pain',
-          isActive: false,
-          subcategories: [
-            {
-              name: 'Headache',
-              isActive: false
-            },
-            {
-              name: 'Ear Pain',
-              isActive: false
-            },
-            {
-              name: 'Teeth Pain',
-              isActive: false
-            },
-            {
-              name: 'Throat Pain',
-              isActive: false
-            },
-            {
-              name: 'Back Pain',
-              isActive: false
-            },
-            {
-              name: 'Joint Pain',
-              isActive: false
-            },
-            {
-              name: 'Chest Pain',
-              isActive: false
-            },
-            {
-              name: 'Abdominal Pain',
-              isActive: false
-            },
-            {
-              name: 'Breat Pain',
-              isActive: false
-            },
-            {
-              name: 'Scrotal Pain',
-              isActive: false
-            },
-            {
-              name: 'Perianal Pain',
-              isActive: false
-            }
-          ]
-        },
-        {
-          name: 'Swelling/Tumor',
-          isActive: false,
-          subcategories: [
-            {
-              name: 'Throat Swelling',
-              isActive: false
-            },
-            {
-              name: 'Abdomen Swelling',
-              isActive: false
-            },
-            {
-              name: 'Swelling (Other)',
-              isActive: false
-            }
-          ]
-        },
-        {
-          name: 'Vomiting',
-          isActive: false
-        },
-        {
-          name: 'Skin Rash',
-          isActive: false
-        },
-        {
-          name: 'Yellow Urine',
-          isActive: false
-        },
-        {
-          name: 'Gynae Problems',
-          isActive: false,
-          subcategories: [
-            {
-              name: 'Period Problem',
-              isActive: false
-            },
-            {
-              name: 'Ante-natal Problem',
-              isActive: false
-            },
-            {
-              name: 'Infertility Problem',
-              isActive: false
-            },
-            {
-              name: 'Private Parts Problem',
-              isActive: false
-            },
-            {
-              name: 'Intercourse Problem',
-              isActive: false
-            }
-          ]
-        },
-        {
-          name: 'Injury',
-          isActive: false
-        },
-        {
-          name: 'Palpitation',
-          isActive: false
-        },
-        {
-          name: 'Fainting',
-          isActive: false
-        },
-        {
-          name: 'Ulcer',
-          isActive: false
-        },
-        {
-          name: 'Weakness',
-          isActive: false,
-          subcategories: [
-            {
-              name: 'General Weakness',
-              isActive: false
-            },
-            {
-              name: 'Particular Weakness',
-              isActive: false
-            }
-          ]
-        },
-      ],
       specificExamQuestions: [
         {
           examination: 'eyes',
@@ -2687,9 +2300,8 @@ export default {
             {
               title: 'How many lumps/swellings',
               hasAnswer: false,
-              type: 'text',
+              type: 'number',
               answer: '',
-              placeholder: '0',
               caption: 'count.'
             },
             {
@@ -3078,7 +2690,7 @@ export default {
           isChecked: false,
         },
         {
-          question: "If you are examining a female patient, is there a female chaperon in the room?",
+          question: "If you are examning a female patient, is there a female chaperon in the room?",
           isChecked: false,
         },
         {
@@ -3212,20 +2824,16 @@ export default {
         {
           name: 'Acidity/Indigestion',
           isActive: false,
-          isComplete: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              isComplete: false,
               answer: '',
-              placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "Is there any abdominal pain?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3240,7 +2848,6 @@ export default {
             {
               question: "Is there any vomiting?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3255,7 +2862,6 @@ export default {
             {
               question: "Is there any nausea?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3270,7 +2876,6 @@ export default {
             {
               question: "Is there a loss of appetite?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -3285,7 +2890,6 @@ export default {
             {
               question: "Is there any constipation?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3300,7 +2904,6 @@ export default {
             {
               question: "Is there any diarrhea?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3315,7 +2918,6 @@ export default {
             {
               question: "Is there H/O jaundice?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3330,7 +2932,6 @@ export default {
             {
               question: "Is there H/O alcohol ingestion?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3345,7 +2946,6 @@ export default {
             {
               question: "Is there H/O smoking?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3360,7 +2960,6 @@ export default {
             {
               question: "Has there been a change weight?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3377,13 +2976,11 @@ export default {
         {
           name: 'Bleeding with Stool',
           isActive: false,
-          isComplete: false,
           showOther: false,
           questions: [
             {
               question: "What is the color of the stool?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Bright Red',
@@ -3402,7 +2999,6 @@ export default {
             {
               question: "What is the amount of stool?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'A lot',
@@ -3417,7 +3013,6 @@ export default {
             {
               question: "Is there pain during the passing of stool?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3432,7 +3027,6 @@ export default {
             {
               question: "Has there been a change in bowel habit?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3447,7 +3041,6 @@ export default {
             {
               question: "Is there any constipation?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3462,7 +3055,6 @@ export default {
             {
               question: "Is there any diarrhoea?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3478,28 +3070,23 @@ export default {
         },
         {
           name: 'Boils',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long have the boils been there?",
               type: 'number',
-              isComplete: false,
               answer: '',
-              placeholder: '0',
               caption: 'days.'
             },
             {
               question: "Where is are the boils located?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body'
             },
             {
               question: "How did the boils start?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3519,7 +3106,6 @@ export default {
             {
               question: "Is there any pain or discomfort?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3547,7 +3133,6 @@ export default {
             {
               question: "Describe the color of the skin over the boils.",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Red',
@@ -3563,21 +3148,18 @@ export default {
         },
         {
           name: 'Difficulty Breathing',
-          isComplete: false,
           isActive: false,
           questions: [
             {
-              question: "How long has this been going on?",
-              type: 'number',
-              isComplete: false,
-              answer: '',
-              caption: 'days long.'
+                question: "How long has this been going on?",
+                type: 'number',
+                answer: '',
+                caption: 'days long.'
             },
             {
               question: "How has it progressed?",
               type: 'button',
               showOther: false,
-              isComplete: false,
               options: [
                 {
                   name: 'Same as Before',
@@ -3604,7 +3186,6 @@ export default {
             {
               question: "What brings it on?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3628,7 +3209,6 @@ export default {
             {
               question: "What is the difficulty relieved?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3652,7 +3232,6 @@ export default {
             {
               question: "Does it wake you up at night?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3667,7 +3246,6 @@ export default {
             {
               question: "Is there a cough?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3682,7 +3260,6 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3707,20 +3284,17 @@ export default {
         },
         {
           name: 'Diarrhoea',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              isComplete: false,
               answer: '',
               caption: 'days long.'
             },
             {
               question: "What is the stool type?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3744,7 +3318,6 @@ export default {
             {
               question: "What is the nature of this complaint?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Happens Everyday',
@@ -3759,14 +3332,12 @@ export default {
             {
               question: "What is the frequency?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the # of times per day',
             }, 
             {
               question: "Is there blood in the stool?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3781,7 +3352,6 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3809,7 +3379,6 @@ export default {
             {
               question: "Is there any relation to food?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3824,7 +3393,6 @@ export default {
             {
               question: "Are there any current medications?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3840,21 +3408,17 @@ export default {
         },
         {
           name: 'Dizziness',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              isComplete: false,
               answer: '',
-              placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "What is the nature of the dizziness?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Happens Everyday',
@@ -3869,7 +3433,6 @@ export default {
             {
               question: "When does the dizziness occur?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3897,21 +3460,18 @@ export default {
             {
               question: "What causes the dizziness?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any possible causes',
             },
             {
               question: "What provides relief?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any possible causes',
             },
             {
               question: "Is there a relation with positioning?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -3939,7 +3499,6 @@ export default {
             {
               question: "Is there H/O fainting?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3954,7 +3513,6 @@ export default {
             {
               question: "Is there H/O fall?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -3969,7 +3527,6 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -4001,7 +3558,6 @@ export default {
             {
               question: "Has there been a change in hearing?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -4016,7 +3572,6 @@ export default {
             {
               question: "Has there been a change in vision?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -4032,21 +3587,17 @@ export default {
         },
         {
           name: 'Fever',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been going on?",
               type: 'number',
-              isComplete: false,
               answer: '', 
-              placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "How has it progressed?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -4074,7 +3625,6 @@ export default {
             {
               question: "What is the nature of the fever?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -4098,7 +3648,6 @@ export default {
             {
               question: "When does the fever come on?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -4126,7 +3675,6 @@ export default {
             {
               question: "What is the temperature of the patient?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -4154,7 +3702,6 @@ export default {
             {
               question: "Is there shivering?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -4169,7 +3716,6 @@ export default {
             {
               question: "Is there a cough?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -4184,7 +3730,6 @@ export default {
             {
               question: "Is there a cough with blood?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -4199,7 +3744,6 @@ export default {
             {
               question: "Is there pain?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -4214,7 +3758,6 @@ export default {
             {
               question: "Is there general weakness?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -4229,7 +3772,6 @@ export default {
             {
               question: "Is there loss of weight?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -4244,7 +3786,6 @@ export default {
             {
               question: "Is there burning, or more frequency in urine?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -4264,7 +3805,6 @@ export default {
             {
               question: "Are there any reliefs?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -4292,21 +3832,17 @@ export default {
             {
               name: 'Headache',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['eye', 'head', 'hand'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Front (R)',
@@ -4337,7 +3873,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4373,7 +3908,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4393,7 +3927,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4416,7 +3949,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4435,7 +3967,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4463,7 +3994,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4479,7 +4009,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4504,22 +4033,18 @@ export default {
             },
             {
               name: 'Ear Pain',
-              isComplete: false,
               isActive: false,
               organsToExamine: ['ear', 'cheek&mouth'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Right',
@@ -4538,7 +4063,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4554,7 +4078,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4574,7 +4097,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4597,7 +4119,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4616,7 +4137,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4632,7 +4152,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4648,7 +4167,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4682,21 +4200,17 @@ export default {
             {
               name: 'Teeth Pain',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['cheek&mouth'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Upper Right',
@@ -4719,7 +4233,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4735,7 +4248,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4755,7 +4267,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4778,7 +4289,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4797,7 +4307,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4813,7 +4322,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4829,7 +4337,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4863,21 +4370,17 @@ export default {
             {
               name: 'Throat Pain',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['neck', 'cheek&mouth', 'eyes'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Back of Mouth',
@@ -4892,7 +4395,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4908,7 +4410,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4928,7 +4429,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -4951,7 +4451,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -4970,7 +4469,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -4986,7 +4484,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5002,7 +4499,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5036,21 +4532,17 @@ export default {
             {
               name: 'Back Pain',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['back', 'eyes&mouth', 'lowerleg&ankle'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Upper Right',
@@ -5085,7 +4577,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5125,7 +4616,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5145,7 +4635,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -5168,7 +4657,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -5187,7 +4675,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5215,7 +4702,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5235,7 +4721,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5264,22 +4749,18 @@ export default {
             },
             {
               name: 'Joint Pain',
-              isComplete: false,
               isActive: false,
               organsToExamine: ['joints'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5467,7 +4948,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5655,7 +5135,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Sudden',
@@ -5674,7 +5153,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -5697,7 +5175,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -5716,7 +5193,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5740,7 +5216,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5764,7 +5239,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5793,22 +5267,18 @@ export default {
             },
             {
               name: 'Chest Pain',
-              isComplete: false,
               isActive: false,
               organsToExamine: ['eyes', 'lowerleg&ankle', 'hands', 'chest'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Upper (R)',
@@ -5843,7 +5313,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5899,7 +5368,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5919,7 +5387,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -5942,7 +5409,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Dull',
@@ -5965,7 +5431,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -5993,7 +5458,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6013,7 +5477,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6047,21 +5510,17 @@ export default {
             {
               name: 'Abdominal Pain',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['eye', 'lowerleg&ankle', 'hands', 'abdomen'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Upper (R)',
@@ -6108,7 +5567,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Upper (R)',
@@ -6159,7 +5617,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6179,7 +5636,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -6202,7 +5658,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -6221,7 +5676,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6249,7 +5703,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6273,7 +5726,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6307,21 +5759,17 @@ export default {
             {
               name: 'Breast Pain',
               isActive: false,
-              isComplete: false,
               organsToExamine: [],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'RUO (R)',
@@ -6364,7 +5812,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'RUO (R)',
@@ -6407,7 +5854,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6427,7 +5873,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -6450,7 +5895,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -6469,7 +5913,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6493,7 +5936,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6517,7 +5959,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6543,20 +5984,17 @@ export default {
             {
               name: 'Scrotal Pain',
               isActive: false,
-              isComplete: false,
               organsToExamine: [],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Left',
@@ -6575,7 +6013,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6595,7 +6032,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6615,7 +6051,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -6638,7 +6073,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -6657,7 +6091,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6677,7 +6110,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6697,7 +6129,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6723,21 +6154,17 @@ export default {
             {
               name: 'Perianal Pain',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['neck', 'cheek&mouth', 'eyes'],
               questions: [
                 {
                   question: "How long has this been going on?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "Where did it start?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6757,7 +6184,6 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6781,7 +6207,6 @@ export default {
                 {
                   question: "How did the pain start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Sudden',
@@ -6800,7 +6225,6 @@ export default {
                 {
                   question: "What is the intensity of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Mild',
@@ -6823,7 +6247,6 @@ export default {
                 {
                   question: "What is the nature of the pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Continuous',
@@ -6842,7 +6265,6 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6862,7 +6284,6 @@ export default {
                 {
                   question: "What is the pain relieved by?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6882,7 +6303,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -6914,18 +6334,15 @@ export default {
         {
           name: 'Swelling/Tumor',
           isActive: false,
-          isComplete: false,
           organsToExamine: ['eye', 'hands', 'neck&throat', 'chest', 'lowerleg&ankle'],
           subCategories: [
             {
               name: 'Throat Swelling',
-              isComplete: false,
               isActive: false,
               questions: [
                 {
                   question: "Where is it swelling?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Back of Mouth',
@@ -6940,15 +6357,12 @@ export default {
                 {
                   question: "How long has it been there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'day(s)'
                 },
                 {
                   question: "How did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Gradually',
@@ -6963,7 +6377,6 @@ export default {
                 {
                   question: "Is it painful?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -6978,7 +6391,6 @@ export default {
                 {
                   question: "Has it changed in size?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'No Change',
@@ -6997,7 +6409,6 @@ export default {
                 {
                   question: "Has there been a change in skin color?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'No Change',
@@ -7012,7 +6423,6 @@ export default {
                 {
                   question: "Are there any other symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -7036,7 +6446,6 @@ export default {
                 {
                   question: "Is there any history of injury?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7051,7 +6460,6 @@ export default {
                 {
                   question: "Is there excessive sweating?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7066,7 +6474,6 @@ export default {
                 {
                   question: "Is there constipation?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7081,7 +6488,6 @@ export default {
                 {
                   question: "Are there any period problems?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7096,7 +6502,6 @@ export default {
                 {
                   question: "Has there been an excess in appetite?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7111,7 +6516,6 @@ export default {
                 {
                   question: "Is there a general weakness?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7128,13 +6532,11 @@ export default {
             {
               name: 'Abdomen Swelling',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['eye', 'neck', 'adbomen', 'cheek&mouth', 'lump&swelling', 'lowerleg&ankle'],
               questions: [
                 {
                   question: "Where is the swelling?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7149,23 +6551,18 @@ export default {
                 {
                   question: "How many tumors are there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'tumor(s)'
                 },
                 {
                   question: "How long has it been there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days(s)'
                 },
                 {
                   question: "How did it start?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7180,7 +6577,6 @@ export default {
                 {
                   question: "Is it painful?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7195,7 +6591,6 @@ export default {
                 {
                   question: "Has it changed in size?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7210,7 +6605,6 @@ export default {
                 {
                   question: "Are there any other symptoms?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7225,7 +6619,6 @@ export default {
                 {
                   question: "Is there any history of injury?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7240,7 +6633,6 @@ export default {
                 {
                   question: "Is it general abdominal pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7255,7 +6647,6 @@ export default {
                 {
                   question: "Has there been a change in weight?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7270,15 +6661,12 @@ export default {
                 {
                   question: "What is the bowel habit?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'time(s) per day'
                 },
                 {
                   question: "Is there yellow colour in urine?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7293,7 +6681,6 @@ export default {
                 {
                   question: "Has there been any vomiting?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7308,7 +6695,6 @@ export default {
                 {
                   question: "Has there been a change in appetite?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7323,7 +6709,6 @@ export default {
                 {
                   question: "Are there any flucuations in swelling size?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7340,83 +6725,70 @@ export default {
             {
               name: 'Swelling (Other)',
               isActive: false,
-              isComplete: false,
               organsToExamine: ['eye', 'hands', 'neck&throat', 'chest', 'lowerleg&ankle'],
               questions: [
                 {
                   question: "Where is the swelling?",
                   type: 'text',
-                  isComplete: false,
                   answer: '',
                   placeholder: 'Describe the location of the swelling'
                 },
                 {
                   question: "How many swellings are there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'swelling(s)'
                 },
                 {
                   question: "How long has it been there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days(s)'
                 },
                 {
                   question: "How did it start?",
-                  type: 'text',
-                  isComplete: false,
+                  type: 'text'
                 }, 
                 {
                   question: "Is it painful?",
-                  type: 'text',
-                  isComplete: false,
+                  type: 'text'
                 },
                 {
                   question: "Has it changed in size?",
-                  type: 'text',
-                  isComplete: false,
+                  type: 'text'
                 },
                 {
                   question: "Has there been a change in skin color?",
-                  type: 'text',
-                  isComplete: false,
+                  type: 'text'
                 },
                 {
                   question: "Are there any other symptoms?",
-                  type: 'text',
-                  isComplete: false,
+                  type: 'text'
                 },
                 {
                   question: "Is there any history of injury?",
-                  type: 'text',
-                  isComplete: false,
+                  type: 'text'
                 },
               ]
             },
           ]
         },
+        
+
+
         {
           name: 'Vomiting',
           isActive: false,
-          isComplete: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              isComplete: false,
               answer: '',
-                  placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "What is the nature of the vomiting?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Happens Everyday',
@@ -7431,14 +6803,12 @@ export default {
             {
               question: "What is the frequency?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the # of days between incidents',
             },
             {
               question: "Has appetitie changed?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Normal',
@@ -7457,21 +6827,18 @@ export default {
             {
               question: "What causes the vomiting?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             },
             {
               question: "Is there any relief?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             },
             {
               question: "Is there blood?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7486,7 +6853,6 @@ export default {
             {
               question: "Is there nausea?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7501,7 +6867,6 @@ export default {
             {
               question: "Any associated symptoms?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -7536,29 +6901,26 @@ export default {
             },
           ]
         },
+
         {
           name: 'Skin Rash',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "Where are the rash(es) located?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body',
             },
             {
               question: "How big are the rash(es)?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the size in cm x cm',
             },
             {
               question: "How many rashes are there?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Single',
@@ -7577,7 +6939,6 @@ export default {
             {
               question: "Provide a description of the rash surface.",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Smooth',
@@ -7592,7 +6953,6 @@ export default {
             {
               question: "Provide a description of the rash color.",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             },
@@ -7600,21 +6960,17 @@ export default {
         },
         {
           name: 'Yellow Urine',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has this been happening?",
               type: 'number',
-              isComplete: false,
               answer: '',
-                  placeholder: '0',
               caption: 'days long.'
             },
             {
               question: "Is there any abdominal pain?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7629,7 +6985,6 @@ export default {
             {
               question: "Is there any fever?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7644,7 +6999,6 @@ export default {
             {
               question: "What is the color of stool?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Bright Red',
@@ -7663,7 +7017,6 @@ export default {
             {
               question: "Is there any bleeding with urine?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7678,7 +7031,6 @@ export default {
             {
               question: "Is there a general weakness?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -7692,20 +7044,19 @@ export default {
             },
           ]
         },
+
+
         {
           name: 'Gynae Problems',
-          isComplete: false,
           isActive: false,
           subCategories: [
             {
               name: 'Period Problem',
               isActive: false,
-              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7720,23 +7071,18 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'days ago.'
+                  caption: 'days ago'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days.',
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
-                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -7756,7 +7102,6 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -7779,39 +7124,30 @@ export default {
                 {
                   question: "How many children are there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'children'
+                  caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'pregnancies'
+                  caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7826,7 +7162,6 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Not Started Yet',
@@ -7841,7 +7176,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -7857,7 +7191,6 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7873,13 +7206,11 @@ export default {
             },
             {
               name: 'Ante-natal Problem',
-              isComplete: false,
               isActive: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7894,23 +7225,18 @@ export default {
                 ,{
                   question: "When was the last LMP?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days.'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
-                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -7929,7 +7255,6 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -7952,39 +7277,30 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'children'
+                  caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'pregnancies'
+                  caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -7999,15 +7315,12 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -8023,7 +7336,6 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8040,12 +7352,10 @@ export default {
             {
               name: 'Infertility Problem',
               isActive: false,
-              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8060,23 +7370,18 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'days ago.'
+                  caption: 'days ago'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number', 
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
-                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -8096,7 +7401,6 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -8119,39 +7423,30 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8166,15 +7461,12 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -8190,7 +7482,6 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8207,12 +7498,10 @@ export default {
             {
               name: 'Private Parts Problem',
               isActive: false,
-              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8227,23 +7516,18 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'days ago.'
+                  caption: 'days ago'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
-                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -8263,7 +7547,6 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -8286,39 +7569,30 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8333,15 +7607,12 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -8357,7 +7628,6 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8374,12 +7644,10 @@ export default {
             {
               name: 'Intercourse Problem',
               isActive: false,
-              isComplete: false,
               questions: [
                 {
                   question: "Is the patient married?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8394,23 +7662,18 @@ export default {
                 {
                   question: "When was the last LMP?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
-                  caption: 'days ago.'
+                  caption: 'days ago'
                 },
                 {
                   question: "What is the duration of the patient's period?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days long.'
                 },
                 {
                   question: "What is the interval between periods?",
                   type: 'button',
-                  isComplete: false,
                   showTextInput: false,
                   options: [
                     {
@@ -8430,7 +7693,6 @@ export default {
                 {
                   question: "What is the flow?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -8453,39 +7715,30 @@ export default {
                 {
                   question: "How many of children are there?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'children.'
                 },
                 {
                   question: "How many pregnancies have there been?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'pregnancies.'
                 },
                 {
                   question: "What age was the patient at first childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "How old was the patient at the last childbirth?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Is contraception practiced?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8500,15 +7753,12 @@ export default {
                 {
                   question: "What was the age of onset?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'years old.'
                 },
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   showOther: false,
                   options: [
                     {
@@ -8524,7 +7774,6 @@ export default {
                 {
                   question: "Is there any pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -8543,19 +7792,16 @@ export default {
         {
           name: 'Injury',
           isActive: false,
-          isComplete: false,
           questions: [
             {
               question: "Where is the injury located?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body'
             },
             {
               question: "How was the injury sustained?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Fall (at home)',
@@ -8598,15 +7844,12 @@ export default {
             {
               question: "When was the injury sustained?",
               type: 'number',
-              isComplete: false,
               answer: '',
-              placeholder: '0',
-              caption: 'days ago.',
+              caption: 'days ago',
             },
             {
               question: "Describe other problems and issues resulting from the injury.",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Can\'t Walk',
@@ -8625,7 +7868,6 @@ export default {
             {
               question: "Is there any bleeding?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8639,23 +7881,21 @@ export default {
             }
           ]
         },
+
+
         {
           name: 'Palpitation',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long do the palpitations last?",
               type: 'number',
-              isComplete: false,
               answer: '',
-              placeholder: '0',
               caption: 'days.',
             },
             {
               question: "What is the type of palpitation?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Intermittent',
@@ -8670,7 +7910,6 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -8686,7 +7925,6 @@ export default {
             {
               question: "Is there Fainting?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8701,7 +7939,6 @@ export default {
             {
               question: "Was there a Fall?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8716,7 +7953,6 @@ export default {
             {
               question: "Is there Dizziness?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8731,7 +7967,6 @@ export default {
             {
               question: "What brings the palpitations on?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8746,7 +7981,6 @@ export default {
             {
               question: "How are the palpitation relieved?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information',
             }
@@ -8754,21 +7988,17 @@ export default {
         },
         {
           name: 'Fainting',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How many episodes have there been?",
               type: 'number',
-              isComplete: false,
               answer: '',
-              placeholder: '0',
               caption: 'episodes'
             },
             {
               question: "What is the interval between episodes?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: '1',
@@ -8795,7 +8025,6 @@ export default {
             {
               question: "Is consciousness loss during fainting?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8810,7 +8039,6 @@ export default {
             {
               question: "Are there any associated fits?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8825,7 +8053,6 @@ export default {
             {
               question: "Is there dizziness?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8840,7 +8067,6 @@ export default {
             {
               question: "Was there a fall?",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Yes',
@@ -8855,14 +8081,12 @@ export default {
             {
               question: "What brings on the fainting?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information'
             },
             {
               question: "How is the fainting relieved?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe any relevant information'
             },
@@ -8870,27 +8094,23 @@ export default {
         },
         {
           name: 'Ulcer',
-          isComplete: false,
           isActive: false,
           questions: [
             {
               question: "How long has the ulcer been there?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the # of days',
             },
             {
               question: "Where is the ulcer located?",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Describe the location on body',
             },
             {
               question: "How did the ulcer start?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -8910,7 +8130,6 @@ export default {
             {
               question: "Is there any pain or discomfort?",
               type: 'button',
-              isComplete: false,
               showOther: false,
               options: [
                 {
@@ -8938,7 +8157,6 @@ export default {
             {
               question: "Describe the surface of the ulcer.",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Clean',
@@ -8969,7 +8187,6 @@ export default {
             {
               question: "Describe the edges of the ulcer.",
               type: 'button',
-              isComplete: false,
               options: [
                 {
                   name: 'Raised',
@@ -8984,7 +8201,6 @@ export default {
             {
               question: "What is the size of the ulcer??",
               type: 'text',
-              isComplete: false,
               answer: '',
               placeholder: 'Small, medium, large'
             },
@@ -8992,26 +8208,21 @@ export default {
         },
         {
           name:  'Weakness',
-          isComplete: false,
           isActive: false,
           subCategories: [
             {
               name: 'General Weakness',
               isActive: false,
-              isComplete: false,
               questions: [
                 {
                   question: "What has been the duration of the weakness?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days.',
                 },
                 {
                   question: "Is there a loss of appetite?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -9026,7 +8237,6 @@ export default {
                 {
                   question: "Has there been a change in weight?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -9041,7 +8251,6 @@ export default {
                 {
                   question: "Is there any abdominal pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -9056,7 +8265,6 @@ export default {
                 {
                   question: "Is there any chest pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -9071,7 +8279,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -9088,20 +8295,16 @@ export default {
             {
               name: 'Particular Weakness',
               isActive: false,
-              isComplete: false,
               questions: [
                 {
                   question: "What has been the duration of the weakness?",
                   type: 'number',
-                  isComplete: false,
                   answer: '',
-                  placeholder: '0',
                   caption: 'days.',
                 },
                 {
                   question: "Is there a loss appetite?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Normal',
@@ -9116,7 +8319,6 @@ export default {
                 {
                   question: "Has there been a change in weight?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'No Change',
@@ -9135,7 +8337,6 @@ export default {
                 {
                   question: "Is there any abdominal pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -9150,7 +8351,6 @@ export default {
                 {
                   question: "Is there any chest pain?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Yes',
@@ -9165,7 +8365,6 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
-                  isComplete: false,
                   options: [
                     {
                       name: 'Fever',
@@ -9196,12 +8395,16 @@ export default {
           url: '/ha'
         },
         {
+          title: this.$store.state.currEpisode.title,
+          url: '/ha/profile/visit?id=' + this.$store.state.currEpisode.episodeID,
+        },
+        {
           title: 'Patient\'s Profile',
           url: '/ha/profile'
         },
         {
-          title: 'New Episode',
-          url: '/ha/new-episode'
+          title: 'New Follow Up',
+          url: '/ha/new-followup'
         },
       ],
       list: [],

@@ -58,7 +58,7 @@ export const mutations = udayMutations;
 
 export const actions = {
   nuxtServerInit(store) {
-    console.log('INIT STORE')
+    // console.log('INIT STORE')
 
     // if (localStorage.getItem('vuex')) {
     //   console.log('LOCAL STORAGE EXISTS')

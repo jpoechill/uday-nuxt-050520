@@ -51,8 +51,8 @@
                 </div>
                 <div class="col-md-6">
                   <label for="">Age</label><br>
-                  <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age">
-                  <select class="w-100 custom-select mb-3" v-model="patientData.ageType">
+                  <input type="number" min="0" class="w-100 p-2 mb-3" v-model="patientData.age" placeholder="Age" @keyup="(patientData.age && patientData.ageType) ? formErrs.ageErr = false : formErrs.ageErr = true">
+                  <select class="w-100 custom-select mb-3" v-model="patientData.ageType" @change="(patientData.age && patientData.ageType) ? formErrs.ageErr = false : formErrs.ageErr = true">
                     <option disabled selected value="">Select Age Type</option>
                     <option value="years">Years</option>
                     <option value="months">Months</option>
@@ -103,9 +103,9 @@
                   </transition>
 
                   <label for="">Husband/Wife/Son/Daughter of</label>
-                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.hswd" placeholder="Family Members's Name">
+                  <input type="text" class="w-100 p-2 mb-3" v-model="patientData.hswd" @keyup="patientData.hswd !== '' ? formErrs.hswdErr = false : formErrs.hswdErr = true" placeholder="Family Members's Name">
                   <transition name="u-fade" mode="out-in" appear>
-                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.hswdErr">
                       Please provide a valid relative name.
                     </div>
                   </transition>
@@ -119,31 +119,31 @@
                 <div class="col-md-6">
 
                   <label for="">Address</label>
-                  <input type="text" class="w-100 p-2 mb-2" v-model="patientData.address" placeholder="Address 1">
+                  <input type="text" class="w-100 p-2 mb-2" v-model="patientData.address" @keyup="patientData.address !== '' ? formErrs.addressErr = false : formErrs.addressErr = true" placeholder="Address 1">
                   <transition name="u-fade" mode="out-in" appear>
-                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.addressErr">
                       Please provide a valid address.
                     </div>
                   </transition>
 
-                  <label class="mt-2">District</label>
-                  <select class="custom-select mb-2" v-model="districts.selected">
-                    <option selected disabled value="district">Select District</option>
-                    <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
+                  <label class="mt-3">State</label>
+                  <select class="custom-select mb-2" v-model="states.selected" @change="states.selected !=='' ? formErrs.stateErr = false : formErrs.stateErr = true">
+                    <option selected disabled value="">Select State</option>
+                    <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
                   </select>
                   <transition name="u-fade" mode="out-in" appear>
-                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
-                      Please provide a valid district.
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.stateErr">
+                      Please provide a valid state.
                     </div>
                   </transition>
-
+                  
                   <label class="mt-2">Police Station</label>
-                  <select class="custom-select mb-2" v-model="policeStations.selected">
-                    <option selected disabled value="policestation">Select Police Station</option>
+                  <select class="custom-select mb-2" v-model="policeStations.selected" @change="policeStations.selected !=='' ? formErrs.policestationErr = false : formErrs.policestationErr = true">
+                    <option selected disabled value="">Select Police Station</option>
                     <option v-for="(policeStation, index) in policeStations.options" :key="index" :value="{ name: policeStation.name, id: policeStation.objectid}">{{ policeStation.name }}</option>
                   </select>
                   <transition name="u-fade" mode="out-in" appear>
-                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.nameErr">
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.policestationErr">
                       Please provide a valid police station.
                     </div>
                   </transition>
@@ -153,14 +153,14 @@
                   <label for="">Address 2</label>
                   <input type="text" class="w-100 p-2 mb-3" v-model="patientData.address2" placeholder="Address 2">
                   
-                  <label for="">State</label>
-                  <select class="custom-select mb-4" v-model="states.selected">
-                    <option selected disabled value="">Select State</option>
-                    <option v-for="(state, index) in states.options" :key="index" :value="{ name: state.name, id: state.objectid}">{{ state.name }}</option>
+                  <label class="mt-2">District</label>
+                  <select class="custom-select mb-4" v-model="districts.selected" @change="districts.selected !=='' ? formErrs.districtErr = false : formErrs.districtErr = true">
+                    <option selected disabled value="">Select District</option>
+                    <option v-for="(district, index) in districts.options" :key="index" :value="{ name: district.name, id: district.objectid}">{{ district.name }}</option>
                   </select>
                   <transition name="u-fade" mode="out-in" appear>
-                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.stateErr">
-                      Please provide a valid state.
+                    <div class="small ml-2 mt-0 mb-3 text-danger" v-if="formErrs.districtErr">
+                      Please provide a valid district.
                     </div>
                   </transition>
 
@@ -177,9 +177,11 @@
           </div>
         </div>
         <div class="col-md-12 mb-3">
-          <button type="button" @click="goToNext()" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-            GO TO NEXT SECTION
-          </button>
+          <div>
+            <button type="button" :disabled="!Object.values(this.formErrs).every(val => val === false)" @click="goToNext()" style="pointer-events: auto;" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
+              GO TO NEXT SECTION
+            </button>
+          </div>
         </div>
       </div>
 
@@ -377,7 +379,7 @@ export default {
       if (this.patientData.name === '') {
         this.formErrs.nameErr = true
       }
-      if (this.patientData.age === '' || patient.ageType === '') {
+      if (this.patientData.age === '' || this.patientData.ageType === '') {
         this.formErrs.ageErr = true
       }
       if (this.patientData.gender === '') {
@@ -392,12 +394,20 @@ export default {
       if (this.patientData.address === '') {
         this.formErrs.addressErr = true
       }
-      if (this.occupations.selected === '') {
-        this.formErrs.occupationErr = true
+      if (this.districts.selected === '') {
+        this.formErrs.districtErr = true
       }
-      if (this.patientData.phone === '') {
-        this.formErrs.phoneErr = true
+      if (this.patientData.hswd === '') {
+        this.formErrs.hswdErr = true
       }
+      if (this.states.selected === '') {
+        this.formErrs.stateErr = true
+      }
+      if (this.policeStations.selected === '') {
+        this.formErrs.policestationErr = true
+      }
+      
+      Object.values(this.formErrs).every(val => val === false) ? this.formHasErrs = false : this.formHasErrs = true;
     },
     goToNext: function () {
       let tabs = this.tabs
@@ -405,17 +415,20 @@ export default {
 
       this.checkFormErrs()
 
-      // for (let i = 0; i < tabs.length; i++) {
-      //   if (tabs[i].isActive === true) {
-      //     tabs[i].isActive = false
-      //     ref = i
-      //   }
-      // }
 
-      // window.scrollTo(0, 0);
+      if (this.formHasErrs != true) {
+        for (let i = 0; i < tabs.length; i++) {
+          if (tabs[i].isActive === true) {
+            tabs[i].isActive = false
+            ref = i
+          }
+        }
 
-      // tabs[ref + 1].isActive = true
-      // tabs[ref + 1].isEnabled = true
+        window.scrollTo(0, 0);
+
+        tabs[ref + 1].isActive = true
+        tabs[ref + 1].isEnabled = true
+      }
     },
     getTab: function (tabName) {
       let tabs = this.tabs
@@ -432,13 +445,12 @@ export default {
     },
     registerPatient: function (event) {
 
-      // console.log('Patient Data: ')
-      // console.log(this.patientData.objectID)
+      console.log('Patient Data: ')
+      console.log(this.patientDataComputed)
       // console.log(this.patientData.patientRegID)
 
       let payload = {
         objectID: this.patientData.objectID,
-        // regNo: this.patientData,
         regBy: this.$store.state.currUser.name,
         demographics: this.patientDataComputed
       }
@@ -513,6 +525,7 @@ export default {
       formIsCompelete: false,
       formHasBeenUpdated: false,
       baseURL: 'https://powerful-thicket-49412.herokuapp.com',
+      formHasErrs: false,
       formErrs: {
         nameErr: false,
         ageErr: false,
@@ -584,7 +597,7 @@ export default {
         ]
       },
       policeStations: {
-        selected: 'policestation',
+        selected: '',
         options: [
           {
             district: "5f6ccadc3a7d3d5dd5174782",
@@ -692,7 +705,7 @@ export default {
         ]
       },
       districts: {
-        selected: 'district',
+        selected: '',
         options: [
           {
             name: "Bageshwar",
