@@ -110,6 +110,25 @@
 export default {
   layout: 'dashboard',
   mounted() {
+    console.log('MOUNTED')
+
+    this.list = []
+
+    let queryID = this.$route.query.id
+
+    if (queryID !== this.$store.state.currPatient.id) {
+      // request ID does not equal curr ID,
+      // get that patient profile
+      this.$store.commit('updateCurrPatient', { id: queryID })
+    } else {
+      // display current Patient in store)
+      this.$store.commit('clearVisitID')
+    }
+
+    console.log('New Pateint ID: ' + this.$store.state.currPatient.id)
+    console.log(this.$store.state.currPatient)
+
+
     this.list = this.filterAllVisits
 
     this.$store.commit('updatePath', [
@@ -136,6 +155,8 @@ export default {
       if (!queryID) {
         queryID = this.$store.state.currPatient.id
       }
+
+      console.log('Getting visits for: ' + this.$store.state.currPatient.id)
 
       return [...(this.$store.state.currPatient.episodes), ...(this.$store.state.currPatient.services)] || []
     },

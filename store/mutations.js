@@ -10,6 +10,9 @@ let getCurrDate = function () {
 }
 
 export default {
+  updateProfileImage (state,payload) {
+    state.profileImage = payload
+  },
   updatePath(state, payload) {
     state.currPath = payload
   },
@@ -224,15 +227,16 @@ export default {
     let currentDate = getCurrDate()
 
     // generate random UID
-    let newID = Math.random().toString(36).substr(2, 6)
+    let newUserID = Math.random().toString(36).substr(2, 6)
+    let newEpisodeID = Math.random().toString(36).substr(2, 6)
 
     console.log('From Vuex Store: ')
     console.log(payload)
 
     let baseProfile = {
       regNo: payload.regNo,
-      objectID: newID,
-      id: newID,
+      objectID: newUserID,
+      id: newUserID,
       status: "registered",
       regBy: payload.regBy,
       dateRegistered: currentDate,
@@ -241,7 +245,7 @@ export default {
         ...payload.demographics
       },
       episodes: [{
-        episodeID: "PA01EP0",
+        episodeID: newEpisodeID,
         title: "Registered",
         created: currentDate,
         lastUpdated: currentDate,

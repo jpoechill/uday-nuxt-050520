@@ -5,6 +5,7 @@ import formOptionsStore from "./formOptions"
 export const state = () => ({
   ...udayDBStore,
   ...formOptionsStore,
+  profileImage: '122',
   currPath: [
     {
       title: "Dashboard",

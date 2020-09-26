@@ -9188,12 +9188,12 @@ export default {
           url: '/ha'
         },
         {
-          title: this.$store.state.currEpisode.title,
-          url: '/ha/profile/visit?id=' + this.$store.state.currEpisode.episodeID,
-        },
-        {
           title: 'Patient\'s Profile',
           url: '/ha/profile'
+        },
+        {
+          title: this.$store.state.currEpisode.title,
+          url: '/ha/profile/visit?id=' + this.$store.state.currEpisode.episodeID,
         },
         {
           title: 'New Follow Up',

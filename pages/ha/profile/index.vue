@@ -1,5 +1,6 @@
 <template>
   <div>
+    
     <div class="container">
       <transition appear name="u-fade">
         <div class="row">
@@ -31,6 +32,7 @@
             
             <div class="row">
               <div class="col-md-6"> 
+                {{ currPatient.id }}
                 {{ currPatient.demographics.occupation.name }} | {{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old <br>
                 {{ currPatient.demographics.phone }} <br>
                 {{ currPatient.demographics.policeStation.name }}
@@ -111,8 +113,6 @@ export default {
     }
   },
   mounted () {
-    console.log('ooga booga') 
-
     let queryID = this.$route.query.id
     console.log('Query ID: ' + queryID)
     console.log('Curr Pateint ID: ' + this.$store.state.currPatient.id)
@@ -126,10 +126,13 @@ export default {
       // display current Patient in store
       // console.log(this.currPatient.demographics)
 
-      // this.$store.commit('clearVisitID')
+      this.$store.commit('clearVisitID')
 
       window.scrollTo(0, 0);
     }
+
+    console.log('New Pateint ID: ' + this.$store.state.currPatient.id)
+    console.log(this.$store.state.currPatient)
 
     this.$store.commit('updatePath', this.fullPath)
   },

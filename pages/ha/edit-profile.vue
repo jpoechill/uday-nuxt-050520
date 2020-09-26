@@ -3,14 +3,18 @@
     <div class="container mb-3" @change="print('Hello')">
       <div class="row px-3">
         <div class="col-md-12 text-center bg-white rounded py-5">
-          <div class="position-relative mx-auto" style="width: 200px;">
-            <div class="position-absolute">
-              <img class="w-100 pb-2" src="/avatar-girl_04.png">
+          <div class="position-relative mx-auto overflow-hidden" style="width: 200px;">
+            <div class="position-absolute ">
+              <!-- <img class="w-100 pb-2" src="/avatar-girl_04.png"> -->
+              <!-- {{ this.$store.state.profileImage }} -->
+              <img class="w-100 pb-2" :src="profileImage" alt="">
             </div>
             <div style="padding-bottom: 100%;"></div>
           </div>
           <br>
-          <button class="btn btn-dark px-4 mb-3">Upload Photo</button>
+          <input type="file" accept="image/*" @change="uploadImage($event)" id="file-input">
+
+          <!-- <button class="btn btn-dark px-4 mb-3">Upload Photo</button> -->
         </div>
         <div class="col-md-12 bg-white rounded pb-3">
           <div class="container">
@@ -105,6 +109,26 @@ export default {
     }
   },
   methods: {
+    uploadImage: function (event) {
+      let data = new FormData();
+      data.append('name', 'my-picture');
+      data.append('file', event.target.files[0]); 
+
+      this.encodeImage(event.target.files[0])
+      console.log(data)
+    },
+    encodeImage (input) {
+      if (input) {
+        const reader = new FileReader()
+        let self = this
+        reader.onload = (e) => {
+          // this.profileImage = e.target.result
+          console.log('Image upload')
+          self.$store.commit('updateProfileImage', e.target.result)
+        }
+        reader.readAsDataURL(input)
+      }
+    },
     print: function () {
       console.log('123')
     },
@@ -129,6 +153,11 @@ export default {
     ]
 
     this.$store.commit('updatePath', path)
+  },
+  computed: {
+    profileImage: function () {
+      return this.$store.state.profileImage
+    }
   },
   data() {
     return {

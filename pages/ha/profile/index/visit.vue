@@ -820,7 +820,7 @@
                               </text>
                           </g>
                           <g id="Group-12" v-if="visitData.specificExams.some(e => e.examination === 'lump&swelling')" transform="translate(1131.000000, 486.000000)">
-                              <rect id="Rectangle-Copy-13" :fill="currEpisode.episodeDetails.specificExams.find(e => e.examination === 'lump&swelling').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
+                              <rect id="Rectangle-Copy-13" :fill="this.currEpisode.episodeDetails.specificExams.find(e => e.examination === 'lump&swelling').isComplete ? 'green' : 'red'" x="0" y="0" width="226" height="47" rx="5"/>
                               <text id="Lumps-&amp;-Swelling" font-family="HelveticaNeue, Helvetica Neue" font-size="22" font-weight="normal" letter-spacing="0.625625" fill="#FFFFFF">
                                   <tspan x="20.182" y="32">Lumps &amp; Swelling</tspan>
                               </text>
@@ -1192,21 +1192,21 @@ export default {
     const episodeID = this.$route.query.id
 
     if ( this.$store.state.currPatient.id !== '') {
-      let currEpisode = this.$store.state.currPatient.episodes.find(episode => episode.episodeID === episodeID)
+      // let currEpisode = this.$store.state.currPatient.episodes.find(episode => episode.episodeID === episodeID)
 
-      this.episodeData = currEpisode
-      this.visitData = currEpisode.episodeDetails
+      // this.episodeData = currEpisode
+      // this.visitData = currEpisode.episodeDetails
 
-      // add followup tabs for navigation
-      currEpisode.followUps.forEach((followup, index) => self.tabs.push(
-        {
-          type: 'followup',
-          name: 'followup' + index,
-          title: 'Follow Up ' + (index + 1),
-          isActive: false,
-          itemIndex: index,
-        },
-      ))
+      // // add followup tabs for navigation
+      // currEpisode.followUps.forEach((followup, index) => self.tabs.push(
+      //   {
+      //     type: 'followup',
+      //     name: 'followup' + index,
+      //     title: 'Follow Up ' + (index + 1),
+      //     isActive: false,
+      //     itemIndex: index,
+      //   },
+      // ))
 
       // add service tabs for navigation
       currEpisode.services.forEach((service, index) => self.tabs.push(

@@ -161,7 +161,7 @@
               <div class="row">
                 <div class="col-md-12 px-0">
                     <button @click="goToNext()" :disabled="!complaints.every(category => category.questions.every(question => question.isComplete === true))" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
-                      Go to Vitals
+                      Go to Pre-Check
                     </button>
                 </div>
               </div>
@@ -188,7 +188,7 @@
               <div class="row">
                 <div class="col-md-12 px-0">
                   <button @click="goToNext()" :disabled="!preCheckQuestions.every(question => question.isChecked === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
-                    Go to General Exams
+                    Go to Vitals
                   </button>
                 </div>
               </div>
@@ -212,12 +212,12 @@
                   </div>
                   <div v-else-if="!vitalQuestion.options && vitalQuestion.name === 'bp'">
                     <label for="exampleFormControlSelect1">{{ vitalQuestion.title }}</label><br>
-                    <input class="form-control d-inline w-25 mr-2" type="number" min="0" v-model="vitalQuestion.valueFirst"> /
+                    <input class="form-control d-inline w-25 mr-2" type="number" min="0" v-model="vitalQuestion.valueFirst" @change=" vitalQuestion.valueFirst !== '' && vitalQuestion.valueSecond !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false"> /
                     <input class="form-control d-inline w-25 mx-2 mr-2" type="number" min="0" v-model="vitalQuestion.valueSecond" @change=" vitalQuestion.valueFirst !== '' && vitalQuestion.valueSecond !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false"> {{ vitalQuestion.caption }}
                   </div>
                   <div v-else-if="!vitalQuestion.options && vitalQuestion.name === 'height'">
                     <label for="exampleFormControlSelect1 mb-2">{{ vitalQuestion.title }}</label><br>
-                    <input class="form-control d-inline w-25 mr-2" @keyup="calculateBMI" @click="calculateBMI(); vitalQuestion.isComplete = true" @change=" vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" type="number" min="0" v-model="vitalQuestion.value" value=""> {{ vitalQuestion.caption }}
+                    <input class="form-control d-inline w-25 mr-2" @keyup="calculateBMI; vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" @click="calculateBMI(); vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" @change="vitalQuestion.value !== '' ? vitalQuestion.isComplete = true : vitalQuestion.isComplete = false" type="number" min="0" v-model="vitalQuestion.value" value=""> {{ vitalQuestion.caption }}
                   </div>
                   <div v-else-if="!vitalQuestion.options && vitalQuestion.name === 'weight'">
                     <label for="exampleFormControlSelect1 mb-2">{{ vitalQuestion.title }} </label><br>
@@ -1172,6 +1172,7 @@ export default {
       tabs[ref + 1].isEnabled = true
     },
     addToQueue: function () {
+      this.formIsComplete = true
       alert('The patient has been allocated.')
 
       // normalize answers to new episode questions
@@ -1375,9 +1376,13 @@ export default {
     }
   },
   beforeRouteLeave (to, from , next) {
-    const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
-    
-    answer ? next() : next(false);
+    if (!this.formIsCompelete) {
+      const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
+      
+      answer ? next() : next(false);
+    } else {
+      next()
+    }
   },
   created() {
     // init complaint categories
@@ -1419,6 +1424,7 @@ export default {
   },
   data() {
     return {
+      formIsComplete: false,
       complaints: [],
       patHeight: 0,
       patWeight: 0,
