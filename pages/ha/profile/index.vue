@@ -32,7 +32,7 @@
             
             <div class="row">
               <div class="col-md-6"> 
-                {{ currPatient.id }}
+                <!-- {{ currPatient.id }} -->
                 {{ currPatient.demographics.occupation.name }} | {{ currPatient.demographics.age }} {{ currPatient.demographics.ageType }} old <br>
                 {{ currPatient.demographics.phone }} <br>
                 {{ currPatient.demographics.policeStation.name }}

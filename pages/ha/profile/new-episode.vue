@@ -1173,6 +1173,7 @@ export default {
     },
     addToQueue: function () {
       this.formIsComplete = true
+      
       alert('The patient has been allocated.')
 
       // normalize answers to new episode questions

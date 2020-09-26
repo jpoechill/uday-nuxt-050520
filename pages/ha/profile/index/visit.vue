@@ -269,8 +269,13 @@
                   <hr class="mb-3 mt-1">
                 </div>
               </div>
+
               <div class="col-md-12 mb-3">
                 <div>
+                  <label for="exampleFormControlSelect1">What is the category of the complaint?</label><br>
+                  <button v-for="(condition, index) in visitData.conditionQuestions" :key="index" class="btn mb-2 mr-2" :class="condition.isActive ? 'btn-dark text-white' : 'btn-light'">{{ condition.title }}</button>
+                </div>
+                <div v-if="complaint.chiefComplaint">
                   <button class="btn mb-2 btn-dark mr-2">{{ complaint.chiefComplaint }}</button>
                   <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint !== ''">{{ complaint.chiefSubComplaint }}</button>
                 </div>
@@ -1173,40 +1178,34 @@ export default {
   mounted() {
     let self = this
 
-    this.$store.commit('updatePath', [
-      {
-        title: 'Dashboard',
-        url: '/ha'
-      },
-      {
-        title: 'Patient\'s Profile',
-        url: '/ha/profile'
-      },
-      {
-        title: 'Episode 1',
-        url: '/ha/profile'
-      }
-    ])
+    // clear visitCache
 
     // get episode data, set episode data
     const episodeID = this.$route.query.id
 
-    if ( this.$store.state.currPatient.id !== '') {
-      // let currEpisode = this.$store.state.currPatient.episodes.find(episode => episode.episodeID === episodeID)
+    console.log('Looking for Episode: ' + episodeID)
 
-      // this.episodeData = currEpisode
-      // this.visitData = currEpisode.episodeDetails
+    if ( this.$store.state.currPatient.id !== '') {
+      let currEpisode = this.$store.state.currPatient.episodes.find(episode => episode.episodeID === episodeID)
+
+      console.log('Curr Patient ID: ' + this.$store.state.currPatient.id)
+      console.log('Found Episode: ')
+      console.log(currEpisode)
+
+
+      this.episodeData = currEpisode
+      this.visitData = currEpisode.episodeDetails
 
       // // add followup tabs for navigation
-      // currEpisode.followUps.forEach((followup, index) => self.tabs.push(
-      //   {
-      //     type: 'followup',
-      //     name: 'followup' + index,
-      //     title: 'Follow Up ' + (index + 1),
-      //     isActive: false,
-      //     itemIndex: index,
-      //   },
-      // ))
+      currEpisode.followUps.forEach((followup, index) => self.tabs.push(
+        {
+          type: 'followup',
+          name: 'followup' + index,
+          title: 'Follow Up ' + (index + 1),
+          isActive: false,
+          itemIndex: index,
+        },
+      ))
 
       // add service tabs for navigation
       currEpisode.services.forEach((service, index) => self.tabs.push(
@@ -1219,12 +1218,27 @@ export default {
         },
       ))
 
-      // update currEpisode in Store
+      this.$store.commit('updatePath', [
+        {
+          title: 'Dashboard',
+          url: '/ha'
+        },
+        {
+          title: 'Patient\'s Profile',
+          url: '/ha/profile'
+        },
+        {
+          title: 'Episode ' + currEpisode.episodeID,
+          url: '/ha/profile'
+        }
+      ])
+
+      // // update currEpisode in Store
       this.$store.commit("updateCurrEpisode", currEpisode)
 
-      if (this.episodeData.feedback.hasFeedback ) {
-        this.showDocsFeedback = true
-      }
+      // if (this.episodeData.feedback.hasFeedback ) {
+      //   this.showDocsFeedback = true
+      // }
     }
   },
   computed: {
@@ -1347,6 +1361,20 @@ export default {
           advice: '',
         }
       },
+      fullPath: [
+        {
+          title: 'Dashboard',
+          url: '/ha'
+        },
+        {
+          title: 'Patient\'s Profile',
+          url: '/ha/profile'
+        },
+        {
+          title: 'Episode',
+          url: '/ha/new-episode'
+        },
+      ],
       showDocsFeedback: false,
       showDemographics: true,
       showComplete: false,

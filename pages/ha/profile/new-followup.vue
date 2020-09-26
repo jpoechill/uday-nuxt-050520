@@ -33,7 +33,7 @@
             <div class="w-100 bg-white mb-3 mt-0 px-3 pt-3 pb-3" style="min-height: 200px;">
               <div class="row mt-1">
                 <div class="col-md-12 text-muted small mb-0">
-                  Please generalize the chief complaint. <br>
+                  Please generalize the condition of this follow-up. <br>
                   <!-- <hr> -->
                 </div>
 
@@ -56,32 +56,45 @@
                   complaints
                 }} -->
 
+                <div class="col-md-12 mt-3 mb-1">
+                    <label for="exampleFormControlSelect1">What is current condition of the patient?
+                    </label><br>
+                    <button v-for="(condition, index) in conditionOptions" :key="index" class="btn mb-2 mr-2" :class="condition.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleConditionOptions(index)">{{ condition.title }}</button>
+                </div>
 
-                <div v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
-                  <transition  appear name="u-fade"  mode="out-in" tag="div">
-                    <div>
-                      <div class="col-md-12">
-                        <hr>
-                      </div>
-                      <!-- General Category -->
-                      <div class="col-md-12 mb-1">
-                        <label for="exampleFormControlSelect1">What is the category of the complaint?
-                          </label><br>
-                        <button v-for="(category, categoryIndex) in complaint.categories" :class="category.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeCategoryActiveMulti(category.name, questionIndex, categoryIndex)"  class="btn mb-2 mr-2" :key="categoryIndex">{{category.name}}</button>
-                      </div>
+                <transition  appear name="u-fade"  mode="out-in" tag="div">
+                  <div class="col-md-12 small text-muted mt-3 mb-2 fake-link" @click="showAdditionalComplaints = true">
+                    Are there any additional complaints?
+                  </div>
+                </transition>
 
-                      <!-- General SubCategory -->
-                      <transition  appear name="u-fade"  mode="out-in" tag="div">
-                        <div class="col-md-12 mt-4 mb-1" v-if="complaint.hasSubcategories">
-                          <label for="exampleFormControlSelect1">What is the specific complaint? 
-                            </label><br>
-                          <!-- <div v-if="categoryItemInd !== null" class="w-100"> -->
-                            <button v-for="(subCategory, subCategoryIndex) in complaint.subCategories" :key="subCategoryIndex" class="btn mb-2 mr-2" :class="subCategory.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeSubCategoryActiveMulti(questionIndex, subCategoryIndex)">{{ subCategory.name }}</button>
-                          <!-- </div> -->
+                <div v-if="showAdditionalComplaints">
+                  <div v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
+                    <transition  appear name="u-fade"  mode="out-in" tag="div">
+                      <div>
+                        <div class="col-md-12">
+                          <hr>
                         </div>
-                      </transition>
-                    </div>
-                  </transition>
+                        <!-- General Category -->
+                        <div class="col-md-12 mb-1">
+                          <label for="exampleFormControlSelect1">What is the category of the complaint?
+                            </label><br>
+                          <button v-for="(category, categoryIndex) in complaint.categories" :class="category.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeCategoryActiveMulti(category.name, questionIndex, categoryIndex)"  class="btn mb-2 mr-2" :key="categoryIndex">{{category.name}}</button>
+                        </div>
+
+                        <!-- General SubCategory -->
+                        <transition  appear name="u-fade"  mode="out-in" tag="div">
+                          <div class="col-md-12 mt-4 mb-1" v-if="complaint.hasSubcategories">
+                            <label for="exampleFormControlSelect1">What is the specific complaint? 
+                              </label><br>
+                            <!-- <div v-if="categoryItemInd !== null" class="w-100"> -->
+                              <button v-for="(subCategory, subCategoryIndex) in complaint.subCategories" :key="subCategoryIndex" class="btn mb-2 mr-2" :class="subCategory.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeSubCategoryActiveMulti(questionIndex, subCategoryIndex)">{{ subCategory.name }}</button>
+                            <!-- </div> -->
+                          </div>
+                        </transition>
+                      </div>
+                    </transition>
+                  </div>
                 </div>
 
                 <transition  appear name="u-fade"  mode="out-in" tag="div">
@@ -95,8 +108,9 @@
             <div class="container mb-3">
               <div class="row">
                 <div class="col-md-12 px-0">
-                  <!-- {{  !(complaints[complaints.length-1].chiefComplaint == '' || complaints[complaints.length-1].hasSubcategories === false) }} -->
-                    <button @click="goToNext()" :disabled="(complaints[complaints.length-1].chiefComplaint === '' && complaints[complaints.length-1].hasSubcategories === false) || (complaints[complaints.length-1].chiefSubComplaint === '' && complaints[complaints.length-1].hasSubcategories === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
+                  <!-- {{ (complaints[complaints.length-1].chiefComplaint === '' && complaints[complaints.length-1].hasSubcategories === false) }}
+                  {{ (complaints[complaints.length-1].chiefSubComplaint === '' && complaints[complaints.length-1].hasSubcategories === true) }} -->
+                    <button @click="goToNext()" :disabled="conditionOptions.every(condition => condition.isActive === false)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
                       Go to Fixed Questions
                     </button>
                 </div>
@@ -118,9 +132,12 @@
                       <div class="container">
                         <div class="row" v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
                           <div class="col-md-12 mb-3">
-                            <div>
+                            <div v-if="complaint.chiefComplaint">
                               <button class="btn mb-2 btn-dark mr-2">{{ complaint.chiefComplaint }}</button>
                               <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint !== ''">{{ complaint.chiefSubComplaint }}</button>
+                            </div>
+                            <div v-else>
+                              There are no fixed questions to be asked. Please go on to the next section.
                             </div>
                           </div>
                           <div v-for="(question, indexQuestion) in complaint.questions" class="col-md-12 mb-4" :key="indexQuestion">
@@ -161,7 +178,7 @@
               <div class="row">
                 <div class="col-md-12 px-0">
                     <button @click="goToNext()" :disabled="!questions.every(question => question.isComplete === true)" type="button" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-0 text-uppercase">
-                      Go to Vitals
+                      Go to Pre-Check
                     </button>
                 </div>
               </div>
@@ -860,6 +877,15 @@
 export default {
   layout: 'dashboard',
   methods: {
+    handleConditionOptions: function (optionIndex) {
+      this.conditionOptions.forEach((option, index) => {
+        if (index === optionIndex) {
+          option.isActive = true
+        } else {
+          option.isActive = false
+        }
+      })
+    },
     makeCategoryActiveMulti: function (categoryName, questionIndex, categoryIndex) {
       // alert('Complaint name: ' + categoryName)
       // alert('Complaint index: ' + categoryIndex)
@@ -1178,6 +1204,9 @@ export default {
       // normalize answers to new episode questions
       this.newEpisodeComplete.complaints.push(...this.complaints)
 
+      let conditionQuestions = this.conditionOptions
+      this.newEpisodeComplete.conditionQuestions = conditionQuestions
+      
       // normalize fixed questions
       // let questions = this.questions
       // this.newEpisodeComplete.chiefComplaintsFixedQuestions.push(...questions)
@@ -1419,6 +1448,7 @@ export default {
   },
   data() {
     return {
+      showAdditionalComplaints: false,
       complaints: [],
       patHeight: 0,
       patWeight: 0,
@@ -1431,6 +1461,20 @@ export default {
       hasSubCategory: false,
       showQuestions: false,
       complaintItem: '',
+      conditionOptions: [
+        {
+          title: 'Better',
+          isActive: false,
+        },
+        {
+          title: 'Same',
+          isActive: false,
+        },
+        {
+          title: 'Worse',
+          isActive: false,
+        }
+      ],
       mds: [
         {
           id: "md001", 
