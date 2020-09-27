@@ -22,12 +22,14 @@
                       {{ this.$store.state.currUser.email }}
                     </span>
                     <div class="dropdown-menu">
-                      <div class="dropdown-item fake-link">MIS Reports</div>
+                      <nuxt-link to="/ha" class="dropdown-item">Dashboard</nuxt-link>
                       <div class="dropdown-divider"></div>
                       <nuxt-link to="/ha/edit-profile" class="dropdown-item">Edit Profile</nuxt-link>
                       <nuxt-link to="/ha/edit-password" class="dropdown-item">Change Password</nuxt-link>
                       <div class="dropdown-divider"></div>
-                      <div class="dropdown-item fake-link" @click="clearCache()">Clear Cache</div>
+                      <nuxt-link to="/ha/mis-reports" class="dropdown-item">MIS Reports</nuxt-link>
+                      <!-- <div class="dropdown-divider"></div>
+                      <div class="dropdown-item fake-link" @click="clearCache()">Clear Cache</div> -->
                     </div>
                       | 
                     <a href="/" class="text-white">Logout</a>
@@ -133,6 +135,7 @@ export default {
   },
   methods: {
     clearCache() {
+      alert('The browser cache has been cleared.')
       localStorage.clear();
     },
     setPath () {

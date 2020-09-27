@@ -34,7 +34,10 @@
               Login as Doctor
             </button>
           </nuxt-link>
-
+          <hr>
+          <button class="btn mb-2 p-2 w-100 text-uppercase" :class="clearCacheState ? 'btn-dark' : 'btn-light'" @click="clearCache()">
+            Clear Browser Cache
+          </button>
           <nuxt-link to="/forgot-pass">
             <small class="text-secondary">Forgot password?</small>
           </nuxt-link>
@@ -62,6 +65,7 @@ export default {
   layout: 'default',
   data() {
     return {
+      clearCacheState: false,
       email: 'poulami@gmail.com',
       password: 'abcd1234',
       type: 'HA',
@@ -80,6 +84,16 @@ export default {
 
   },
   methods: {
+    clearCache() {
+      let self = this
+      this.clearCacheState = true
+
+      setTimeout(() => {
+        alert('The browser cache has been cleared. \n\n Please reload the page to completely clear all mock data.'); 
+        localStorage.clear();
+        self.clearCacheState = false
+      }, 400)
+    },
     login: function () {
       this.showLoading = true
 
@@ -87,7 +101,35 @@ export default {
         HaId: "5f3eaf404be1fce03b7a5655",
         cluster: "5f3eacbde0dc1a1675cd2c1a",
         name: "Poulami Chakraborty",
-        email: "poulami.chakraborty@udayhealth.org"
+        email: "poulami.chakraborty@udayhealth.org",
+        id: 'xxxx',
+        demographics: {
+          gender: "female",
+          age: "30",
+          ageType: 'years',
+          address: "5555 Market St.",
+          address2: "",
+          occupation: {
+            name: "Student",
+            objectid: "5f3e81a843bec66f97b8f6f3"
+          },
+          district: {
+            name:  "Hooghly",
+            objectid:  "5f3e864f43bec66f97b8f708",
+            state:  "5f3e7e6f43bec66f97b8f6ee"
+          },
+          policeStation: {
+            district: "5f6ccadc3a7d3d5dd5174782",
+            name: "Pindar Valley",
+            objectid: "5f6ccc723a7d3d5dd5174783"
+          },
+          state: {
+            "name": "Uttarakhand",
+            "objectid": "5f6cc9ce3a7d3d5dd5174781"
+          },
+          phone: "1 (415) 555-1234",
+          location: "San Francisco, CA"
+        }
       })
 
       this.$router.push({

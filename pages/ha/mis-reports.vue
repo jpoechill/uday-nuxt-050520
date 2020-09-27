@@ -1,59 +1,9 @@
 <template>
   <div>
-    <div class="w-100 bg-dark text-white mb-3">
-      <div class="container bg-dark">
-        <div class="row py-2">
-          <div class="col-md-6 font-weight-bold pt-2" style="font-size: 24px;"> 
-            <nuxt-link to="/ha" class="text-white text-decoration-none">UD.</nuxt-link>
-          </div>
-          <div class="col-md-6 py-3 text-right">
-            <div class="dropdown d-inline">
-              <span class="dropdown-toggle dropdown-no-caret pointer" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                jane.doe@udayhealth.org
-              </span>
-              <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="#">MIS Reports</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">Edit Profile</a>
-                <a class="dropdown-item" href="#">Change Password</a>
-              </div>
-            </div>
-            | Logout
-          </div>
-        </div>
-      </div>
-    </div>
-        <div class="container">
-      <div class="row">
-        <div class="col-md-12">
-          <small>
-            <nuxt-link class="text-muted" to="/ha">Dashboard</nuxt-link>
-             > MIS Reports
-          </small>
-        </div>
-      </div>
-    </div>
-    <div class="container">
-      <div class="row">
-        <div class="col-md-12 mb-1 text-center">
-          MIS Reports
-          <hr>
-        </div>
-      </div>
-    </div>
     <div class="container mb-3">
       <div class="row">
         <div class="col-md-12 bg-white rounded py-5 text-center">
-          In development...
-        </div>
-      </div>
-    </div>
-    <div class="container text-center mb-4">
-      <div class="row">
-        <div class="col-md-12 text-secondary">
-          <small>
-            UdayHealth.org is a virtual, telemedicine application organized by medical professionals and volunteers worldwide.
-          </small>
+          In development. Check back soon.
         </div>
       </div>
     </div>
@@ -62,6 +12,7 @@
 
 <script>
 export default {
+  layout: 'dashboard',
   computed: {
     filterMyPatients: function () {
       // return 123

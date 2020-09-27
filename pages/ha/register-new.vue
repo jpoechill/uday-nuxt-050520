@@ -31,7 +31,7 @@
                     <div style="padding-bottom: 100%;"></div>
                   </div>
                   <br>
-                  <button class="btn btn-dark px-4 mb-3">Upload Photo</button>
+                  <button type="button" class="btn btn-dark px-4 mb-3">Upload Photo</button>
                 </div>
               </div>
               <div class="row mt-3">

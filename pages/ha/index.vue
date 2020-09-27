@@ -23,16 +23,19 @@
                 </div>
               </div>
               <br>
-              Hello, my name is {{ this.$store.state.currUser.name }}, and I'm studying to become a nurse! I'm happy help you!
+              <!-- {{ this.$store.state.currUser }} -->
+              Hello, my name is {{ currUser.name }}, and I'm studying to become a nurse! I'm happy help you!
               <br><br>
               <div class="row">
                 <div class="col-md-6">
-                  Health Assistant | 24 years old
+                  <!-- {{ currUser.demographics }} -->
+                  {{ currUser.demographics.occupation.name }} | {{ currUser.demographics.age }} {{ currUser.demographics.ageType }} old | <span class="text-capitalize">{{ currUser.demographics.gender }}</span><br>
+                  {{ currUser.demographics.policeStation.name }} <br>
                 </div>
                 <div class="col-md-6">
-                  1-415-555-1234 <br><br>
-                  2222 Market Street <br>
-                  San Francisco, CA<br>
+                  {{ currUser.demographics.phone }} <br>
+                  {{ currUser.demographics.address }} <br>
+                  {{ currUser.demographics.district.name }}, {{ currUser.demographics.state.name }} <br>
                 </div>
               </div>
             </div>

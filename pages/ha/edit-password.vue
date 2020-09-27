@@ -23,11 +23,9 @@
     <div class="container mb-3">
       <div class="row">
         <div class="col-md-12">
-          <nuxt-link to="/ha">
-            <button class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
-              Update Password
-            </button>
-          </nuxt-link>
+          <button @click="savePassword()" class="w-100 btn btn-dark rounded font-weight-bold py-3 mb-1  text-uppercase">
+            Update Password
+          </button>
         </div>
       </div>
     </div>
@@ -51,6 +49,15 @@ export default {
 
     this.$store.commit('updatePath', path)
 
+  },
+  methods: {
+    savePassword: function () {
+      alert('Your password has been successfully updated.')
+
+      this.$router.push({
+        path: '/ha'
+      })
+    }
   },
   data() {
     return {}

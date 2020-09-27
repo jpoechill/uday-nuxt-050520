@@ -5,7 +5,7 @@ import formOptionsStore from "./formOptions"
 export const state = () => ({
   ...udayDBStore,
   ...formOptionsStore,
-  profileImage: '122',
+  profileImage: '/avatar-girl_04.png',
   currPath: [
     {
       title: "Dashboard",
@@ -13,45 +13,9 @@ export const state = () => ({
     }
   ],
   currCluster: 'cluster001',
-  currUser: {
-    name: 'Uday Health Assistant',
-    id: 'xxxx',
-    email: 'udayuser@udayehealth.com'
-  },
+  currUser: {},
   baseURL: 'https://powerful-thicket-49412.herokuapp.com',
-  currPatient: {
-    id: "",
-    status: "",
-    regBy: "",
-    demographics: {
-      name: "",
-      gender: "",
-      age: "",
-      hswd: '',
-      address: "",
-      address2: "",
-      occupation: {
-        name: 'No Answer',
-        id: 'xxxx'
-      },
-      district: {
-        name: 'No Answer',
-        id: 'xxxx'
-      },
-      policeStation: {
-        name: 'No Answer',
-        id: 'xxxx'
-      },
-      state: {
-        name: 'No Answer',
-        id: 'xxxx'
-      },
-      phone: "",
-      location: ""
-    },
-    episodes: [],
-    services: []
-  },
+  currPatient: {},
   currEpisode: {},
 });
 

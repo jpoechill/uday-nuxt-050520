@@ -280,6 +280,14 @@
                   <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint !== ''">{{ complaint.chiefSubComplaint }}</button>
                 </div>
               </div>
+
+              <div class="col-md-12" v-if="complaint.questions.length">
+                <div class="small text-muted mb-2">
+                  Chief Complaints, Fixed Questions
+                  <hr class="mb-3 mt-1">
+                </div>
+              </div>
+
               <div v-for="(question, indexQuestion) in complaint.questions" class="col-md-12 mb-4" :key="indexQuestion">
                 <div v-if="question.type === 'text'">
                   <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
@@ -358,7 +366,7 @@
 
              -->
           </div>
-          <div class="w-100 bg-white mb-2 mt-0 px-3 pt-3 pb-3" key="vitals" style="min-height: 200px;" v-if="subTabs[1].isActive">
+          <div class="w-100 bg-white mb-2 mt-0 px-3 pt-3 pb-3" key="vitals" style="min-height: 150px;" v-if="subTabs[1].isActive">
             <div class="row mt-1">
               <!-- {{ currEpisode.episodeDetails.vitals }} -->
               <div class="mb-4" v-for="(vitalQuestion, index) in visitData.vitals" :class="[vitalQuestion.fullLength ? 'col-md-12' : 'col-md-6']" :key="index">

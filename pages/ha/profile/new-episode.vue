@@ -826,7 +826,7 @@
                   Who would you like to allocate this complaint record to?
                 </div>
                 <div class="col-md-12">
-                  <button v-for="(md, index) in this.mds" :key="index" class="btn mb-2 mr-2 btn-light">
+                  <button v-for="(md, index) in this.mds" :key="index" @click="handleSelectDoctor(md, index)" class="btn mb-2 mr-2" :class="md.isActive ? 'btn-dark' : 'btn-light'">
                     {{ md.name }} ({{ md.status }})
                   </button>
                   <!-- <button class="btn mb-2 btn-light">
@@ -1037,6 +1037,15 @@ export default {
         }
       })
     },
+    handleSelectDoctor: function (doctor, index) {
+      this.mds.forEach((md, mdIndex) => {
+        if (index === mdIndex) {
+          md.isActive = true
+        } else {
+          md.isActive = false
+        }
+      })
+    },
     handleQuestionsText: function (question, answer) {
       if (answer !== '') {
         question.isComplete = true
@@ -1173,7 +1182,7 @@ export default {
     },
     addToQueue: function () {
       this.formIsComplete = true
-      
+
       alert('The patient has been allocated.')
 
       // normalize answers to new episode questions
@@ -1442,13 +1451,15 @@ export default {
         {
           id: "md001", 
           status: "offline", 
+          isActive: false,
           name: "Dr. Ritwika Ghosh",
           allocatedPatients: [], 
           demographics: {}
         },
         {
           id: "md002", 
-          status: "offline", 
+          status: "offline",
+          isActive: false, 
           name: "Dr. Abhigyan Bose",
           allocatedPatients: [], 
           demographics: {}
