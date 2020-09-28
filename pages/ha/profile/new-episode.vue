@@ -119,7 +119,7 @@
                         <div class="row" v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
                           <div class="col-md-12 mb-3">
                             <div>
-                              <button class="btn mb-2 btn-dark mr-2">{{ complaint.chiefComplaint }}</button>
+                              <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint === ''">{{ complaint.chiefComplaint }}</button>
                               <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint !== ''">{{ complaint.chiefSubComplaint }}</button>
                             </div>
                           </div>
