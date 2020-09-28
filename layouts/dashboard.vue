@@ -171,6 +171,14 @@ html, body {
   opacity: 0;
 }
 
+.u-fade-list-enter-active, .u-fade-list-leave-active {
+  transition: opacity .4s;
+  transform: translateY(30px);
+}
+.u-fade-list-enter, .u-fade-list-leave-active {
+  opacity: 0;
+}
+
 tr.pointer td, tr.pointer th {
   padding-top: 7px;
 }

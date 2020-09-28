@@ -56,33 +56,33 @@
                   complaints
                 }} -->
 
-
-                <div v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
-                  <transition  appear name="u-fade"  mode="out-in" tag="div">
-                    <div>
-                      <div class="col-md-12">
-                        <hr>
-                      </div>
-                      <!-- General Category -->
-                      <div class="col-md-12 mb-1">
-                        <label for="exampleFormControlSelect1">What is the category of the complaint?
-                          </label><br>
-                        <button v-for="(category, categoryIndex) in complaint.categories" :class="category.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeCategoryActiveMulti(category.name, questionIndex, categoryIndex)"  class="btn mb-2 mr-2" :key="categoryIndex">{{category.name}}</button>
-                      </div>
-
-                      <!-- General SubCategory -->
-                      <transition  appear name="u-fade"  mode="out-in" tag="div">
-                        <div class="col-md-12 mt-4 mb-1" v-if="complaint.hasSubcategories">
-                          <label for="exampleFormControlSelect1">What is the specific complaint? 
-                            </label><br>
-                          <!-- <div v-if="categoryItemInd !== null" class="w-100"> -->
-                            <button v-for="(subCategory, subCategoryIndex) in complaint.subCategories" :key="subCategoryIndex" class="btn mb-2 mr-2" :class="subCategory.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeSubCategoryActiveMulti(questionIndex, subCategoryIndex)">{{ subCategory.name }}</button>
-                          <!-- </div> -->
+                <transition-group  appear name="u-fade-list"  mode="out-in" tag="div">
+                  <div v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
+                    
+                      <div>
+                        <div class="col-md-12">
+                          <hr>
                         </div>
-                      </transition>
-                    </div>
-                  </transition>
-                </div>
+                        <!-- General Category -->
+                        <div class="col-md-12 mb-1">
+                          <label for="exampleFormControlSelect1">What is the category of the complaint?
+                            </label><img v-if="questionIndex !== 0" src="/x.png" @click="removeComplaint(questionIndex)" style="width: 14px; height: 14px;" class="float-right fake-link"><br>
+                          <button v-for="(category, categoryIndex) in complaint.categories" :class="category.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeCategoryActiveMulti(category.name, questionIndex, categoryIndex)"  class="btn mb-2 mr-2" :key="categoryIndex">{{category.name}}</button>
+                        </div>
+
+                        <!-- General SubCategory -->
+                        <transition  appear name="u-fade"  mode="out-in" tag="div">
+                          <div class="col-md-12 mt-4 mb-1" v-if="complaint.hasSubcategories">
+                            <label for="exampleFormControlSelect1">What is the specific complaint? 
+                              </label><br>
+                            <!-- <div v-if="categoryItemInd !== null" class="w-100"> -->
+                              <button v-for="(subCategory, subCategoryIndex) in complaint.subCategories" :key="subCategoryIndex" class="btn mb-2 mr-2" :class="subCategory.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeSubCategoryActiveMulti(questionIndex, subCategoryIndex)">{{ subCategory.name }}</button>
+                            <!-- </div> -->
+                          </div>
+                        </transition>
+                      </div>
+                  </div>
+                </transition-group>
 
                 <transition  appear name="u-fade"  mode="out-in" tag="div">
                   <div class="col-md-12 small text-muted mt-3 mb-2 fake-link" @click="makeNewComplaint()" v-if="(complaints[complaints.length-1].chiefComplaint !== '' && complaints[complaints.length-1].hasSubcategories === false) || (complaints[complaints.length-1].chiefSubComplaint !== '' && complaints[complaints.length-1].hasSubcategories === true)">
@@ -425,41 +425,78 @@
                 </div>
 
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="eyes">
-                  <small>Eyes (hover title for photo)</small>
+                  <small>Eyes</small>
                   <hr class="mb-1 mt-1">
                 </div>
-                <div class="col-md-6 mb-3">
-                  <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/jaundice.png'>` }">
+                <div class="col-md-12 mb-5">
+                  <!-- <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/jaundice.png'>` }">
                     <label class="fake-link" for="exampleFormControlSelect1">{{ generalExamsQuestions[0].name }}</label><br>
+                  </div> -->
+                  Jaundice<br>
+                  <div class="w-100 my-3">
+                    <img class='w-25' src='/refImages/jaundice.png'><img class='w-25' src='/refImages/jaundice.png'><img class='w-25' src='/refImages/jaundice.png'><img class='w-25' src='/refImages/jaundice.png'>
                   </div>
+                   Jaundice is yellowness around the pupil of the eyes. Please examine the conjunctiva under the upper lid for any discoloration. 
+                   <br><br>
+                   <div class="mb-2">
+                    Is there jaundice present in the patient?
+                   </div>
                   <button class="btn mb-2 mr-2" :class="option.isActive ? 'btn-dark' : 'btn-light'" v-for="(option, oIndex) in generalExamsQuestions[0].options" :key="oIndex" @click="handleGenExamOptions(0, oIndex)">
                     {{ option.name }}
                   </button>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/pallor.png'>` }">
+                <div class="col-md-12 mb-3">
+                  <!-- <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/pallor.png'>` }">
                     <label class="fake-link" for="exampleFormControlSelect1" >{{ generalExamsQuestions[1].name }}</label><br>
+                  </div> -->
+
+                  Pallor<br>
+                  <div class="w-100 my-3">
+                    <img class='w-25' src='/refImages/pallor.png'><img class='w-25' src='/refImages/pallor.png'><img class='w-25' src='/refImages/pallor.png'><img class='w-25' src='/refImages/pallor.png'>
                   </div>
+                   Pallor is yellowness around the pupil of the eyes. Please examine the conjunctiva under the upper lid for any discoloration. 
+                   <br><br>
+                   <div class="mb-2">
+                    What is the level of pallor in the patient?
+                   </div>
                   <button class="btn mb-2 mr-2" :class="option.isActive ? 'btn-dark' : 'btn-light'" v-for="(option, oIndex) in generalExamsQuestions[1].options" :key="oIndex" @click="handleGenExamOptions(1, oIndex)">
                     {{ option.name }}
                   </button>
                 </div>
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="hands">
-                  <small>Hands (hover title for photo)</small>
+                  <small>Hands</small>
                   <hr class="mb-1 mt-1">
                 </div>
-                <div class="col-md-6 mb-3">
-                  <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/cyanosis.png'>` }">
+                <div class="col-md-12 mb-5">
+                  <!-- <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/cyanosis.png'>` }">
                     <label class="fake-link" for="exampleFormControlSelect1" >{{ generalExamsQuestions[2].name }}</label><br>
+                  </div> -->
+                  Cyanosis<br>
+                  <div class="w-100 my-3">
+                    <img class='w-25' src='/refImages/cyanosis.png'><img class='w-25' src='/refImages/cyanosis.png'><img class='w-25' src='/refImages/cyanosis.png'><img class='w-25' src='/refImages/cyanosis.png'>
                   </div>
+                   Cyanosis is blueness of the hands. Please examine the hands of the patient for any discoloration. 
+                   <br><br>
+                   <div class="mb-2">
+                    What is the level of cyanosis in the patient?
+                   </div>
                   <button class="btn mb-2 mr-2" :class="option.isActive ? 'btn-dark' : 'btn-light'" v-for="(option, oIndex) in generalExamsQuestions[2].options" :key="oIndex" @click="handleGenExamOptions(2, oIndex)">
                     {{ option.name }}
                   </button>
                 </div>
-                <div class="col-md-6 mb-3">
-                  <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/clubbing.png'>` }">
+                <div class="col-md-12 mb-3">
+                  <!-- <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/clubbing.png'>` }">
                     <label class="fake-link" for="exampleFormControlSelect1" >{{ generalExamsQuestions[3].name }}</label><br>
+                  </div> -->
+                  Clubbing<br>
+                  <div class="w-100 my-3">
+                    <img class='w-25' src='/refImages/clubbing.png'><img class='w-25' src='/refImages/clubbing.png'><img class='w-25' src='/refImages/clubbing.png'><img class='w-25' src='/refImages/clubbing.png'>
                   </div>
+                   Clubbing is a physical sign characterized by bulbous enlargement of the ends of one or more fingers or toes. Please examine the hands of the patient for any disfiguration. 
+                   <br><br>
+                   <div class="mb-2">
+                    What is the level of clubbing in the patient?
+                   </div>
                   <button class="btn mb-2 mr-2" :class="option.isActive ? 'btn-dark' : 'btn-light'" v-for="(option, oIndex) in generalExamsQuestions[3].options" :key="oIndex" @click="handleGenExamOptions(3, oIndex)">
                     {{ option.name }}
                   </button>
@@ -468,10 +505,16 @@
                   <small>Legs (hover for photo)</small>
                   <hr class="mb-1 mt-1">
                 </div>
-                <div class="col-md-6 mb-3">
-                  <div class="d-inline" v-tooltip="{ content: `<img class='w-100' src='/refImages/oedema.png'>` }">
-                    <label class="fake-link" for="exampleFormControlSelect1">{{ generalExamsQuestions[4].name }}</label><br>
+                <div class="col-md-12 mb-3">
+                  Oedema<br>
+                  <div class="w-100 my-3">
+                    <img class='w-25' src='/refImages/oedema.png'><img class='w-25' src='/refImages/oedema.png'><img class='w-25' src='/refImages/oedema.png'><img class='w-25' src='/refImages/oedema.png'>
                   </div>
+                   Oedema is characterized by swelling in the ankles, feet and legs, which is often caused by a build-up of fluid.  Please examine the legs of the patient for any disfiguration. 
+                   <br><br>
+                   <div class="mb-2">
+                    What is the level of oedema in the patient?
+                   </div>
                   <button class="btn mb-2 mr-2" :class="option.isActive ? 'btn-dark' : 'btn-light'" v-for="(option, oIndex) in generalExamsQuestions[4].options" :key="oIndex" @click="handleGenExamOptions(4, oIndex)">
                     {{ option.name }}
                   </button>
@@ -860,6 +903,9 @@
 export default {
   layout: 'dashboard',
   methods: {
+    removeComplaint: function (complaintIndex) {
+      this.complaints.splice(complaintIndex, 1)
+    },
     makeCategoryActiveMulti: function (categoryName, questionIndex, categoryIndex) {
       // alert('Complaint name: ' + categoryName)
       // alert('Complaint index: ' + categoryIndex)
@@ -1652,7 +1698,7 @@ export default {
               isActive: false
             },
             {
-              name: 'Breat Pain',
+              name: 'Breast Pain',
               isActive: false
             },
             {
@@ -3118,7 +3164,7 @@ export default {
       ],
       generalExamsQuestions: [
         {
-          name: 'Jaundice (yellow-ness) in Eyes',
+          name: 'Jaundice in Eyes',
           type: 'button',
           isComplete: false,
           options: [
@@ -4313,14 +4359,14 @@ export default {
               isComplete: false,
               organsToExamine: ['eye', 'head', 'hand'],
               questions: [
-                {
-                  question: "How long has this been going on?",
-                  type: 'number',
-                  isComplete: false,
-                  answer: '',
-                  placeholder: '0',
-                  caption: 'days long.'
-                },
+                // {
+                //   question: "How long has this been going on?",
+                //   type: 'number',
+                //   isComplete: false,
+                //   answer: '',
+                //   placeholder: '0',
+                //   caption: 'days long.'
+                // },
                 {
                   question: "Where did it start?",
                   type: 'button',
