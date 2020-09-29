@@ -29,13 +29,17 @@ export default {
     let CLUSTER_ID = state.currCluster
     let PATIENT_ID = payload.id || state.currPatient.id
 
-    // console.log('Patient List: ')
-    // console.log(state.udayDb.clusters[CLUSTER_ID].patients)
+    console.log('search for: ' + PATIENT_ID)
 
-    let patientProf = state.udayDb.clusters[CLUSTER_ID].patients.find(patient => patient.id === PATIENT_ID) || state.currPatient
+    let patientProf = state.udayDb.clusters[CLUSTER_ID].patients.find(patient => {
+      // console.log('looking for id: ')
+      // console.log(patient.id)
+      console.log(patient)
+      return patient.id === PATIENT_ID
+    }) || state.currPatient
 
-    // console.log('searching for patient...')
-    // console.log(patientProf)
+    console.log('found patient: ')
+    console.log(patientProf)
 
     state.currPatient = patientProf
   },

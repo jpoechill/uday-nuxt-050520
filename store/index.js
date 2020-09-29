@@ -15,7 +15,19 @@ export const state = () => ({
   currCluster: 'cluster001',
   currUser: {},
   baseURL: 'https://powerful-thicket-49412.herokuapp.com',
-  currPatient: {},
+  currPatient: {
+    id: '',
+    demographics: {
+      name: '',
+      occupation: '',
+      phone: '',
+      gender: '',
+      address: '',
+      policeStation: '',
+      state: '',
+      district: '',
+    }
+  },
   currEpisode: {},
 });
 

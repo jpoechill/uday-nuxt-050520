@@ -70,19 +70,20 @@
                   </td>
                   <td>
                     <div v-if="visit.episodeDetails">
-                      <div v-for="(complaints, index) in visit.episodeDetails.chiefComplaints" :key="index">
-
-                        <div v-if="complaints[1]">
+                      <!-- {{ visit.episodeDetails.complaints[0].chiefComplaint }} | 
+                      {{ visit.episodeDetails.complaints[0].chiefSubComplaint }} -->
+                      <!-- <div v-for="(complaints, index) in visit.episodeDetails.complaints[0]" :key="index"> -->
+                        <!-- <div v-if="visit.episodeDetails.complaints[0].chiefSubComplaint">
                           <button class="btn-sm btn-light mb-2 mr-2">
-                            {{ complaints[1] }}
+                            {{ visit.episodeDetails.complaints[0].chiefSubComplaint }}
                           </button>
                         </div>
                         <div v-else>
                           <button class="btn-sm btn-light mb-2 mr-2">
-                            {{ complaints[0] }}
+                            {{ visit.episodeDetails.complaints[0].chiefComplaint }}
                           </button>
-                        </div>
-                      </div>
+                        </div> -->
+                      <!-- </div> -->
                     </div>
                   </td>
                   <td class="d-none d-md-inline-block mb-n1 w-33">{{ visit.lastUpdated }}</td>

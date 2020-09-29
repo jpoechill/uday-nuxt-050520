@@ -17,7 +17,7 @@
           <div class="col-md-9">
             <div class="row">
               <div class="col-md-12 text-capitalize">
-                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics.name ? currPatient.demographics.name : '' }} </h5>  
+                <h5 class="d-inline text-decoration-none">{{ currPatient.demographics ? currPatient.demographics.name : '' }} </h5>  
                 <div class="d-inline float-right">
                   <!-- {{ currPatient }} -->
                   <img v-if="currPatient.status == 'registered'" src="/circle-green.svg" class="shape-status" alt="">
@@ -112,7 +112,9 @@ export default {
       ]
     }
   },
-  mounted () {
+  created () {
+    console.log('xxxxxxxx')
+
     let queryID = this.$route.query.id
     console.log('Query ID: ' + queryID)
     console.log('Curr Pateint ID: ' + this.$store.state.currPatient.id)
@@ -121,6 +123,8 @@ export default {
     if (queryID !== this.$store.state.currPatient.id) {
       // request ID does not equal curr ID,
       // get that patient profile
+      console.log('find the patient: ' + queryID)
+
       this.$store.commit('updateCurrPatient', { id: queryID })
     } else {
       // display current Patient in store

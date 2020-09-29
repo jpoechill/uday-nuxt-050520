@@ -434,7 +434,7 @@
                   </div> -->
                   Jaundice<br>
                   <div class="w-100 my-3">
-                    <img class='w-25' src='/refImages/jaundice.png'><img class='w-25' src='/refImages/jaundice.png'><img class='w-25' src='/refImages/jaundice.png'><img class='w-25' src='/refImages/jaundice.png'>
+                    <img class='w-25' src='/refImages/jaundice.png'><img class='w-25' src='/refImages/jaundice_02.jpg'><img class='w-25' src='/refImages/jaundice_03.jpg'><img class='w-25' src='/refImages/jaundice_04.jpg'>
                   </div>
                    Jaundice is yellowness around the pupil of the eyes. Please examine the conjunctiva under the upper lid for any discoloration. 
                    <br><br>
@@ -452,7 +452,7 @@
 
                   Pallor<br>
                   <div class="w-100 my-3">
-                    <img class='w-25' src='/refImages/pallor.png'><img class='w-25' src='/refImages/pallor.png'><img class='w-25' src='/refImages/pallor.png'><img class='w-25' src='/refImages/pallor.png'>
+                    <img class='w-25' src='/refImages/pallor.png'><img class='w-25' src='/refImages/pallor_02.jpg'><img class='w-25' src='/refImages/pallor_03.jpg'><img class='w-25' src='/refImages/pallor_04.jpg'>
                   </div>
                    Pallor is yellowness around the pupil of the eyes. Please examine the conjunctiva under the upper lid for any discoloration. 
                    <br><br>
@@ -502,7 +502,7 @@
                   </button>
                 </div>
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="legs">
-                  <small>Legs (hover for photo)</small>
+                  <small>Legs</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-12 mb-3">
@@ -1247,7 +1247,7 @@ export default {
 
       // // normalize vitals
       // let vitals = this.vitals
-      console.log(this.newEpisodeComplete.vitals)
+      // console.log(this.newEpisodeComplete.vitals)
 
       // normalize specific exams
       let specificExams = this.getAllSpecificComplaintQuestions()
@@ -1257,10 +1257,13 @@ export default {
       console.log('list of completed questions')
       console.log(this.newEpisodeComplete)
 
+      // attach patient id to payload
+      // this.newEpisodeComplete.id = this.$store.state.currPatient.id
+
       this.$store.commit('updateStatus', 'allocated')
       this.$store.commit('addPatientToQueue', this.$store.state.currPatient.id)
       this.$store.commit('recordNewEpisode', this.newEpisodeComplete)
-      this.$store.commit('updateCurrPatient')
+      this.$store.commit('updateCurrPatient', { id: this.$store.state.currPatient.id })
     },
     calculateBMI: function () {
       let patWeight = this.newEpisodeComplete.vitals.filter(question => question.name === 'weight')[0].value
@@ -1432,7 +1435,7 @@ export default {
     }
   },
   beforeRouteLeave (to, from , next) {
-    if (!this.formIsCompelete) {
+    if (!this.formIsComplete) {
       const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
       
       answer ? next() : next(false);

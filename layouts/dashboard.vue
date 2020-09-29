@@ -32,7 +32,7 @@
                       <div class="dropdown-item fake-link" @click="clearCache()">Clear Cache</div> -->
                     </div>
                       | 
-                    <a href="/" class="text-white">Logout</a>
+                    <nuxt-link to="/" class="text-white">Logout</nuxt-link>
                   </div>
                 </div>
               </div>
