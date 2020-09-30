@@ -478,7 +478,7 @@
                    Cyanosis is blueness of the hands. Please examine the hands of the patient for any discoloration. 
                    <br><br>
                    <div class="mb-2">
-                    What is the level of cyanosis in the patient?
+                    Is there cyanosis present in the patient?
                    </div>
                   <button class="btn mb-2 mr-2" :class="option.isActive ? 'btn-dark' : 'btn-light'" v-for="(option, oIndex) in generalExamsQuestions[2].options" :key="oIndex" @click="handleGenExamOptions(2, oIndex)">
                     {{ option.name }}
@@ -3187,11 +3187,15 @@ export default {
           isComplete: false,
           options: [
             {
-              name: 'Yes',
+              name: 'Mild/Moderate',
               isActive: false,
             },
             {
-              name: 'No',
+              name: 'Severe',
+              isActive: false,
+            },
+            {
+              name: 'None',
               isActive: false,
             },
           ]
@@ -3217,6 +3221,10 @@ export default {
           isComplete: false,
           options: [
             {
+              name: 'Normal',
+              isActive: false,
+            },
+            {
               name: 'Clubbing',
               isActive: false,
             },
@@ -3225,7 +3233,7 @@ export default {
               isActive: false,
             },
             {
-              name: 'Cyanosis (blue-ness)',
+              name: 'Cyanosis',
               isActive: false,
             },
             {

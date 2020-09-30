@@ -61,6 +61,11 @@
                     </label><br>
                     <button v-for="(condition, index) in conditionOptions" :key="index" class="btn mb-2 mr-2" :class="condition.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleConditionOptions(index)">{{ condition.title }}</button>
                 </div>
+                <div class="col-md-12 mt-3 mb-1">
+                    <label for="exampleFormControlSelect1">Please provide any addition details to the condition of the patient.
+                    </label><br>
+                    <textarea name="" v-model="conditionDescription" placeholder="Describe any abnormalities or changes you notice from the patient's last visit" class="w-100 p-2 w-100" rows="6"></textarea>
+                </div>
 
                 <transition  appear name="u-fade"  mode="out-in" tag="div">
                   <div class="col-md-12 small text-muted mt-3 mb-2 fake-link" @click="showAdditionalComplaints = true">
@@ -1196,7 +1201,7 @@ export default {
       tabs[ref + 1].isEnabled = true
     },
     addToQueue: function () {
-      alert('The patient has been allocated.')
+      this.formIsComplete = true
 
       // normalize answers to new episode questions
       // this.newEpisodeComplete.chiefComplaints.push([this.currCategory, this.subCategory])
@@ -1204,9 +1209,18 @@ export default {
       // normalize answers to new episode questions
       this.newEpisodeComplete.complaints.push(...this.complaints)
 
+      // normalize condition options
       let conditionQuestions = this.conditionOptions
       this.newEpisodeComplete.conditionQuestions = conditionQuestions
       
+      // normalize condition description
+      // conditionDescription
+      let conditionDescription = this.conditionDescription
+      this.newEpisodeComplete.conditionDescription = conditionDescription
+      
+      // mark episode as follow up
+      this.newEpisodeComplete.episodeType = 'followup'
+
       // normalize fixed questions
       // let questions = this.questions
       // this.newEpisodeComplete.chiefComplaintsFixedQuestions.push(...questions)
@@ -1219,6 +1233,8 @@ export default {
       // let vitals = this.vitals
       console.log(this.newEpisodeComplete.vitals)
 
+      //
+
       // normalize specific exams
       let specificExams = this.getAllSpecificComplaintQuestions()
       this.newEpisodeComplete.specificExams.push(...specificExams)
@@ -1229,6 +1245,8 @@ export default {
 
       this.$store.commit('recordNewFollowUp', [this.$store.state.currEpisode.episodeID, this.newEpisodeComplete])
 
+
+      alert('The patient has been allocated.')
       // this.$store.commit('updateStatus', 'allocated')
       // this.$store.commit('addPatientToQueue', this.$store.state.currPatient.id)
       // this.$store.commit('recordNewEpisode', this.newEpisodeComplete)
@@ -1404,9 +1422,13 @@ export default {
     }
   },
   beforeRouteLeave (to, from , next) {
-    const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
-    
-    answer ? next() : next(false);
+    if (!this.formIsComplete) {
+      const answer = window.confirm('You have unsaved changes. Are you sure you want to leave? ')
+      
+      answer ? next() : next(false);
+    } else {
+      next()
+    }
   },
   created() {
     // init complaint categories
@@ -1448,6 +1470,7 @@ export default {
   },
   data() {
     return {
+      formIsComplete: false,
       showAdditionalComplaints: false,
       complaints: [],
       patHeight: 0,
@@ -1461,6 +1484,7 @@ export default {
       hasSubCategory: false,
       showQuestions: false,
       complaintItem: '',
+      conditionDescription: '',
       conditionOptions: [
         {
           title: 'Better',
@@ -1552,32 +1576,32 @@ export default {
             title: 'Blood Pressure',
             name: 'bp',
             caption: 'mmHg',
-            valueFirst: '0',
-            valueSecond: '0'
+            valueFirst: '',
+            valueSecond: ''
           },
           {
             title: 'Sp02',
             name: 'sp02',
             caption: '%',
-            value: '0'
+            value: ''
           },
           {
             title: 'Patient Temperature',
             name: 'temperature',
             caption: '°F',
-            value: '0'
+            value: ''
           },
           {
             title: 'Patient Height',
             name: 'height',
             caption: 'cm',
-            value: '0'
+            value: ''
           },
           {
             title: 'Patient Weight',
             name: 'weight',
             caption: 'kg',
-            value: '0'
+            value: ''
           },
           {
             title: 'Patient BMI',

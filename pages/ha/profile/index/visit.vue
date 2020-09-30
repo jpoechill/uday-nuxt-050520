@@ -260,61 +260,87 @@
           </ul>
           <transition name="u-fade"  mode="out-in">
           <div class="w-100 bg-white mb-2 mt-0 px-3 pt-3 pb-3" key="complaint" style="min-height: 200px;" v-if="subTabs[0].isActive">
-            
 
-            <div class="row" v-for="(complaint, questionIndex) in visitData.complaints" :key="questionIndex">
-              <div class="col-md-12">
-                <div class="small text-muted mb-2">
-                  Chief Complaints
-                  <hr class="mb-3 mt-1">
-                </div>
-              </div>
-
-              <div class="col-md-12 mb-3">
-                <div>
-                  <label for="exampleFormControlSelect1">What is the category of the complaint?</label><br>
-                  <button v-for="(condition, index) in visitData.conditionQuestions" :key="index" class="btn mb-2 mr-2" :class="condition.isActive ? 'btn-dark text-white' : 'btn-light'">{{ condition.title }}</button>
-                </div>
-                <div v-if="complaint.chiefComplaint">
-                  <button class="btn mb-2 btn-dark mr-2">{{ complaint.chiefComplaint }}</button>
-                  <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint !== ''">{{ complaint.chiefSubComplaint }}</button>
-                </div>
-              </div>
-
-              <div class="col-md-12" v-if="complaint.questions.length">
-                <div class="small text-muted mb-2">
-                  Chief Complaints, Fixed Questions
-                  <hr class="mb-3 mt-1">
-                </div>
-              </div>
-
-              <div v-for="(question, indexQuestion) in complaint.questions" class="col-md-12 mb-4" :key="indexQuestion">
-                <div v-if="question.type === 'text'">
-                  <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                  <input type="text" class="p-2 w-100" v-model="question.answer" :placeholder="question.placeholder || 'There is no placeholder.'">
-                </div>
-                <div v-if="question.type === 'button'">
-                  <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                  <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'">
-                    {{ option.name }}
-                  </button>
-                  <div v-if="question.showOther === true">
-                    <input type="text" class="mt-1 p-2 w-100" placeholder="Describe any further details">
+            <div v-if="visitData.episodeType === 'followup'">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="small text-muted mb-2">
+                    Current Conditions
+                    <hr class="mb-3 mt-1">
                   </div>
                 </div>
-                <div v-if="question.type === 'button' && question.showTextInput === true">
+                <div class="col-md-12 mt-3 mb-1">
+                    <label for="exampleFormControlSelect1">What is current condition of the patient?
+                    </label><br>
+                    <button v-for="(condition, index) in visitData.conditionQuestions" :key="index" class="btn mb-2 mr-2" :class="condition.isActive ? 'btn-dark text-white' : 'btn-light'">{{ condition.title }}</button>
+                </div>
+                <div class="col-md-12 mt-3 mb-5">
+                    <label for="exampleFormControlSelect1">Please provide any addition details to the condition of the patient.
+                    </label><br>
+                    {{ visitData.conditionDescription }}
+                    <!-- <textarea name="" v-model="visitData.conditionDescription" placeholder="Describe any abnormalities or changes you notice from the patient's last visit" class="w-100 p-2 w-100" rows="6"></textarea> -->
+                </div>
+              </div>
+            </div>
+
+            <!-- {{ visitData.complaints && visitData.complaints[0].chiefComplaint }} -->
+
+            <div v-if="visitData.complaints && visitData.complaints[0].chiefComplaint"> 
+              <div class="row" v-for="(complaint, questionIndex) in visitData.complaints" :key="questionIndex">
+                <div class="col-md-12">
+                  <div class="small text-muted mb-2">
+                    Chief Complaints
+                    <hr class="mb-3 mt-1">
+                  </div>
+                </div>
+
+                <div class="col-md-12 mb-3">
                   <div>
-                    <input type="text" class="mt-1 p-2 w-100" :placeholder="question.options[0].isActive === true ? question.options[0].placeholder : question.options[1].placeholder">
+                    <label for="exampleFormControlSelect1">What is the category of the complaint?</label><br>
+                    <!-- <button v-for="(complaint, index) in visitData.complaints" :key="index" class="btn mb-2 mr-2" :class="complaint.isActive ? 'btn-dark text-white' : 'btn-light'">{{ complaint.title }}</button> -->
+                  </div>
+                  <div v-if="complaint.chiefComplaint">
+                    <button class="btn mb-2 btn-dark mr-2">{{ complaint.chiefComplaint }}</button>
+                    <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint !== ''">{{ complaint.chiefSubComplaint }}</button>
                   </div>
                 </div>
-                <div v-if="question.type === 'number'">
-                  <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                  {{ question.answer || 'No Answer' }}
+
+                <div class="col-md-12" v-if="complaint.questions.length">
+                  <div class="small text-muted mb-2">
+                    Chief Complaints, Fixed Questions
+                    <hr class="mb-3 mt-1">
+                  </div>
+                </div>
+
+                <div v-for="(question, indexQuestion) in complaint.questions" class="col-md-12 mb-4" :key="indexQuestion">
+                  <div v-if="question.type === 'text'">
+                    <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
+                    <input type="text" class="p-2 w-100" v-model="question.answer" :placeholder="question.placeholder || 'There is no placeholder.'">
+                  </div>
+                  <div v-if="question.type === 'button'">
+                    <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
+                    <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'">
+                      {{ option.name }}
+                    </button>
+                    <div v-if="question.showOther === true">
+                      <input type="text" class="mt-1 p-2 w-100" placeholder="Describe any further details">
+                    </div>
+                  </div>
+                  <div v-if="question.type === 'button' && question.showTextInput === true">
+                    <div>
+                      <input type="text" class="mt-1 p-2 w-100" :placeholder="question.options[0].isActive === true ? question.options[0].placeholder : question.options[1].placeholder">
+                    </div>
+                  </div>
+                  <div v-if="question.type === 'number'">
+                    <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
+                    {{ question.answer || 'No Answer' }}
+                  </div>
+                </div>
+                <div class="col-md-12" v-if="questionIndex !== (visitData.complaints.length - 1)">
+                  <hr>
                 </div>
               </div>
-              <div class="col-md-12" v-if="questionIndex !== (visitData.complaints.length - 1)">
-                <hr>
-              </div>
+
             </div>
             
 <!--             

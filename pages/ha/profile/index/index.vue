@@ -70,25 +70,27 @@
                   </td>
                   <td>
                     <div v-if="visit.episodeDetails">
+                      <!-- {{ visit.episodeDetails.complaints[0] }} -->
                       <!-- {{ visit.episodeDetails.complaints[0].chiefComplaint }} | 
                       {{ visit.episodeDetails.complaints[0].chiefSubComplaint }} -->
-                      <!-- <div v-for="(complaints, index) in visit.episodeDetails.complaints[0]" :key="index"> -->
-                        <!-- <div v-if="visit.episodeDetails.complaints[0].chiefSubComplaint">
+                      <div v-for="(complaints, index) in visit.episodeDetails.complaints" :key="index">
+                        <!-- {{ complaints }} xxx -->
+                        <div v-if="complaints.chiefSubComplaint">
                           <button class="btn-sm btn-light mb-2 mr-2">
-                            {{ visit.episodeDetails.complaints[0].chiefSubComplaint }}
+                            {{ complaints.chiefSubComplaint }}
                           </button>
                         </div>
                         <div v-else>
                           <button class="btn-sm btn-light mb-2 mr-2">
-                            {{ visit.episodeDetails.complaints[0].chiefComplaint }}
+                            {{ complaints.chiefComplaint }}
                           </button>
-                        </div> -->
-                      <!-- </div> -->
+                        </div>
+                      </div>
                     </div>
                   </td>
                   <td class="d-none d-md-inline-block mb-n1 w-33">{{ visit.lastUpdated }}</td>
                   <td class="d-none d-md-inline-block mb-n1 w-33">{{ visit.created }}</td>
-                  <td class="d-none d-md-inline-block mb-n1 w-33"></td>
+                  <td class="d-none d-md-inline-block mb-n1 w-33">{{ visit.numFollowUps }}</td>
                 </tr>
                 <tr class="pointer" v-if="this.list.length === 0" style="height: 40px;">
                   <td class="py-3 px-3 text-center" colspan="9">

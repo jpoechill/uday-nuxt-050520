@@ -117,6 +117,7 @@ export default {
 
     let FOLLOWUP_PAYLOAD = payload[1]
 
+    console.log(FOLLOWUP_PAYLOAD);
     // console.log(episodeID);
     // console.log(episodePayload);
 
@@ -124,6 +125,21 @@ export default {
     let newID = Math.random() .toString(36) .substr(2, 6);
     FOLLOWUP_PAYLOAD.meta.visitID = newID;
     FOLLOWUP_PAYLOAD.meta.createDate = getCurrDate();
+
+    // console.log('Curr follow ups: ' + state.udayDb.clusters[CLUSTER_ID].patients
+    //   .find(patient => patient.id === PATIENT_ID).find(episode => episode.episodeID === EPISODE_ID).numFollowUps)
+
+
+    // state.udayDb.clusters[CLUSTER_ID].patients
+    //   .find(patient => patient.id === PATIENT_ID).find(episode => episode.episodeID === EPISODE_ID).numFollowUps++
+
+    // console.log('Adjusted follow ups: ' + state.udayDb.clusters[CLUSTER_ID].patients
+    //   .find(patient => patient.id === PATIENT_ID).find(episode => episode.episodeID === EPISODE_ID).numFollowUps)
+
+    state.udayDb.clusters[CLUSTER_ID].patients
+      .find(patient => patient.id === PATIENT_ID)
+      .episodes.find(episode => episode.episodeID === EPISODE_ID)
+      .numFollowUps++
 
     state.udayDb.clusters[CLUSTER_ID].patients
       .find(patient => patient.id === PATIENT_ID)
@@ -153,7 +169,7 @@ export default {
       title: 'Episode ' + episodeLen,
       created: currentDate,
       lastUpdated: currentDate,
-      numFollowUps: '',
+      numFollowUps: 0,
       allocated: true,
       followUps: [],
       services: [],
