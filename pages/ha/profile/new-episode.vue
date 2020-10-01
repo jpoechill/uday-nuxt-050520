@@ -69,14 +69,14 @@
                             </label><img v-if="questionIndex !== 0" src="/x.png" @click="removeComplaint(questionIndex)" style="width: 14px; height: 14px;" class="float-right fake-link"><br>
                           <button v-for="(category, categoryIndex) in complaint.categories" :class="category.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeCategoryActiveMulti(category.name, questionIndex, categoryIndex)"  class="btn mb-2 mr-2" :key="categoryIndex">{{category.name}}</button>
                         </div>
-
+                        
                         <!-- General SubCategory -->
                         <transition  appear name="u-fade"  mode="out-in" tag="div">
                           <div class="col-md-12 mt-4 mb-1" v-if="complaint.hasSubcategories">
                             <label for="exampleFormControlSelect1">What is the specific complaint? 
                               </label><br>
                             <!-- <div v-if="categoryItemInd !== null" class="w-100"> -->
-                              <button v-for="(subCategory, subCategoryIndex) in complaint.subCategories" :key="subCategoryIndex" class="btn mb-2 mr-2" :class="subCategory.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeSubCategoryActiveMulti(questionIndex, subCategoryIndex)">{{ subCategory.name }}</button>
+                              <button v-for="(subCategory, subCategoryIndex) in complaint.subcategories" :key="subCategoryIndex" class="btn mb-2 mr-2" :class="subCategory.isActive ? 'btn-dark text-white' : 'btn-light'" @click="makeSubCategoryActiveMulti(questionIndex, subCategoryIndex)">{{ subCategory.name }}</button>
                             <!-- </div> -->
                           </div>
                         </transition>
@@ -117,6 +117,7 @@
                     <div class="w-100">
                       <div class="container">
                         <div class="row" v-for="(complaint, questionIndex) in complaints" :key="questionIndex">
+                          
                           <div class="col-md-12 mb-3">
                             <div>
                               <button class="btn mb-2 btn-dark mr-2" v-if="complaint.chiefSubComplaint === ''">{{ complaint.chiefComplaint }}</button>
@@ -921,10 +922,10 @@ export default {
 
           if (category.subcategories) {
             this.complaints[questionIndex].hasSubcategories = true
-            this.complaints[questionIndex].subCategories = JSON.parse(JSON.stringify(category.subcategories))
+            this.complaints[questionIndex].subcategories = JSON.parse(JSON.stringify(category.subcategories))
           } else {
             this.complaints[questionIndex].hasSubcategories = false
-            this.complaints[questionIndex].subCategories = []
+            this.complaints[questionIndex].subcategories = []
             this.complaints[questionIndex].chiefSubComplaint = ''
 
             // clone fixed questions
@@ -951,31 +952,60 @@ export default {
     makeSubCategoryActiveMulti: function (questionIndex, subCategoryIndex) {
       let self = this
 
-      this.complaints[questionIndex].subCategories.forEach((subCategory, index) => {
+      this.complaints[questionIndex].subcategories.forEach((subCategory, index) => {
         if (subCategoryIndex === index) {
           subCategory.isActive = true
           this.complaints[questionIndex].chiefSubComplaint = subCategory.name
           
           // clone fixed questions (for subcategories)
-          console.log(self.categories.find(x => x.name === this.complaints[questionIndex].chiefComplaint).subCategories.find(y => y.name === subCategory.name).questions)
-          let subCategoryQuestions = JSON.parse(JSON.stringify(self.categories.find(x => x.name === this.complaints[questionIndex].chiefComplaint).subCategories.find(y => y.name === subCategory.name).questions))
+          console.log(self.categories.find(x => x.name === this.complaints[questionIndex].chiefComplaint).subcategories.find(y => y.name === subCategory.name).questions)
+          let subCategoryQuestions = JSON.parse(JSON.stringify(self.categories.find(x => x.name === this.complaints[questionIndex].chiefComplaint).subcategories.find(y => y.name === subCategory.name).questions))
           self.complaints[questionIndex].questions = subCategoryQuestions
         } else {
           subCategory.isActive = false
         }
       })
     },
-    makeNewComplaint: function () {
+    makeNewComplaint: function (chiefComplaint, chiefSubComplaint) {
       let categoriesClone = JSON.parse(JSON.stringify(this.categoriesShallow))
+      let subcategoriesClone = []
+      let subCategoryQuestions = []
+      let hasSubCategories = false
+      let categoryIndex = 0
+
+      // filter new chief comaplaint and subcategory to match new complaint entry
+      if (chiefComplaint) {
+        categoriesClone.forEach((category, index) => {
+          if (category.name === chiefComplaint) {
+            category.isActive = true
+            categoryIndex = index
+
+            if (chiefSubComplaint !== '') {
+              subcategoriesClone = category.subcategories
+
+              // find and clone subcategories over (shallow)
+              subcategoriesClone.forEach(subcategory => subcategory.name === chiefSubComplaint ? subcategory.isActive = true : subcategory.isActive = false)
+
+              // find and clone complaint questions over
+              subCategoryQuestions = JSON.parse(JSON.stringify(this.categories.find(x => x.name === chiefComplaint).subcategories.find(y => y.name === chiefSubComplaint).questions))
+
+              hasSubCategories = true
+            }
+
+          
+          }
+        })
+      }
+
 
       this.complaints.push(
         {
-          chiefComplaint: '',
-          chiefSubComplaint: '',
-          hasSubcategories: false,
+          chiefComplaint: chiefComplaint,
+          chiefSubComplaint: chiefSubComplaint,
+          hasSubcategories: hasSubCategories,
           categories: categoriesClone,
-          subCategories: [],
-          questions: []
+          subcategories: subcategoriesClone,
+          questions: subCategoryQuestions
         }
       )
     },
@@ -1017,14 +1047,14 @@ export default {
           self.currCategory = clickedCategory
           self.categoryIndex = index
 
-          if (this.categories[index].subCategories) {
+          if (this.categories[index].subcategories) {
             // has sub-category
             self.hasSubCategory = true
             self.showQuestions = false
             self.categoryItemInd = index
             self.subCategoryInd = -1
 
-            this.categories[index].subCategories.forEach(function(subCategory, index){
+            this.categories[index].subcategories.forEach(function(subCategory, index){
               subCategory.isActive = false
             })
           } else {
@@ -1051,7 +1081,7 @@ export default {
 
       // console.log(categoryName)
 
-      this.categories[categoryInd].subCategories.forEach(function(subCategory, index){
+      this.categories[categoryInd].subcategories.forEach(function(subCategory, index){
         // console.log(self.subCategory)
         if (index === subCategoryInd) {
           subCategory.isActive = true
@@ -1072,7 +1102,7 @@ export default {
 
       // console.log(categoryName)
 
-      this.categories[categoryInd].subCategories.forEach(function(subCategory, index){
+      this.categories[categoryInd].subcategories.forEach(function(subCategory, index){
         // console.log(self.subCategory)
         if (index === subCategoryInd) {
           subCategory.isActive = true
@@ -1106,6 +1136,13 @@ export default {
         if (indexAnswer === index) {
           question.isActive = true
           questionMain.isComplete = true
+
+          console.log(question)
+          if (question.isComplaint) {
+            self.makeNewComplaint(question.complaint[0], question.complaint[1])
+            alert('This question is a complaint')
+            // self.goToPrevious()
+          }
 
           // toggle secondary input
           if (self.complaints[questionIndex].questions[indexQuestion].showTextInput === false) {
@@ -1209,6 +1246,22 @@ export default {
           }
         }
       }
+    },
+    goToPrevious: function () {
+      this.scrollToTop()
+
+      let tabs = this.tabs
+      let ref = 0
+
+      for (let i = 0; i < tabs.length; i++) {
+        if (tabs[i].isActive === true) {
+          tabs[i].isActive = false
+          ref = i
+        }
+      }
+
+      tabs[ref - 1].isActive = true
+      tabs[ref - 1].isEnabled = true
     },
     goToNext: function () {
       this.scrollToTop()
@@ -1456,8 +1509,8 @@ export default {
     
     for (let category in this.categories) {
       console.log(this.categories[category].name)
-      if (this.categories[category].subCategories) {
-        this.categories[category].subCategories.forEach(x => console.log(':: ' + x.name))
+      if (this.categories[category].subcategories) {
+        this.categories[category].subcategories.forEach(x => console.log(':: ' + x.name))
       }
     }
 
@@ -3757,6 +3810,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
               options: [
@@ -3856,6 +3910,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
               options: [
@@ -4044,6 +4099,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
               options: [
@@ -4363,7 +4419,7 @@ export default {
         {
           name: 'Pain',
           isActive: false,
-          subCategories: [
+          subcategories: [
             {
               name: 'Headache',
               isActive: false,
@@ -4554,6 +4610,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -4723,6 +4780,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -4904,6 +4962,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5077,6 +5136,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5310,6 +5370,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5839,6 +5900,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6088,6 +6150,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6348,6 +6411,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6592,6 +6656,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6772,11 +6837,14 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
                     {
                       name: 'Swelling',
+                      isComplaint: true,
+                      complaint: ['Swelling/Tumor', 'Swelling (Other)'],
                       isActive: false
                     },
                     {
@@ -6957,11 +7025,13 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
                     {
                       name: 'Fever',
+                      isComplaint: true,
                       isActive: false
                     },
                     {
@@ -6991,7 +7061,7 @@ export default {
           isActive: false,
           isComplete: false,
           organsToExamine: ['eye', 'hands', 'neck&throat', 'chest', 'lowerleg&ankle'],
-          subCategories: [
+          subcategories: [
             {
               name: 'Throat Swelling',
               isComplete: false,
@@ -7444,31 +7514,37 @@ export default {
                 {
                   question: "How did it start?",
                   type: 'text',
+                  placeholder: 'Describe how the swelling started',
                   isComplete: false,
                 }, 
                 {
                   question: "Is it painful?",
                   type: 'text',
+                  placeholder: 'Describe if the swelling emits any pain',
                   isComplete: false,
                 },
                 {
                   question: "Has it changed in size?",
                   type: 'text',
+                  placeholder: 'Has the swelling gotten bigger or smaller',
                   isComplete: false,
                 },
                 {
                   question: "Has there been a change in skin color?",
                   type: 'text',
-                  isComplete: false,
-                },
-                {
-                  question: "Are there any other symptoms?",
-                  type: 'text',
+                  placeholder: 'Describe if the swelling has changed in appearance',
                   isComplete: false,
                 },
                 {
                   question: "Is there any history of injury?",
                   type: 'text',
+                  placeholder: 'Has the patient been injured similarly in the past',
+                  isComplete: false,
+                },
+                {
+                  question: "Are there any other symptoms?",
+                  type: 'text',
+                  placeholder: 'Please describe any other noticeable symptoms',
                   isComplete: false,
                 },
               ]
@@ -7576,6 +7652,7 @@ export default {
             {
               question: "Any associated symptoms?",
               type: 'button',
+              isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
               options: [
@@ -7593,6 +7670,7 @@ export default {
                 },
                 {
                   name: 'Diarrhoea',
+                  isComplaint: true,
                   isActive: false
                 },
                 {
@@ -7771,7 +7849,7 @@ export default {
           name: 'Gynae Problems',
           isComplete: false,
           isActive: false,
-          subCategories: [
+          subcategories: [
             {
               name: 'Period Problem',
               isActive: false,
@@ -7916,6 +7994,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -8082,6 +8161,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -8249,6 +8329,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -8416,6 +8497,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -8583,6 +8665,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -8745,6 +8828,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
               options: [
@@ -8885,6 +8969,7 @@ export default {
             {
               question: "Are there any associated fits?",
               type: 'button',
+              isAssociatedSymptomQuestion: true,
               isComplete: false,
               options: [
                 {
@@ -9069,7 +9154,7 @@ export default {
           name:  'Weakness',
           isComplete: false,
           isActive: false,
-          subCategories: [
+          subcategories: [
             {
               name: 'General Weakness',
               isActive: false,
@@ -9146,6 +9231,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   options: [
                     {
@@ -9240,6 +9326,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   options: [
                     {

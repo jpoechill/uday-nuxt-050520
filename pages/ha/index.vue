@@ -7,7 +7,7 @@
             <div class="col-md-3 text-left responsive-padding-bottom">
               <div class="position-relative">
                 <div class="position-absolute w-100">
-                  <img class="w-100 pb-2" src="/avatar-ud_03.svg">
+                  <img class="w-100 pb-2" src="/avatar-fleur_01.png">
                 </div>
                 <div class="w-100" style="padding-bottom: 100%;"></div>
               </div>
