@@ -125,24 +125,44 @@
                             </div>
                           </div>
                           <div v-for="(question, indexQuestion) in complaint.questions" class="col-md-12 mb-4" :key="indexQuestion">
+                            
+                            <!-- for Text inputs -->
                             <div v-if="question.type === 'text'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
                               <input type="text" class="p-2 w-100" @keyup="handleQuestionsText(question, question.answer)" v-model="question.answer" :placeholder="question.placeholder || 'There is no placeholder.'">
                             </div>
+
+                            <!-- for Button inputs -->
                             <div v-if="question.type === 'button'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
-                              <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleSelectAnswer(questionIndex, indexQuestion, indexAnswer, question)">
-                                {{ option.name }}
-                              </button>
+                              
+                              <!-- for Multi Select Button inputs -->
+                              <div v-if="question.hasMultiSelect">
+                                <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleMultiSelectAnswer(questionIndex, indexQuestion, indexAnswer, question)">
+                                  {{ option.name }}
+                                </button>
+                              </div>
+
+                              <!-- for Single Select Button inputs -->
+                              <div v-else>
+                                <button class="btn mb-2 mr-2" v-for="(option, indexAnswer) in question.options" :key="indexAnswer" :class="option.isActive ? 'btn-dark text-white' : 'btn-light'" @click="handleSelectAnswer(questionIndex, indexQuestion, indexAnswer, question)">
+                                  {{ option.name }}
+                                </button>
+                              </div>
+
                               <div v-if="question.showOther === true">
                                 <input type="text" class="mt-1 p-2 w-100" placeholder="Describe any further details">
                               </div>
                             </div>
+
+                            <!-- for Button inputs with additional Text input -->
                             <div v-if="question.type === 'button' && question.showTextInput === true">
                               <div>
                                 <input type="text" class="mt-1 p-2 w-100" :placeholder="question.options[0].isActive === true ? question.options[0].placeholder : question.options[1].placeholder">
                               </div>
                             </div>
+
+                            <!-- for Number Inputs -->
                             <div v-if="question.type === 'number'">
                               <label for="exampleFormControlSelect1">{{ question.question }}</label><br>
                               <input type="number" value="" min="0"  @click="handleQuestionsText(question, question.answer)"  @keyup="handleQuestionsText(question, question.answer)" v-model="question.answer" class="mt-1 p-2 mr-2 w-25" placeholder="0"> {{ question.caption }}
@@ -1129,6 +1149,31 @@ export default {
         question.isComplete = false
       }
     },
+    handleMultiSelectAnswer: function(questionIndex, indexQuestion, indexAnswer, questionMain) {
+      let self = this
+
+      this.complaints[questionIndex].questions[indexQuestion].options.forEach((question, index) => {
+        if (indexAnswer === index) {
+          question.isActive = !question.isActive
+          questionMain.isComplete = true
+
+          if (question.isComplaint) {
+            self.makeNewComplaint(question.complaint[0], question.complaint[1])
+          }
+
+          // toggle secondary input
+          if (self.complaints[questionIndex].questions[indexQuestion].showTextInput === false) {
+            self.complaints[questionIndex].questions[indexQuestion].showTextInput = true
+          }
+
+          if (question.name === "Other") {
+            self.complaints[questionIndex].questions[indexQuestion].showOther = true
+          } else {
+            self.complaints[questionIndex].questions[indexQuestion].showOther = false
+          }
+        }
+      })
+    },
     handleSelectAnswer: function (questionIndex, indexQuestion, indexAnswer, questionMain) {
       let self = this
 
@@ -1140,8 +1185,6 @@ export default {
           console.log(question)
           if (question.isComplaint) {
             self.makeNewComplaint(question.complaint[0], question.complaint[1])
-            alert('This question is a complaint')
-            // self.goToPrevious()
           }
 
           // toggle secondary input
@@ -1150,10 +1193,7 @@ export default {
           }
 
           if (question.name === "Other") {
-            // console.log('Click')
-            // console.log(self.questions[indexQuestion].showOther)
             self.complaints[questionIndex].questions[indexQuestion].showOther = true
-            // console.log(self.questions[indexQuestion].showOther)
           } else {
             self.complaints[questionIndex].questions[indexQuestion].showOther = false
           }
@@ -2646,26 +2686,18 @@ export default {
           isComplete: false,
           questions: [
             {
-              title: 'Location',
+              title: 'Where is the ulcer located on the body?',
               hasAnswer: false,
-              type: 'button',
-              options: [
-                {
-                  name: 'Location of Ulcer',
-                  isActive: false,
-                },
-              ]
+              type: 'text',
+              answer: '',
+              placeholder: 'Describe the location of the ulcer'
             },
             {
-              title: 'How many ulcers',
+              title: 'How many ulcers are there?',
               hasAnswer: false,
-              type: 'button',
-              options: [
-                {
-                  name: '#',
-                  isActive: false,
-                },
-              ]
+              type: 'text',
+              answer: '',
+              placeholder: 'Describe the location of the ulcer'
             },
             {
               title: 'Shape of ulcer(s)',
@@ -3732,6 +3764,7 @@ export default {
             {
               question: "What brings it on?",
               type: 'button',
+              hasMultiSelect: true,
               isComplete: false,
               showOther: false,
               options: [
@@ -3810,6 +3843,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              hasMultiSelect: true,
               isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
@@ -3910,6 +3944,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              hasMultiSelect: true,
               isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
@@ -4099,6 +4134,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              hasMultiSelect: true,
               isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
@@ -4411,6 +4447,7 @@ export default {
             {
               question: "Describe any possible causes.",
               type: 'text',
+              isComplete: false,
               answer: '',
               placeholder: 'Describe any possible causes'
             },
@@ -4437,6 +4474,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -4469,6 +4507,7 @@ export default {
                   question: "Where is it now?",
                   type: 'button',
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -4566,6 +4605,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -4610,6 +4650,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -4651,6 +4692,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -4748,6 +4790,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -4780,6 +4823,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -4829,6 +4873,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -4930,6 +4975,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -4962,6 +5008,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -5011,6 +5058,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -5104,6 +5152,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5138,6 +5187,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -5185,6 +5235,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -5220,6 +5271,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5322,6 +5374,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5372,6 +5425,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -5415,6 +5469,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5603,6 +5658,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5852,6 +5908,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -5902,6 +5959,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -5945,6 +6003,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -5980,6 +6039,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6102,6 +6162,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6152,6 +6213,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -6199,6 +6261,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -6246,6 +6309,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -6359,6 +6423,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6413,6 +6478,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -6460,6 +6526,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -6503,6 +6570,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -6608,6 +6676,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6658,6 +6727,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -6696,6 +6766,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   options: [
                     {
@@ -6715,6 +6786,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6797,6 +6869,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6839,6 +6912,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -6880,6 +6954,7 @@ export default {
                 {
                   question: "Where did it start?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6900,6 +6975,7 @@ export default {
                 {
                   question: "Where is it now?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -6985,6 +7061,7 @@ export default {
                 {
                   question: "What brings it on?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isComplete: false,
                   showOther: false,
                   options: [
@@ -7027,6 +7104,7 @@ export default {
                   type: 'button',
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
+                  hasMultiSelect: true,
                   showOther: false,
                   options: [
                     {
@@ -7654,6 +7732,7 @@ export default {
               type: 'button',
               isAssociatedSymptomQuestion: true,
               isComplete: false,
+              hasMultiSelect: true,
               showOther: false,
               options: [
                 {
@@ -7994,6 +8073,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -8161,6 +8241,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -8329,6 +8410,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -8497,6 +8579,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -8665,6 +8748,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   showOther: false,
@@ -8828,6 +8912,7 @@ export default {
             {
               question: "Are there any associated symptoms?",
               type: 'button',
+              hasMultiSelect: true,
               isAssociatedSymptomQuestion: true,
               isComplete: false,
               showOther: false,
@@ -8969,6 +9054,7 @@ export default {
             {
               question: "Are there any associated fits?",
               type: 'button',
+              hasMultiSelect: true,
               isAssociatedSymptomQuestion: true,
               isComplete: false,
               options: [
@@ -9231,6 +9317,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   options: [
@@ -9326,6 +9413,7 @@ export default {
                 {
                   question: "Are there any associated symptoms?",
                   type: 'button',
+                  hasMultiSelect: true,
                   isAssociatedSymptomQuestion: true,
                   isComplete: false,
                   options: [

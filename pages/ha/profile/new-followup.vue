@@ -447,7 +447,7 @@
                 </div>
 
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="eyes">
-                  <small>Eyes (hover title for photo)</small>
+                  <small>Eyes</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
@@ -467,7 +467,7 @@
                   </button>
                 </div>
                 <div class="col-md-12 mt-4 mb-2 text-muted" ref="hands">
-                  <small>Hands (hover title for photo)</small>
+                  <small>Hands</small>
                   <hr class="mb-1 mt-1">
                 </div>
                 <div class="col-md-6 mb-3">
